@@ -1,0 +1,97 @@
+DeptNum;Nom;Commune;DeptNom;LatDD;LonDD
+2A;Palais Lantivy;Ajaccio;Corse-du-Sud;41.919722222222219;8.736111111111111
+2B;Hôtel de préfecture;Bastia;Haute-Corse;42.703611111111108;9.447777777777778
+"1";Hôtel de préfecture;Bourg-en-Bresse;Ain;46.202500000000001;5.221944444444444
+"2";Hôtel de préfecture;Laon;Aisne;49.562222222222225;3.622500000000000
+"3";Hôtel de préfecture;Moulins;Allier;46.568333333333335;3.334444444444444
+"4";Hôtel de préfecture;Digne-les-Bains;Alpes-de-Haute-Provence;44.092222222222219;6.238055555555555
+"5";Hôtel de préfecture;Gap;Hautes-Alpes;44.557499999999997;6.076111111111111
+"6";Palais des ducs de Savoie;Nice;Alpes-Maritimes;43.696388888888890;7.275000000000000
+"7";Hôtel de préfecture;Privas;Ardèche;44.735277777777775;4.599444444444444
+"8";École royale du génie de Mézières;Charleville-Mézières;Ardennes;49.761388888888888;4.720000000000000
+"9";Hôtel de préfecture;Foix;Ariège;42.967222222222219;1.605833333333333
+"10";Hôtel de préfecture;Troyes;Aube;48.297777777777775;4.078333333333333
+"11";Hôtel de préfecture;Carcassonne;Aude;43.214722222222221;2.353333333333333
+"12";Hôtel de préfecture;Rodez;Aveyron;44.349444444444444;2.574722222222222
+"13";Hôtel de préfecture;Marseille;Bouches-du-Rhône;43.290277777777774;5.380000000000000
+"14";Hôtel de préfecture;Caen;Calvados;49.180000000000000;-0.365277777777778
+"15";Hôtel de préfecture;Aurillac;Cantal;44.929166666666667;2.446944444444445
+"16";Hôtel de préfecture;Angoulême;Charente;45.645833333333336;0.156944444444444
+"17";Hôtel de préfecture;La Rochelle;Charente-Maritime;46.157499999999999;-1.157222222222222
+"18";Hôtel de préfecture;Bourges;Cher;47.081111111111113;2.395277777777778
+"19";Hôtel de préfecture;Tulle;Corrèze;45.271111111111111;1.768888888888889
+"21";Hôtel de préfecture;Dijon;Côte-d'Or;47.324616438823348;5.041909541769544
+"22";Hôtel de préfecture;Saint-Brieuc;Côtes-d'Armor;48.514444444444443;-2.765833333333333
+"23";Hôtel de préfecture;Guéret;Creuse;46.168888888888887;1.869444444444444
+"24";Hôtel de préfecture;Périgueux;Dordogne;45.186944444444443;0.725277777777778
+"25";Hôtel de préfecture;Besançon;Doubs;47.233611111111109;6.020833333333333
+"26";Hôtel de préfecture;Valence;Drôme;44.935555555555553;4.893611111111111
+"27";Hôtel de préfecture;Évreux;Eure;49.025555555555556;1.142500000000000
+"28";Hôtel de préfecture;Chartres;Eure-et-Loir;48.445833333333333;1.481666666666667
+"29";Hôtel de préfecture;Quimper;Finistère;47.994444444444447;-4.102777777777778
+"30";Hôtel de préfecture;Nîmes;Gard;43.831944444444446;4.363055555555555
+"31";Hôtel de préfecture;Toulouse;Haute-Garonne;43.598611111111111;1.450277777777778
+"32";Hôtel de préfecture;Auch;Gers;43.646666666666668;0.586388888888889
+"33";Hôtel de préfecture;Bordeaux;Gironde;44.837499999999999;-0.586666666666667
+"34";Hôtel de préfecture;Montpellier;Hérault;43.611111111111114;3.876666666666667
+"35";Hôtel de préfecture;Rennes;Ille-et-Vilaine;48.113611111111112;-1.674444444444445
+"36";Hôtel de préfecture;Châteauroux;Indre;46.811666666666667;1.686944444444444
+"37";Hôtel de préfecture;Tours;Indre-et-Loire;47.393055555555556;0.691944444444444
+"38";Hôtel de préfecture;Grenoble;Isère;45.188333333333333;5.732500000000000
+"39";Hôtel de préfecture;Lons-le-Saunier;Jura;46.671944444444442;5.550555555555555
+"40";Hôtel de préfecture;Mont-de-Marsan;Landes;43.893333333333331;-0.499722222222222
+"41";Hôtel de préfecture;Blois;Loir-et-Cher;47.590833333333336;1.333888888888889
+"42";Hôtel de préfecture;Saint-Étienne;Loire;45.442500000000003;4.386388888888889
+"43";Hôtel de préfecture;Le Puy-en-Velay;Haute-Loire;45.041111111111114;3.883888888888889
+"44";Hôtel de préfecture;Nantes;Loire-Atlantique;47.220555555555556;-1.553055555555555
+"45";Hôtel de préfecture;Orléans;Loiret;47.900277777777781;1.910555555555556
+"46";Hôtel de préfecture;Cahors;Lot;44.447499999999998;1.442222222222222
+"47";Hôtel de préfecture;Agen;Lot-et-Garonne;44.198611111111113;0.614722222222222
+"48";Hôtel de préfecture;Mende;Lozère;44.517777777777781;3.498333333333333
+"49";Hôtel de préfecture;Angers;Maine-et-Loire;47.466111111111111;-0.555000000000000
+"50";Hôtel de préfecture;Saint-Lô;Manche;49.116111111111110;-1.095555555555556
+"51";Hôtel de préfecture;Châlons-en-Champagne;Marne;48.953333333333333;4.366388888888889
+"52";Hôtel de préfecture;Chaumont;Haute-Marne;48.114444444444445;5.140555555555555
+"53";Hôtel de préfecture;Laval;Mayenne;48.069722222222225;-0.766388888888889
+"54";Hôtel de préfecture;Nancy;Meurthe-et-Moselle;48.694166666666668;6.185277777777777
+"55";Hôtel de préfecture;Bar-le-Duc;Meuse;48.773888888888891;5.158055555555555
+"56";Hôtel de préfecture;Vannes;Morbihan;47.658055555555556;-2.753611111111111
+"57";Hôtel de préfecture;Metz;Moselle;49.122500000000002;6.174722222222222
+"58";Hôtel de préfecture;Nevers;Nièvre;46.993333333333332;3.163055555555556
+"59";Hôtel de préfecture;Lille;Nord;50.632222222222225;3.059722222222222
+"60";Hôtel de préfecture;Beauvais;Oise;49.440555555555555;2.076666666666667
+"61";Hôtel de préfecture;Alençon;Orne;48.432499999999997;0.091388888888889
+"62";Hôtel de préfecture;Arras;Pas-de-Calais;50.292777777777779;2.764722222222222
+"63";Hôtel de préfecture;Clermont-Ferrand;Puy-de-Dôme;45.777222222222221;3.084166666666667
+"64";Hôtel de préfecture;Pau;Pyrénées-Atlantiques;43.296111111111109;-0.369166666666667
+"65";Hôtel de préfecture;Tarbes;Hautes-Pyrénées;43.234166666666667;0.068055555555556
+"66";Hôtel de préfecture;Perpignan;Pyrénées-Orientales;42.700000000000003;2.893611111111111
+"67";Hôtel de préfecture;Strasbourg;Bas-Rhin;48.588333333333331;7.755000000000000
+"68";Hôtel de préfecture;Colmar;Haut-Rhin;48.074166666666663;7.351388888888889
+"69";Hôtel de préfecture;Lyon;Rhône;45.760833333333331;4.843333333333334
+"70";Hôtel de préfecture;Vesoul;Haute-Saône;47.623333333333335;6.152500000000000
+"71";Hôtel de préfecture;Mâcon;Saône-et-Loire;46.306994303845883;4.834704438023452
+"72";Hôtel de préfecture;Le Mans;Sarthe;48.000833333333333;0.197222222222222
+"73";Hôtel de préfecture;Chambéry;Savoie;45.564166666666665;5.918055555555556
+"74";Hôtel de préfecture;Annecy;Haute-Savoie;45.902500000000003;6.129722222222222
+"75";Hôtel de préfecture;Paris;Paris;48.856296190448617;2.353280218702469
+"76";Hôtel de préfecture;Rouen;Seine-Maritime;49.446111111111108;1.080833333333333
+"77";Hôtel de préfecture;Melun;Seine-et-Marne;48.540555555555557;2.655000000000000
+"78";Hôtel de préfecture;Versailles;Yvelines;48.802500000000002;2.132500000000000
+"79";Hôtel de préfecture;Niort;Deux-Sèvres;46.325000000000003;-0.465833333333333
+"80";Hôtel de préfecture;Amiens;Somme;49.890555555555558;2.296388888888889
+"81";Hôtel de préfecture;Albi;Tarn;43.928333333333335;2.146388888888889
+"82";Hôtel de préfecture;Montauban;Tarn-et-Garonne;44.015833333333333;1.356388888888889
+"83";Hôtel de préfecture;Toulon;Var;43.129444444444445;5.934166666666666
+"84";Hôtel de préfecture;Avignon;Vaucluse;43.948333333333331;4.819166666666667
+"85";Hôtel de préfecture;La Roche-sur-Yon;Vendée;46.667499999999997;-1.428055555555556
+"86";Hôtel de préfecture;Poitiers;Vienne;46.580833333333331;0.335833333333333
+"87";Hôtel de préfecture;Limoges;Haute-Vienne;45.833333333333336;1.256944444444444
+"88";Hôtel de préfecture;Épinal;Vosges;48.170277777777777;6.450000000000000
+"89";Hôtel de préfecture;Auxerre;Yonne;47.798055555555557;3.572222222222222
+"90";Hôtel de préfecture;Belfort;Territoire de Belfort;47.638242573387792;6.861370643049034
+"91";Hôtel de préfecture;Évry;Essonne;48.628888888888888;2.435000000000000
+"92";Hôtel de préfecture;Nanterre;Hauts-de-Seine;48.897222222222226;2.215833333333333
+"93";Hôtel de préfecture;Bobigny;Seine-Saint-Denis;48.905277777777776;2.450277777777778
+"94";Hôtel de préfecture;Créteil;Val-de-Marne;48.781944444444441;2.451388888888889
+"95";Hôtel de préfecture;Pontoise;Val-d'Oise;49.035277777777779;2.077777777777778
