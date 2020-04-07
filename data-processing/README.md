@@ -4,6 +4,9 @@ Ces scripts permettent de prétraiter les données dpe, notamment via du géocod
 
 Prérequis : 
 - Avoir les données .sql
+- Installer en amont des instances permettant de faire du géocodage. Vous pouvez monter vos instances via le repo suivant : 
+	- https://github.com/geoffreyaldebert/geocodage_ban
+	- A titre de comparaison, le géocodage de la table td001 (~9 millions de lignes) a pris 5h30 sur une machine avec 8coeurs /16Go de RAM et 4 instances addok + 4 instances addok-redis
 
 Description des différentes étapes déroulées par les scripts :
 
