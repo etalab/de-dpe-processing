@@ -19,9 +19,9 @@ import traceback as tb
 import uuid
 import contextily as ctx
 
-from utils.ban_utils import *
-from utils.addr_utils import *
-from utils.addr_viz import *
+from ban_utils import *
+from addr_utils import *
+from addr_viz import *
 
 
 def cleanup_etalab_csv_files(dpe_table):
