@@ -160,7 +160,7 @@ def addok_search_match_commune(s_com, dept,addok_search_url=addok_search_url):
     for commune in communes:
         # on utilise la fonction de matching du moteur adresse d'etalab sur les communes
         try:
-            list_features = get_addok_search(commune,addok_search_url)
+            list_features = get_addok_search(commune,addok_search_url = addok_search_url)
             # on scinde en réponse commune/réponse adresse
             list_com = [el for el in list_features if el['properties']['type'] == 'municipality'
                         and el['properties']['citycode'].startswith(dept)]

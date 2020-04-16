@@ -47,7 +47,8 @@ def main(res_dir):
     # path for html maps
     maps_dir = Path(res_dir) / 'maps'
     maps_dir.mkdir(exist_ok=True, parents=True)
-
+    (maps_dir / 'dept').mkdir(exist_ok=True, parents=True)
+    (maps_dir / 'citycode').mkdir(exist_ok=True, parents=True)
     # path for static plots
     plot_dir = Path(res_dir) / 'plot'
     plot_dir.mkdir(exist_ok=True, parents=True)
@@ -124,7 +125,17 @@ def main(res_dir):
         a_folium_map = build_addr_folium_map(dpe_geo, marker_data=marker_data, group_col=group_col,
                                              icon_prop_dict=icon_prop_dict, latlon_cols=latlon_cols,
                                              color_col='classe_consommation_energie', color_dict=color_dpe_dict)
-        a_folium_map.save(str((maps_dir / f'dpe_{dept}.html').absolute()))
+        a_folium_map.save(str((maps_dir / 'dept'/ f'dpe_{dept}.html').absolute()))
+
+        city_codes = [str(el) for el in dpe_geo.result_citycode.unique() if str(el).startswith(dept)]
+
+        maps_dir/'citycode'
+        for city_code in city_codes:
+            sel = dpe_geo.loc[dpe_geo.result_citycode==city_code]
+            a_folium_map = build_addr_folium_map(sel, marker_data=marker_data, group_col=group_col,
+                                                 icon_prop_dict=icon_prop_dict, latlon_cols=latlon_cols,
+                                                 color_col='classe_consommation_energie', color_dict=color_dpe_dict)
+            a_folium_map.save(str((maps_dir / 'citycode' / f'dpe_{city_code}.html').absolute()))
 
 if __name__ == '__main__':
     if sys.platform == 'linux':

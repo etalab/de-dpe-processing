@@ -4,8 +4,10 @@ def build_concat_addr_from_table(df, addr_cols):
     def format_addr_col_for_concat(x):
         if isinstance(x, float):
             return ''
-        elif x.strip() != '':
+        elif x.strip() != '' and x.strip()!='nan':
             return x + ' '
+        elif x.strip()=='nan':
+            return ''
         else:
             return x
 
@@ -14,7 +16,6 @@ def build_concat_addr_from_table(df, addr_cols):
     s_addr = pd.Series(index=df.index).fillna('')
     df['adresse_concat'] = ''
     for col in addr_cols:
-        s_clean = df[col].replace({})
         s_addr += df[col].apply(lambda x: format_addr_col_for_concat(x))
     return s_addr
 

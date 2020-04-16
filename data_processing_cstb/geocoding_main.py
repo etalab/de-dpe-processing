@@ -47,6 +47,7 @@ def cleanup_dpe_table(dpe_table):
 
     na_terms = {'Non communiqué': np.nan,
                 "NC": np.nan,
+                "nan":np.nan,
                 }
 
     dpe_table = dpe_table.replace(na_terms)
@@ -84,7 +85,7 @@ def load_geocoded_table(dept, geocode_output_dir):
     return dpe_geo
 
 
-def select_best_geocoding_result(dpe_geo, dept, bonus_match_code=0.1):
+def select_best_geocoding_result(dpe_geo, bonus_match_code=0.1):
     """
     select best geocoding results using theses 4 ordered criteria
 
@@ -315,7 +316,7 @@ def main(res_dir):
 
         dpe_geo = load_geocoded_table(dept, geocode_output_dir=geocode_output_dir)
         dpe_geo = dpe_geo.merge(dpe_addr.drop(set(geocode_cols) - {'id_addr'}, axis=1), on='id_addr', how='right')
-        dpe_geo = select_best_geocoding_result(dpe_geo, dept)
+        dpe_geo = select_best_geocoding_result(dpe_geo)
         dpe_cols = list(set(dpe_table.columns) - set(dpe_geo))
         dpe_geo = dpe_geo.merge(dpe_table[dpe_cols + ['id']], on='id', how='right')
 
