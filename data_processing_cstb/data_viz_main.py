@@ -41,14 +41,8 @@ def to_gdf_mercator(dpe_geo):
     return dpe_geo
 
 
-def main():
-    if sys.platform == 'linux':
-        path_d = Path('/mnt/d')
-    else:
-        path_d = Path('D://')
+def main(res_dir):
 
-    res_dir = path_d / 'test' / 'base_dpe_geocode'
-    res_dir.mkdir(exist_ok=True, parents=True)
 
     # path for html maps
     maps_dir = Path(res_dir) / 'maps'
@@ -118,10 +112,14 @@ def main():
 
         marker_data = ['surface_habitable', 'tr002_type_batiment_id', 'annee_construction',
                        'classe_consommation_energie',
-                       'classe_estimation_ges', 'adresse_concat', 'code_postal', 'code_insee',
-                       'result_type',
+                       'classe_estimation_ges', 'adresse_concat', 'result_label', 'code_postal', 'code_insee',
                        'result_score',
-                       'result_label', ]
+                       "date_etablissement_dpe",
+                       'nom_methode_dpe',
+                       'version_methode_dpe',
+                       "explication_personnalisee",
+                       "commentaires_ameliorations_recommandations"
+                       ]
 
         a_folium_map = build_addr_folium_map(dpe_geo, marker_data=marker_data, group_col=group_col,
                                              icon_prop_dict=icon_prop_dict, latlon_cols=latlon_cols,
@@ -129,4 +127,11 @@ def main():
         a_folium_map.save(str((maps_dir / f'dpe_{dept}.html').absolute()))
 
 if __name__ == '__main__':
-    main()
+    if sys.platform == 'linux':
+        path_d = Path('/mnt/d')
+    else:
+        path_d = Path('D://')
+
+    res_dir = path_d / 'test' / 'base_dpe_geocode'
+    res_dir.mkdir(exist_ok=True, parents=True)
+    main(res_dir)

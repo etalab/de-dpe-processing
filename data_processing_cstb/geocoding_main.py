@@ -211,16 +211,10 @@ def experimental_recover_bad_addr(dpe_geo, dpe_addr, experimental_recover_output
     return dpe_geo
 
 
-def main():
-    # BASE PATHS
+def main(res_dir):
 
-    # switch linux/windows on a linux over windows.
-    if sys.platform == 'linux':
-        path_d = Path('/mnt/d')
-    else:
-        path_d = Path('D://')
 
-    res_dir = path_d / 'test' / 'base_dpe_geocode'
+    res_dir = Path(res_dir)
     res_dir.mkdir(exist_ok=True, parents=True)
 
     source_dir = path_d / 'data' / 'dpe' / 'upload'
@@ -283,7 +277,7 @@ def main():
                                                                addok_search_url=addok_search_url)
             df_match_ban_name_com.to_csv(match_ban_name_com_dir / f'match_ban_name_com_{dept}.csv')
         else:
-            df_match_ban_name_com = pd.read_csv('match_ban_name_com.csv', dtype=str, index_col=0)
+            df_match_ban_name_com = pd.read_csv(match_ban_name_com_dir / f'match_ban_name_com_{dept}.csv', dtype=str, index_col=0)
 
         # BUILD all communes possibilities for each address using raw commune txt or cp or code insee.
         # duplicates entry of address for same dpe id (will take only the best geocoding result later)
@@ -332,4 +326,11 @@ def main():
             store.put('td001_geocoded', dpe_geo)
 
 if __name__ == '__main__':
-    main()
+    if sys.platform == 'linux':
+        path_d = Path('/mnt/d')
+    else:
+        path_d = Path('D://')
+
+    res_dir = path_d / 'test' / 'base_dpe_geocode'
+    res_dir.mkdir(exist_ok=True, parents=True)
+    main(res_dir)

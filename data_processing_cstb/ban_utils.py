@@ -159,51 +159,53 @@ def addok_search_match_commune(s_com, dept,addok_search_url=addok_search_url):
     communes_list = list()
     for commune in communes:
         # on utilise la fonction de matching du moteur adresse d'etalab sur les communes
-        list_features = get_addok_search(commune,addok_search_url)
-        # on scinde en réponse commune/réponse adresse
-        list_com = [el for el in list_features if el['properties']['type'] == 'municipality'
-                    and el['properties']['citycode'].startswith(dept)]
-        list_addr = [el for el in list_features if el['properties']['type'] != 'municipality'
-                     and el['properties']['citycode'].startswith(dept)]
-        # si une commune unique matche on prend cette commune
-        if len(list_com) == 1:
-            com = list_com[0]['properties']
-            com['com_name_dpe'] = commune
-            com['match_ban_com_name_score'] = com['score']
-            com['match_ban_com_name_status'] = 'commune unique'
-
-            communes_list.append(com)
-        # si on a pas de commune on prend la top freq de la commune sur la liste d'adresse.
-        # si égalité on prend le score de matching max le plus haut.
-        elif len(list_com) == 0 and len(list_addr) > 0:
-            list_addr = [el['properties'] for el in list_addr]
-            top_com = pd.DataFrame(list_addr)
-
-            top_com = pd.concat([top_com.city.value_counts(), top_com.groupby('city').score.max()], axis=1)
-
-            top_com.columns = ['city_count', 'max_score']
-
-            top_com = top_com.sort_values(['city_count', 'max_score'], ascending=False).index[0]
-            list_features = get_addok_search(top_com)
+        try:
+            list_features = get_addok_search(commune,addok_search_url)
+            # on scinde en réponse commune/réponse adresse
             list_com = [el for el in list_features if el['properties']['type'] == 'municipality'
                         and el['properties']['citycode'].startswith(dept)]
-            com = list_com[0]['properties']
-            com['com_name_dpe'] = commune
-            com['match_ban_com_name_score'] = com['score']
-            com['match_ban_com_name_status'] = 'liste adresses'
-            communes_list.append(com)
+            list_addr = [el for el in list_features if el['properties']['type'] != 'municipality'
+                         and el['properties']['citycode'].startswith(dept)]
+            # si une commune unique matche on prend cette commune
+            if len(list_com) == 1:
+                com = list_com[0]['properties']
+                com['com_name_dpe'] = commune
+                com['match_ban_com_name_score'] = com['score']
+                com['match_ban_com_name_status'] = 'commune unique'
 
-        elif len(list_com) == 0:
+                communes_list.append(com)
+            # si on a pas de commune on prend la top freq de la commune sur la liste d'adresse.
+            # si égalité on prend le score de matching max le plus haut.
+            elif len(list_com) == 0 and len(list_addr) > 0:
+                list_addr = [el['properties'] for el in list_addr]
+                top_com = pd.DataFrame(list_addr)
+
+                top_com = pd.concat([top_com.city.value_counts(), top_com.groupby('city').score.max()], axis=1)
+
+                top_com.columns = ['city_count', 'max_score']
+
+                top_com = top_com.sort_values(['city_count', 'max_score'], ascending=False).index[0]
+                list_features = get_addok_search(top_com)
+                list_com = [el for el in list_features if el['properties']['type'] == 'municipality'
+                            and el['properties']['citycode'].startswith(dept)]
+                com = list_com[0]['properties']
+                com['com_name_dpe'] = commune
+                com['match_ban_com_name_score'] = com['score']
+                com['match_ban_com_name_status'] = 'liste adresses'
+                communes_list.append(com)
+
+            elif len(list_com) == 0:
+                pass
+            # si multi communes on prend celle avec le meilleur score de matching.
+            else:
+                list_com = [el['properties'] for el in list_com]
+                com = pd.DataFrame(list_com).sort_values('score', ascending=False).iloc[0].to_dict()
+                com['com_name_dpe'] = commune
+                com['match_ban_com_name_status'] = 'commune multiple'
+                com['match_ban_com_name_score'] = com['score']
+                communes_list.append(com)
+        except:
             pass
-        # si multi communes on prend celle avec le meilleur score de matching.
-        else:
-            list_com = [el['properties'] for el in list_com]
-            com = pd.DataFrame(list_com).sort_values('score', ascending=False).iloc[0].to_dict()
-            com['com_name_dpe'] = commune
-            com['match_ban_com_name_status'] = 'commune multiple'
-            com['match_ban_com_name_score'] = com['score']
-            communes_list.append(com)
-
     df_com_match = pd.DataFrame(communes_list)
 
     df_com_match = df_com_match.rename(columns={'postcode': 'code_postal',
