@@ -24,7 +24,7 @@ from addr_utils import *
 from addr_viz import *
 
 
-def cleanup_etalab_csv_files(dpe_table):
+def cleanup_source_csv_files(dpe_table):
     # temporary etalab postprocessing
     dpe_table.index.name = 'id'
     dpe_table = dpe_table.reset_index()
@@ -253,7 +253,7 @@ def main(res_dir):
 
         # LOAD CLEANUP TABLE
         dpe_table = pd.read_csv(td001_dpe_file, sep=',', error_bad_lines=False, dtype=str, index_col=0)
-        dpe_table = cleanup_etalab_csv_files(dpe_table)
+        dpe_table = cleanup_source_csv_files(dpe_table)
         dpe_table = cleanup_dpe_table(dpe_table)
 
         # GET COMMUNES META DATA
