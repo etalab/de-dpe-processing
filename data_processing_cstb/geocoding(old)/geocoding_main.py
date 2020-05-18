@@ -18,7 +18,6 @@ import geopandas as gpd
 import traceback as tb
 import uuid
 import contextily as ctx
-
 from ban_utils import *
 from addr_utils import *
 from addr_viz import *
@@ -61,7 +60,7 @@ def batch_geocoding(dpe_addr, geocode_cols, geocode_output_dir, dept):
 
     # recall previous geocoding if already exists and will recover missing address
     if Path(path_geo).is_file():
-        # using HDFSTORE because preserve types and perf.
+        # using temporary file .
         with pd.HDFStore(path_geo, 'r') as store:
             data_out = store['addr_dpe']
     else:
@@ -72,7 +71,7 @@ def batch_geocoding(dpe_addr, geocode_cols, geocode_output_dir, dept):
                                                   addr_cols=['adresse_concat'],
                                                   data_out=data_out, addok_search_csv_url=addok_search_csv_url)
 
-    # using HDFSTORE because preserve types and perf.
+    # using temporary file HDFSTORE because preserve types and perf.
     with pd.HDFStore(path_geo, 'w') as store:
         store['addr_dpe'] = data_out
 

@@ -66,12 +66,12 @@ def main(res_dir):
         # addr count by commune geoplot
         plot_addr_count_by_communes_dept(dpe_geo)
         plt.savefig(plot_dir / f'{dept}_dpe_count.png', bbox_inches='tight')
-
+        plt.close('all')
         # addr count by commune and by type of result geoplot
 
         plot_addr_count_by_communes_by_type_dept(dpe_geo)
         plt.savefig(plot_dir / f'{dept}_dpe_count_type.png', bbox_inches='tight')
-
+        plt.close('all')
         # FOLIUM INTERACTIVE MAP ADDR
 
         dpe_geo.classe_consommation_energie = dpe_geo.classe_consommation_energie.fillna('N')
