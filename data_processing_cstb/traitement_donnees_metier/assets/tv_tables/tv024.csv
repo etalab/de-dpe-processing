@@ -1,0 +1,17 @@
+,Code,"Hauteur α, β (°)",Orientation,Secteur,Omb
+0,TV024_001,< 15,,,0
+1,TV024_002,15 ≤… < 30,Sud ou Nord,Pour les 2 secteurs latéraux,4
+2,TV024_003,15 ≤… < 30,Sud ou Nord,Pour les 2 secteurs centraux,14
+3,TV024_004,30 ≤… < 60,Sud ou Nord,Pour les 2 secteurs latéraux,13
+4,TV024_005,30 ≤… < 60,Sud ou Nord,Pour les 2 secteurs centraux,35
+5,TV024_006,60 ≤… < 90,Sud ou Nord,Pour les 2 secteurs latéraux,15
+6,TV024_007,60 ≤… < 90,Sud ou Nord,Pour les 2 secteurs centraux,40
+7,TV024_008,15 ≤… < 30,Est ou Ouest,Pour le secteur latéral vers le sud,14
+8,TV024_009,15 ≤… < 30,Est ou Ouest,Pour le secteur central vers le sud,17
+9,TV024_010,15 ≤… < 30,Est ou Ouest,Pour les 2 autres secteurs,5
+10,TV024_011,30 ≤… < 60,Est ou Ouest,Pour le secteur latéral vers le sud,27
+11,TV024_012,30 ≤… < 60,Est ou Ouest,Pour le secteur central vers le sud,40
+12,TV024_013,30 ≤… < 60,Est ou Ouest,Pour les 2 autres secteurs,17
+13,TV024_014,60 ≤… < 90,Est ou Ouest,Pour le secteur latéral vers le sud,30
+14,TV024_015,60 ≤… < 90,Est ou Ouest,Pour le secteur central vers le sud,45
+15,TV024_016,60 ≤… < 90,Est ou Ouest,Pour les 2 autres secteurs,25

@@ -1,0 +1,65 @@
+,Code,Mur Isolé,Année construction,Année isolation,Zone Hiver,Effet Joule,Umur
+0,TV003_001,Inconnu,1948 à 1974,,H1,oui,2.5
+1,TV003_002,Inconnu,1974 à 1977,,H1,oui,1.0
+2,TV003_003,Inconnu,1977 à 1982,,H1,oui,0.8
+3,TV003_004,Inconnu,1982 à 1988,,H1,oui,0.7
+4,TV003_005,Inconnu,1988 à 2000,,H1,oui,0.45
+5,TV003_006,Inconnu,2000 à 2005,,H1,oui,0.4
+6,TV003_007,Inconnu,à partir de 2006,,H1,oui,0.36
+7,TV003_008,Inconnu,1948 à 1974,,H1,non,2.5
+8,TV003_009,Inconnu,1974 à 1977,,H1,non,1.0
+9,TV003_010,Inconnu,1977 à 1982,,H1,non,1.0
+10,TV003_011,Inconnu,1982 à 1988,,H1,non,0.8
+11,TV003_012,Inconnu,1988 à 2000,,H1,non,0.5
+12,TV003_013,Inconnu,2000 à 2005,,H1,non,0.4
+13,TV003_014,Inconnu,à partir de 2006,,H1,non,0.36
+14,TV003_015,Inconnu,1948 à 1974,,H2,oui,2.5
+15,TV003_016,Inconnu,1974 à 1977,,H2,oui,1.05
+16,TV003_017,Inconnu,1977 à 1982,,H2,oui,0.84
+17,TV003_018,Inconnu,1982 à 1988,,H2,oui,0.74
+18,TV003_019,Inconnu,1988 à 2000,,H2,oui,0.47
+19,TV003_020,Inconnu,2000 à 2005,,H2,oui,0.4
+20,TV003_021,Inconnu,à partir de 2006,,H2,oui,0.36
+21,TV003_022,Inconnu,1948 à 1974,,H2,non,2.5
+22,TV003_023,Inconnu,1974 à 1977,,H2,non,1.05
+23,TV003_024,Inconnu,1977 à 1982,,H2,non,1.05
+24,TV003_025,Inconnu,1982 à 1988,,H2,non,0.84
+25,TV003_026,Inconnu,1988 à 2000,,H2,non,0.53
+26,TV003_027,Inconnu,2000 à 2005,,H2,non,0.4
+27,TV003_028,Inconnu,à partir de 2006,,H2,non,0.36
+28,TV003_029,Inconnu,1948 à 1974,,H3,oui,2.5
+29,TV003_030,Inconnu,1974 à 1977,,H3,oui,1.11
+30,TV003_031,Inconnu,1977 à 1982,,H3,oui,0.89
+31,TV003_032,Inconnu,1982 à 1988,,H3,oui,0.78
+32,TV003_033,Inconnu,1988 à 2000,,H3,oui,0.5
+33,TV003_034,Inconnu,2000 à 2005,,H3,oui,0.47
+34,TV003_035,Inconnu,à partir de 2006,,H3,oui,0.4
+35,TV003_036,Inconnu,1948 à 1974,,H3,non,2.5
+36,TV003_037,Inconnu,1974 à 1977,,H3,non,1.11
+37,TV003_038,Inconnu,1977 à 1982,,H3,non,1.11
+38,TV003_039,Inconnu,1982 à 1988,,H3,non,0.89
+39,TV003_040,Inconnu,1988 à 2000,,H3,non,0.56
+40,TV003_041,Inconnu,2000 à 2005,,H3,non,0.47
+41,TV003_042,Inconnu,à partir de 2006,,H3,non,0.4
+42,TV003_043,Non,,,,,2.0
+43,TV003_044,Oui,jusqu'à 1988,,,,0.98
+44,TV003_045,Oui,de 1989 à 2000,,,,0.56
+45,TV003_046,Oui,à partir de 2000,,,,0.42
+46,TV003_047,Oui,,de 1975 à 1977,H1,,1.0
+47,TV003_048,Oui,,de 1978 à 1982,H1,,0.8
+48,TV003_049,Oui,,de 1983 à 1988,H1,,0.7
+49,TV003_050,Oui,,de 1989 à 2000,H1,,0.45
+50,TV003_051,Oui,,de 2001 à 2005,H1,,0.4
+51,TV003_052,Oui,,à partir de 2006,H1,,0.36
+52,TV003_053,Oui,,de 1975 à 1977,H2,,1.05
+53,TV003_054,Oui,,de 1978 à 1982,H2,,0.84
+54,TV003_055,Oui,,de 1983 à 1988,H2,,0.74
+55,TV003_056,Oui,,de 1989 à 2000,H2,,0.47
+56,TV003_057,Oui,,de 2001 à 2005,H2,,0.4
+57,TV003_058,Oui,,à partir de 2006,H2,,0.36
+58,TV003_059,Oui,,de 1975 à 1977,H3,,1.11
+59,TV003_060,Oui,,de 1978 à 1982,H3,,0.89
+60,TV003_061,Oui,,de 1983 à 1988,H3,,0.78
+61,TV003_062,Oui,,de 1989 à 2000,H3,,0.5
+62,TV003_063,Oui,,de 2001 à 2005,H3,,0.47
+63,TV003_064,Oui,,à partir de 2006,H3,,0.4

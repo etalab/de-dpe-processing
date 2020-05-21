@@ -1,0 +1,163 @@
+,Code,Type de Pose,Matériaux,Type de Baie,Type de Vitrage,Fts
+0,TV021_001,Autres,Brique de Verre,,,0.4
+1,TV021_002,Autres,Polycarbonate,,,0.4
+2,TV021_003,Nu Extérieur,Bois,Fenêtre battante ou coulissante,Simple vitrage,0.58
+3,TV021_004,Nu Extérieur,Bois,Fenêtre battante ou coulissante,Double vitrage,0.52
+4,TV021_005,Nu Extérieur,Bois,Fenêtre battante ou coulissante,Double vitrage VIR,0.45
+5,TV021_006,Nu Extérieur,Bois,Fenêtre battante ou coulissante,Triple vitrage,0.46
+6,TV021_007,Nu Extérieur,Bois,Fenêtre battante ou coulissante,Triple vitrage VIR,0.41
+7,TV021_008,Nu Extérieur,Bois,Portes-fenêtres battantes  ou coulissantes sans soubassement,Simple vitrage,0.62
+8,TV021_009,Nu Extérieur,Bois,Portes-fenêtres battantes  ou coulissantes sans soubassement,Double vitrage,0.55
+9,TV021_010,Nu Extérieur,Bois,Portes-fenêtres battantes  ou coulissantes sans soubassement,Double vitrage VIR,0.48
+10,TV021_011,Nu Extérieur,Bois,Portes-fenêtres battantes  ou coulissantes sans soubassement,Triple vitrage,0.49
+11,TV021_012,Nu Extérieur,Bois,Portes-fenêtres battantes  ou coulissantes sans soubassement,Triple vitrage VIR,0.44
+12,TV021_013,Nu Extérieur,Bois,Portes-fenêtres battantes  avec soubassement,Simple vitrage,0.53
+13,TV021_014,Nu Extérieur,Bois,Portes-fenêtres battantes  avec soubassement,Double vitrage,0.48
+14,TV021_015,Nu Extérieur,Bois,Portes-fenêtres battantes  avec soubassement,Double vitrage VIR,0.41
+15,TV021_016,Nu Extérieur,Bois,Portes-fenêtres battantes  avec soubassement,Triple vitrage,0.42
+16,TV021_017,Nu Extérieur,Bois,Portes-fenêtres battantes  avec soubassement,Triple vitrage VIR,0.38
+17,TV021_018,Nu Extérieur,PVC,Fenêtre battante,Simple vitrage,0.54
+18,TV021_019,Nu Extérieur,PVC,Fenêtre battante,Double vitrage,0.48
+19,TV021_020,Nu Extérieur,PVC,Fenêtre battante,Double vitrage VIR,0.42
+20,TV021_021,Nu Extérieur,PVC,Fenêtre battante,Triple vitrage,0.43
+21,TV021_022,Nu Extérieur,PVC,Fenêtre battante,Triple vitrage VIR,0.39
+22,TV021_023,Nu Extérieur,PVC,Portes-fenêtres battantes  sans soubassement,Simple vitrage,0.57
+23,TV021_024,Nu Extérieur,PVC,Portes-fenêtres battantes  sans soubassement,Double vitrage,0.51
+24,TV021_025,Nu Extérieur,PVC,Portes-fenêtres battantes  sans soubassement,Double vitrage VIR,0.44
+25,TV021_026,Nu Extérieur,PVC,Portes-fenêtres battantes  sans soubassement,Triple vitrage,0.45
+26,TV021_027,Nu Extérieur,PVC,Portes-fenêtres battantes  sans soubassement,Triple vitrage VIR,0.4
+27,TV021_028,Nu Extérieur,PVC,Portes-fenêtres battantes  avec soubassement,Simple vitrage,0.5
+28,TV021_029,Nu Extérieur,PVC,Portes-fenêtres battantes  avec soubassement,Double vitrage,0.45
+29,TV021_030,Nu Extérieur,PVC,Portes-fenêtres battantes  avec soubassement,Double vitrage VIR,0.39
+30,TV021_031,Nu Extérieur,PVC,Portes-fenêtres battantes  avec soubassement,Triple vitrage,0.4
+31,TV021_032,Nu Extérieur,PVC,Portes-fenêtres battantes  avec soubassement,Triple vitrage VIR,0.36
+32,TV021_033,Nu Extérieur,PVC,Fenêtre coulissante,Simple vitrage,0.6
+33,TV021_034,Nu Extérieur,PVC,Fenêtre coulissante,Double vitrage,0.54
+34,TV021_035,Nu Extérieur,PVC,Fenêtre coulissante,Double vitrage VIR,0.46
+35,TV021_036,Nu Extérieur,PVC,Fenêtre coulissante,Triple vitrage,0.47
+36,TV021_037,Nu Extérieur,PVC,Fenêtre coulissante,Triple vitrage VIR,0.43
+37,TV021_038,Nu Extérieur,PVC,Portes-fenêtres coulissantes,Simple vitrage,0.64
+38,TV021_039,Nu Extérieur,PVC,Portes-fenêtres coulissantes,Double vitrage,0.57
+39,TV021_040,Nu Extérieur,PVC,Portes-fenêtres coulissantes,Double vitrage VIR,0.49
+40,TV021_041,Nu Extérieur,PVC,Portes-fenêtres coulissantes,Triple vitrage,0.51
+41,TV021_042,Nu Extérieur,PVC,Portes-fenêtres coulissantes,Triple vitrage VIR,0.45
+42,TV021_043,Nu Extérieur,Métal avec rupture de pont thermique,Fenêtre battante,Simple vitrage,0.59
+43,TV021_044,Nu Extérieur,Métal avec rupture de pont thermique,Fenêtre battante,Double vitrage,0.53
+44,TV021_045,Nu Extérieur,Métal avec rupture de pont thermique,Fenêtre battante,Double vitrage VIR,0.46
+45,TV021_046,Nu Extérieur,Métal avec rupture de pont thermique,Fenêtre battante,Triple vitrage,0.47
+46,TV021_047,Nu Extérieur,Métal avec rupture de pont thermique,Fenêtre battante,Triple vitrage VIR,0.42
+47,TV021_048,Nu Extérieur,Métal avec rupture de pont thermique,Portes-fenêtres battantes,Simple vitrage,0.63
+48,TV021_049,Nu Extérieur,Métal avec rupture de pont thermique,Portes-fenêtres battantes,Double vitrage,0.56
+49,TV021_050,Nu Extérieur,Métal avec rupture de pont thermique,Portes-fenêtres battantes,Double vitrage VIR,0.48
+50,TV021_051,Nu Extérieur,Métal avec rupture de pont thermique,Portes-fenêtres battantes,Triple vitrage,0.5
+51,TV021_052,Nu Extérieur,Métal avec rupture de pont thermique,Portes-fenêtres battantes,Triple vitrage VIR,0.45
+52,TV021_053,Nu Extérieur,Métal avec rupture de pont thermique,Fenêtre coulissante,Simple vitrage,0.65
+53,TV021_054,Nu Extérieur,Métal avec rupture de pont thermique,Fenêtre coulissante,Double vitrage,0.58
+54,TV021_055,Nu Extérieur,Métal avec rupture de pont thermique,Fenêtre coulissante,Double vitrage VIR,0.5
+55,TV021_056,Nu Extérieur,Métal avec rupture de pont thermique,Fenêtre coulissante,Triple vitrage,0.52
+56,TV021_057,Nu Extérieur,Métal avec rupture de pont thermique,Fenêtre coulissante,Triple vitrage VIR,0.46
+57,TV021_058,Nu Extérieur,Métal avec rupture de pont thermique,Portes-fenêtres coulissantes,Simple vitrage,0.7
+58,TV021_059,Nu Extérieur,Métal avec rupture de pont thermique,Portes-fenêtres coulissantes,Double vitrage,0.62
+59,TV021_060,Nu Extérieur,Métal avec rupture de pont thermique,Portes-fenêtres coulissantes,Double vitrage VIR,0.54
+60,TV021_061,Nu Extérieur,Métal avec rupture de pont thermique,Portes-fenêtres coulissantes,Triple vitrage,0.55
+61,TV021_062,Nu Extérieur,Métal avec rupture de pont thermique,Portes-fenêtres coulissantes,Triple vitrage VIR,0.5
+62,TV021_063,Nu Extérieur,Métal sans rupture de pont thermique,Fenêtre battante,Simple vitrage,0.61
+63,TV021_064,Nu Extérieur,Métal sans rupture de pont thermique,Fenêtre battante,Double vitrage,0.55
+64,TV021_065,Nu Extérieur,Métal sans rupture de pont thermique,Fenêtre battante,Double vitrage VIR,0.48
+65,TV021_066,Nu Extérieur,Métal sans rupture de pont thermique,Fenêtre battante,Triple vitrage,0.49
+66,TV021_067,Nu Extérieur,Métal sans rupture de pont thermique,Fenêtre battante,Triple vitrage VIR,0.44
+67,TV021_068,Nu Extérieur,Métal sans rupture de pont thermique,Portes-fenêtres battantes,Simple vitrage,0.64
+68,TV021_069,Nu Extérieur,Métal sans rupture de pont thermique,Portes-fenêtres battantes,Double vitrage,0.58
+69,TV021_070,Nu Extérieur,Métal sans rupture de pont thermique,Portes-fenêtres battantes,Double vitrage VIR,0.5
+70,TV021_071,Nu Extérieur,Métal sans rupture de pont thermique,Portes-fenêtres battantes,Triple vitrage,0.52
+71,TV021_072,Nu Extérieur,Métal sans rupture de pont thermique,Portes-fenêtres battantes,Triple vitrage VIR,0.47
+72,TV021_073,Nu Extérieur,Métal sans rupture de pont thermique,Fenêtre coulissante,Simple vitrage,0.67
+73,TV021_074,Nu Extérieur,Métal sans rupture de pont thermique,Fenêtre coulissante,Double vitrage,0.6
+74,TV021_075,Nu Extérieur,Métal sans rupture de pont thermique,Fenêtre coulissante,Double vitrage VIR,0.52
+75,TV021_076,Nu Extérieur,Métal sans rupture de pont thermique,Fenêtre coulissante,Triple vitrage,0.53
+76,TV021_077,Nu Extérieur,Métal sans rupture de pont thermique,Fenêtre coulissante,Triple vitrage VIR,0.48
+77,TV021_078,Nu Extérieur,Métal sans rupture de pont thermique,Portes-fenêtres coulissantes,Simple vitrage,0.71
+78,TV021_079,Nu Extérieur,Métal sans rupture de pont thermique,Portes-fenêtres coulissantes,Double vitrage,0.64
+79,TV021_080,Nu Extérieur,Métal sans rupture de pont thermique,Portes-fenêtres coulissantes,Double vitrage VIR,0.55
+80,TV021_081,Nu Extérieur,Métal sans rupture de pont thermique,Portes-fenêtres coulissantes,Triple vitrage,0.56
+81,TV021_082,Nu Extérieur,Métal sans rupture de pont thermique,Portes-fenêtres coulissantes,Triple vitrage VIR,0.51
+82,TV021_083,Nu intérieur ou Tunnel,Bois,Fenêtre battante ou coulissante,Simple vitrage,0.52
+83,TV021_084,Nu intérieur ou Tunnel,Bois,Fenêtre battante ou coulissante,Double vitrage,0.47
+84,TV021_085,Nu intérieur ou Tunnel,Bois,Fenêtre battante ou coulissante,Double vitrage VIR,0.4
+85,TV021_086,Nu intérieur ou Tunnel,Bois,Fenêtre battante ou coulissante,Triple vitrage,0.41
+86,TV021_087,Nu intérieur ou Tunnel,Bois,Fenêtre battante ou coulissante,Triple vitrage VIR,0.37
+87,TV021_088,Nu intérieur ou Tunnel,Bois,Portes-fenêtres battantes  ou coulissantes sans soubassement,Simple vitrage,0.56
+88,TV021_089,Nu intérieur ou Tunnel,Bois,Portes-fenêtres battantes  ou coulissantes sans soubassement,Double vitrage,0.5
+89,TV021_090,Nu intérieur ou Tunnel,Bois,Portes-fenêtres battantes  ou coulissantes sans soubassement,Double vitrage VIR,0.43
+90,TV021_091,Nu intérieur ou Tunnel,Bois,Portes-fenêtres battantes  ou coulissantes sans soubassement,Triple vitrage,0.44
+91,TV021_092,Nu intérieur ou Tunnel,Bois,Portes-fenêtres battantes  ou coulissantes sans soubassement,Triple vitrage VIR,0.4
+92,TV021_093,Nu intérieur ou Tunnel,Bois,Portes-fenêtres battantes  avec soubassement,Simple vitrage,0.48
+93,TV021_094,Nu intérieur ou Tunnel,Bois,Portes-fenêtres battantes  avec soubassement,Double vitrage,0.43
+94,TV021_095,Nu intérieur ou Tunnel,Bois,Portes-fenêtres battantes  avec soubassement,Double vitrage VIR,0.37
+95,TV021_096,Nu intérieur ou Tunnel,Bois,Portes-fenêtres battantes  avec soubassement,Triple vitrage,0.38
+96,TV021_097,Nu intérieur ou Tunnel,Bois,Portes-fenêtres battantes  avec soubassement,Triple vitrage VIR,0.34
+97,TV021_098,Nu intérieur ou Tunnel,PVC,Fenêtre battante,Simple vitrage,0.49
+98,TV021_099,Nu intérieur ou Tunnel,PVC,Fenêtre battante,Double vitrage,0.44
+99,TV021_100,Nu intérieur ou Tunnel,PVC,Fenêtre battante,Double vitrage VIR,0.38
+100,TV021_101,Nu intérieur ou Tunnel,PVC,Fenêtre battante,Triple vitrage,0.39
+101,TV021_102,Nu intérieur ou Tunnel,PVC,Fenêtre battante,Triple vitrage VIR,0.35
+102,TV021_103,Nu intérieur ou Tunnel,PVC,Portes-fenêtres battantes  sans soubassement,Simple vitrage,0.51
+103,TV021_104,Nu intérieur ou Tunnel,PVC,Portes-fenêtres battantes  sans soubassement,Double vitrage,0.46
+104,TV021_105,Nu intérieur ou Tunnel,PVC,Portes-fenêtres battantes  sans soubassement,Double vitrage VIR,0.39
+105,TV021_106,Nu intérieur ou Tunnel,PVC,Portes-fenêtres battantes  sans soubassement,Triple vitrage,0.4
+106,TV021_107,Nu intérieur ou Tunnel,PVC,Portes-fenêtres battantes  sans soubassement,Triple vitrage VIR,0.36
+107,TV021_108,Nu intérieur ou Tunnel,PVC,Portes-fenêtres battantes  avec soubassement,Simple vitrage,0.45
+108,TV021_109,Nu intérieur ou Tunnel,PVC,Portes-fenêtres battantes  avec soubassement,Double vitrage,0.4
+109,TV021_110,Nu intérieur ou Tunnel,PVC,Portes-fenêtres battantes  avec soubassement,Double vitrage VIR,0.35
+110,TV021_111,Nu intérieur ou Tunnel,PVC,Portes-fenêtres battantes  avec soubassement,Triple vitrage,0.36
+111,TV021_112,Nu intérieur ou Tunnel,PVC,Portes-fenêtres battantes  avec soubassement,Triple vitrage VIR,0.32
+112,TV021_113,Nu intérieur ou Tunnel,PVC,Fenêtre coulissante,Simple vitrage,0.54
+113,TV021_114,Nu intérieur ou Tunnel,PVC,Fenêtre coulissante,Double vitrage,0.48
+114,TV021_115,Nu intérieur ou Tunnel,PVC,Fenêtre coulissante,Double vitrage VIR,0.41
+115,TV021_116,Nu intérieur ou Tunnel,PVC,Fenêtre coulissante,Triple vitrage,0.43
+116,TV021_117,Nu intérieur ou Tunnel,PVC,Fenêtre coulissante,Triple vitrage VIR,0.38
+117,TV021_118,Nu intérieur ou Tunnel,PVC,Portes-fenêtres coulissantes,Simple vitrage,0.57
+118,TV021_119,Nu intérieur ou Tunnel,PVC,Portes-fenêtres coulissantes,Double vitrage,0.51
+119,TV021_120,Nu intérieur ou Tunnel,PVC,Portes-fenêtres coulissantes,Double vitrage VIR,0.44
+120,TV021_121,Nu intérieur ou Tunnel,PVC,Portes-fenêtres coulissantes,Triple vitrage,0.45
+121,TV021_122,Nu intérieur ou Tunnel,PVC,Portes-fenêtres coulissantes,Triple vitrage VIR,0.41
+122,TV021_123,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Fenêtre battante,Simple vitrage,0.53
+123,TV021_124,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Fenêtre battante,Double vitrage,0.48
+124,TV021_125,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Fenêtre battante,Double vitrage VIR,0.41
+125,TV021_126,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Fenêtre battante,Triple vitrage,0.42
+126,TV021_127,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Fenêtre battante,Triple vitrage VIR,0.38
+127,TV021_128,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Portes-fenêtres battantes,Simple vitrage,0.56
+128,TV021_129,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Portes-fenêtres battantes,Double vitrage,0.51
+129,TV021_130,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Portes-fenêtres battantes,Double vitrage VIR,0.44
+130,TV021_131,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Portes-fenêtres battantes,Triple vitrage,0.45
+131,TV021_132,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Portes-fenêtres battantes,Triple vitrage VIR,0.4
+132,TV021_133,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Fenêtre coulissante,Simple vitrage,0.58
+133,TV021_134,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Fenêtre coulissante,Double vitrage,0.52
+134,TV021_135,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Fenêtre coulissante,Double vitrage VIR,0.45
+135,TV021_136,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Fenêtre coulissante,Triple vitrage,0.46
+136,TV021_137,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Fenêtre coulissante,Triple vitrage VIR,0.42
+137,TV021_138,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Portes-fenêtres coulissantes,Simple vitrage,0.63
+138,TV021_139,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Portes-fenêtres coulissantes,Double vitrage,0.56
+139,TV021_140,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Portes-fenêtres coulissantes,Double vitrage VIR,0.48
+140,TV021_141,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Portes-fenêtres coulissantes,Triple vitrage,0.5
+141,TV021_142,Nu intérieur ou Tunnel,Métal avec rupture de pont thermique,Portes-fenêtres coulissantes,Triple vitrage VIR,0.45
+142,TV021_143,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Fenêtre battante,Simple vitrage,0.55
+143,TV021_144,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Fenêtre battante,Double vitrage,0.49
+144,TV021_145,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Fenêtre battante,Double vitrage VIR,0.43
+145,TV021_146,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Fenêtre battante,Triple vitrage,0.44
+146,TV021_147,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Fenêtre battante,Triple vitrage VIR,0.4
+147,TV021_148,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Portes-fenêtres battantes,Simple vitrage,0.58
+148,TV021_149,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Portes-fenêtres battantes,Double vitrage,0.52
+149,TV021_150,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Portes-fenêtres battantes,Double vitrage VIR,0.45
+150,TV021_151,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Portes-fenêtres battantes,Triple vitrage,0.46
+151,TV021_152,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Portes-fenêtres battantes,Triple vitrage VIR,0.42
+152,TV021_153,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Fenêtre coulissante,Simple vitrage,0.6
+153,TV021_154,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Fenêtre coulissante,Double vitrage,0.54
+154,TV021_155,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Fenêtre coulissante,Double vitrage VIR,0.47
+155,TV021_156,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Fenêtre coulissante,Triple vitrage,0.48
+156,TV021_157,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Fenêtre coulissante,Triple vitrage VIR,0.43
+157,TV021_158,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Portes-fenêtres coulissantes,Simple vitrage,0.64
+158,TV021_159,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Portes-fenêtres coulissantes,Double vitrage,0.57
+159,TV021_160,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Portes-fenêtres coulissantes,Double vitrage VIR,0.49
+160,TV021_161,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Portes-fenêtres coulissantes,Triple vitrage,0.51
+161,TV021_162,Nu intérieur ou Tunnel,Métal sans rupture de pont thermique,Portes-fenêtres coulissantes,Triple vitrage VIR,0.46

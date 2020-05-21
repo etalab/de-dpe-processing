@@ -1,0 +1,16 @@
+,Code,Type d'installation,Type de Production,Type de système,Zone Hivers,Prs2
+0,TV027_001,Individuelle,Instantanée,Chauffe-bain,H1,2.1
+1,TV027_002,Individuelle,Instantanée,Chauffe-bain,H2,2.0
+2,TV027_003,Individuelle,Instantanée,Chauffe-bain,H3,1.17
+3,TV027_004,Individuelle,Instantanée,Chaudière mixte,H1,1.05
+4,TV027_005,Individuelle,Instantanée,Chaudière mixte,H2,1.0
+5,TV027_006,Individuelle,Instantanée,Chaudière mixte,H3,0.85
+6,TV027_007,Individuelle,A accumulation,Ballon en volume habitable,H1,3.7
+7,TV027_008,Individuelle,A accumulation,Ballon en volume habitable,H2,3.5
+8,TV027_009,Individuelle,A accumulation,Ballon en volume habitable,H3,3.05
+9,TV027_010,Individuelle,A accumulation,Ballon hors volume habitable,H1,1.05
+10,TV027_011,Individuelle,A accumulation,Ballon hors volume habitable,H2,1.0
+11,TV027_012,Individuelle,A accumulation,Ballon hors volume habitable,H3,0.85
+12,TV027_013,Collective,Toutes les productions,Tous les systèmes,H1,1.05
+13,TV027_014,Collective,Toutes les productions,Tous les systèmes,H2,1.0
+14,TV027_015,Collective,Toutes les productions,Tous les systèmes,H3,0.85

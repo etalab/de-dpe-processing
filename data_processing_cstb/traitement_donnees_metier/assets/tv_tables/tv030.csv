@@ -1,0 +1,19 @@
+,Code,Type d'installation,Rr
+0,TV030_001,Autres cas,0.9
+1,TV030_002,Convecteur électrique NFC,0.99
+2,TV030_003,Panneau rayonnant électrique NFC,0.99
+3,TV030_004,Radiateur électrique NFC,0.99
+4,TV030_005,Plancher ou plafond rayonnant électrique avec régulation terminale,0.98
+5,TV030_006,Plancher ou plafond rayonnant électrique sans régulation,0.96
+6,TV030_007,Radiateur électrique à accumulation,0.95
+7,TV030_008,Autres émetteurs à effet joule,0.96
+8,TV030_009,Plancher ou plafond chauffant à eau en individuel,0.95
+9,TV030_010,Radiateur gaz à ventouse ou sur conduit de fumées,0.96
+10,TV030_011,Poêle charbon/bois/fioul/GPL,0.8
+11,TV030_012,Chaudière électrique,0.9
+12,TV030_013,Radiateur eau chaude sans robinet thermostatique,0.9
+13,TV030_014,Radiateur eau chaude avec robinet thermostatique,0.95
+14,TV030_015,Convecteur bi-jonction,0.9
+15,TV030_016,Plancher ou plafond chauffant à eau (en collectif),0.9
+16,TV030_017,Air soufflé,0.96
+17,TV030_018,Générateur à combustion en l'absence DPE à l'immeuble,0.87

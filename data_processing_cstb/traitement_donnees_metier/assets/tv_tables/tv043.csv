@@ -1,0 +1,4 @@
+,Code,Type de chauffe-eau,Volume de stockage ECS,Cr
+0,TV043_001,Chauffe-eau à accumulation horizontale,,"(939+10,4xVs)/(45xVs)"
+1,TV043_002,Chauffe-eau à accumulation verticale,≥ 75 l,"(224+66,3xVs2/3)/(45xVs)"
+2,TV043_003,Chauffe-eau à accumulation verticale,< 75 l,"(147,4+71,9xVs2/3)/(45xVs)"

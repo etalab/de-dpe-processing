@@ -1,0 +1,6 @@
+Id,Code,Description,Libellé,Est_efface,ordre,simulateur
+1.0,TR002_001,Maison Individuelle,Maison,0.0,1.0,1.0
+2.0,TR002_002,Logement,Appartement,0.0,2.0,1.0
+3.0,TR002_003,Bâtiment collectif à usage principal d'habitation,Logements collectifs,0.0,3.0,0.0
+4.0,TR002_004,Bâtiments ou partie de bâtiment à usage principal autre que d'habitation,Non résidentiel,0.0,5.0,0.0
+5.0,TR002_005,Centre Commerciaux,Centres commerciaux,0.0,4.0,0.0

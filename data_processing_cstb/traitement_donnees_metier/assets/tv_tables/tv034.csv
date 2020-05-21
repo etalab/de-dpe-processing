@@ -1,0 +1,10 @@
+,Code,Températture de Distribution,Type d'émetteur,Période,Tfonc100
+0,TV034_001,Basse,Plancher basse température,Avant 1981,60
+1,TV034_002,Basse,Plancher basse température,Entre 1981 et 2000,35
+2,TV034_003,Basse,Plancher basse température,Après 2000,35
+3,TV034_004,Moyenne,Radiateur à chaleur douce,Avant 1981,80
+4,TV034_005,Moyenne,Radiateur à chaleur douce,Entre 1981 et 2000,70
+5,TV034_006,Moyenne,Radiateur à chaleur douce,Après 2000,60
+6,TV034_007,Haute,Autres émetteurs,Avant 1981,80
+7,TV034_008,Haute,Autres émetteurs,Entre 1981 et 2000,70
+8,TV034_009,Haute,Autres émetteurs,Après 2000,70

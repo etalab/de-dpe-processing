@@ -1,0 +1,396 @@
+,Code,Département,Nom du Réseau,Localisation,Type de production,CO2,Date d'effectivité
+0,TV046_001,1,La Reyssouze,Bourg-en-Bresse,C,0.161,2013-01-01
+1,TV046_002,1,La Forge,Oyonnax,C,0.2,2013-01-01
+2,TV046_003,1,La Plaine (HLM),Oyonnax,C,0.21,2013-01-01
+3,TV046_004,2,ZUP du quartier Europe,Saint-Quentin,C,0.241,2013-01-01
+4,TV046_005,2,ZUP de Presles,Soissons,C,0.23,2013-01-01
+5,TV046_006,2,Réseau de Laon,Laon,C,0.024,2013-01-01
+6,TV046_007,3,Réseau de Moulins,Moulins,C,0.276,2013-01-01
+7,TV046_008,3,Fontbouillant,Montluçon,C,0.071,2013-01-01
+8,TV046_009,3,Meaulne,Meaulne,C,0.011,2013-01-01
+9,TV046_010,4,RCU Manosque ZAC Chanteprunier,Manosque,C,0.151,2013-01-01
+10,TV046_011,5,Réseau bois Delaroche,Embrun,C,0.0,2013-01-01
+11,TV046_012,6,Sonitherm ― Réseau de l’Ariane,Nice,C,0.006,2013-01-01
+12,TV046_013,6,Saint-Augustin (HLM),Nice,C,0.192,2013-01-01
+13,TV046_014,7,Réseau d’Aubenas,Aubenas,C,0.132,2013-01-01
+14,TV046_015,8,La Houllière,Charleville-Mézières,C,0.224,2013-01-01
+15,TV046_016,8,La Citadelle,Charleville-Mézières,C,0.222,2013-01-01
+16,TV046_017,8,ZUP de Sedan,Sedan,C,0.151,2013-01-01
+17,TV046_018,8,Revin,Revin,C,0.065,2013-01-01
+18,TV046_019,8,Réseau de Rocroi,Rocroi,C,0.295,2013-01-01
+19,TV046_020,10,ZUP de La Chapelle-Saint-Luc,Les Noës,C,0.224,2013-01-01
+20,TV046_021,10,Les Chartreux,Troyes,C,0.189,2013-01-01
+21,TV046_022,11,ZAC Saint-Jean et Saint-Pierre,Narbonne,C,0.116,2013-01-01
+22,TV046_023,12,Cransac-les-Thermes,Cransac-les-Thermes,C,0.042,2013-01-01
+23,TV046_024,13,ZAC des Canourgues,Salon-de-Provence,C,0.217,2013-01-01
+24,TV046_025,13,ZAC Paradis-Saint-Roch,Martigues,C,0.251,2013-01-01
+25,TV046_026,13,ZAC Canto Perdrix,Martigues,C,0.221,2013-01-01
+26,TV046_027,13,Centre urbain-ZAC des Pins,Vitrolles,C,0.213,2013-01-01
+27,TV046_028,13,Les Fenouillères,Aix-en-Provence,C,0.248,2013-01-01
+28,TV046_029,13,ZUP d’Encagnane,Aix-en-Provence,C,0.229,2013-01-01
+29,TV046_030,14,Hérouville-Saint-Clair,Hérouville-Saint-Clair,C,0.044,2013-01-01
+30,TV046_031,14,ZUP de Hauteville,Lisieux,C,0.009,2013-01-01
+31,TV046_032,14,ZAC de Falaise,Falaise,C,0.04,2013-01-01
+32,TV046_033,14,La Guérinière,Caen,C,0.18,2013-01-01
+33,TV046_034,14,Réseau de bois I,Bayeux,C,0.069,2013-01-01
+34,TV046_035,17,Villeneuve les Salines,La Rochelle,C,0.087,2013-01-01
+35,TV046_036,17,Réseau de Jonzac,Jonzac,C,0.106,2013-01-01
+36,TV046_037,17,ZUP de Mireuil,La Rochelle,C,0.088,2013-01-01
+37,TV046_038,17,Réseau de Pons,Pons,C,0.246,2013-01-01
+38,TV046_039,17,Réseau des Fouriers,Rochefort,C,0.001,2013-01-01
+39,TV046_040,18,Chancellerie Gibjoncs-ZUP de Bourges,Asnières-lès-Bourges,C,0.077,2013-01-01
+40,TV046_041,18,ZUP du Clos du Roy,Vierzon,C,0.307,2013-01-01
+41,TV046_042,19,Réseau UIOM Brive,Saint-Pantaléon-de-Larche,C,0.0,2013-01-01
+42,TV046_043,19,Egletons Bois Energie,Egletons,C,0.048,2013-01-01
+43,TV046_044,20,Réseau de Corte,Corte,C,0.022,2013-01-01
+44,TV046_045,21,La Fontaine d’Ouche,Dijon,C,0.248,2013-01-01
+45,TV046_046,21,ZUP de Chenove,Chenove,C,0.293,2013-01-01
+46,TV046_047,21,Réseau de Quetigny,Quetigny,C,0.153,2013-01-01
+47,TV046_048,21,Les Gresilles,Dijon,C,0.222,2013-01-01
+48,TV046_049,23,Réseau de Bourganeuf,Bourganeuf,C,0.15,2013-01-01
+49,TV046_050,23,Réseau de Felletin,Felletin,C,0.0,2013-01-01
+50,TV046_051,25,Besançon-Planoise,Besançon,C,0.156,2013-01-01
+51,TV046_052,25,ZUP de la Petite Hollande,Montbéliard,C,0.072,2013-01-01
+52,TV046_053,25,Champvalon,Béthoncourt,C,0.221,2013-01-01
+53,TV046_054,25,Chaufferie Bois du Russey,Le Russey,C,0.053,2013-01-01
+54,TV046_055,25,Champs Montants,Audincourt,C,0.127,2013-01-01
+55,TV046_056,25,Domaine universitaire de la Bouloie,Besançon,C,0.051,2013-01-01
+56,TV046_057,25,Réseau de Mouthe,Mouthe,C,0.089,2013-01-01
+57,TV046_058,26,Réseau de la ZUP de Valence,Valence,C,0.283,2013-01-01
+58,TV046_059,26,Réseau de Pierrelatte Des,Pierrelatte,C,0.013,2013-01-01
+59,TV046_060,26,Réseau Pracomptal,Montélimar,C,0.197,2013-01-01
+60,TV046_061,27,ZUP de Saint-André,Evreux,C,0.264,2013-01-01
+61,TV046_062,27,ZAC des Maisons Rouges,Louvriers,C,0.252,2013-01-01
+62,TV046_063,27,Quartier de l’Europe,Pont-Audemer,C,0.251,2013-01-01
+63,TV046_064,27,Tours du Levant Clos Galots,Les Andelys,C,0.262,2013-01-01
+64,TV046_065,27,ZUP Les Valmeux,Vernon,C,0.252,2013-01-01
+65,TV046_066,28,ZUP de la Madeleine,Chartres,C,0.245,2013-01-01
+66,TV046_067,28,Les Gauchetières,Nogent-le-Rotrou,C,0.237,2013-01-01
+67,TV046_068,29,Réseau de Brest,Brest,C,0.041,2013-01-01
+68,TV046_069,29,Réseau de Plougastel-Daoulas,Plougastel-Daoulas,C,0.049,2013-01-01
+69,TV046_070,30,Quartier Ouest,Nîmes,C,0.219,2013-01-01
+70,TV046_071,30,Centre-ville Alès,Alès,C,0.228,2013-01-01
+71,TV046_072,31,Réseau de Toulouse (UIOM),Toulouse,C,0.0,2013-01-01
+72,TV046_073,31,ZAC du Ritouret,Blagnac,C,0.149,2013-01-01
+73,TV046_074,31,CSU Rangueil,Toulouse,C,0.205,2013-01-01
+74,TV046_075,33,Parc de Mérignac Ville Stemer,Mérignac,C,0.22,2013-01-01
+75,TV046_076,33,Hauts de Garonne,"Cenon, Lormont, Floirac",C,0.043,2013-01-01
+76,TV046_077,33,Puis de Gueyrosse,Libourne,C,0.155,2013-01-01
+77,TV046_078,33,La Benauge-Cité Pinçon,Bordeaux,C,0.195,2013-01-01
+78,TV046_079,34,Polygone Antigone,Montpellier,C,0.239,2013-01-01
+79,TV046_080,34,Polygone Antigone,Montpellier,F,0.196,2013-01-01
+80,TV046_081,34,Ernest Granier,Montpellier,C,0.236,2013-01-01
+81,TV046_082,34,Ernest Granier,Montpellier,F,0.21,2013-01-01
+82,TV046_083,34,Port Marianne,Montpellier,C,0.129,2013-01-01
+83,TV046_084,34,Port Marianne,Montpellier,F,0.013,2013-01-01
+84,TV046_085,34,Réseau des universités,Montpellier,C,0.018,2013-01-01
+85,TV046_086,34,Réseau Arches Jacques Cœur,Montpellier,C,0.195,2013-01-01
+86,TV046_087,34,Réseau Arches Jacques Cœur,Montpellier,C,0.013,2013-01-01
+87,TV046_088,34,Parc Marianne,Montpellier,C,0.269,2013-01-01
+88,TV046_089,35,Villejean-Beauregard,Rennes,C,0.058,2013-01-01
+89,TV046_090,35,Sarah Bernhardt,Rennes,C,0.192,2013-01-01
+90,TV046_091,35,Campus scientifique de Beaulieu,Rennes,C,0.192,2013-01-01
+91,TV046_092,35,Quartier Sud,Rennes,C,0.243,2013-01-01
+92,TV046_093,36,Géothermie du quartier Saint-Jean,Châteauroux,C,0.279,2013-01-01
+93,TV046_094,37,Morier et Rabière,Joué-lès-Tours,C,0.219,2013-01-01
+94,TV046_095,37,ZUP des Bords de Cher,Tours,C,0.228,2013-01-01
+95,TV046_096,37,Sanitas,Tours,C,0.259,2013-01-01
+96,TV046_097,37,Quartier Chateaubriand,Tours,C,0.206,2013-01-01
+97,TV046_098,37,La Rabaterie,Saint-Pierre-des-Corps,C,0.257,2013-01-01
+98,TV046_099,37,Réseau UIOM Chinon,Saint-Pierre-des-Corps,C,0.0,2013-01-01
+99,TV046_100,37,Réseau de la Riche-Quartier,La Riche,C,0.23,2013-01-01
+100,TV046_101,38,Compagnie de chauffage de Grenoble,Grenoble,C,0.137,2013-01-01
+101,TV046_102,38,Compagnie de chauffage de Grenoble,Grenoble,F,0.008,2013-01-01
+102,TV046_103,38,Réseau UIOM SITOM Nord Isère,Bourgoin-Jallieu,C,0.256,2013-01-01
+103,TV046_104,38,Réseau de Saint-Marcellin,Saint-Marcellin,C,0.007,2013-01-01
+104,TV046_105,39,Réseau de Dole,Dole,C,0.189,2013-01-01
+105,TV046_106,39,La Marjorie,Lons-le-Saunier,C,0.082,2013-01-01
+106,TV046_107,39,Réseau de Moirans-en-Montagne,Moirans-en-Montagne,C,0.177,2013-01-01
+107,TV046_108,40,ZAC des Bords de l’Adour,Dax,C,0.21,2013-01-01
+108,TV046_109,41,Quartier Bégon et Chevalier,Blois,C,0.077,2013-01-01
+109,TV046_110,41,ZAC des Paradis,Vineuil,C,0.077,2013-01-01
+110,TV046_111,41,Réseau de Mondoubleau,Mondoubleau,C,0.143,2013-01-01
+111,TV046_112,42,ZUP de la Cotonne,Saint-Etienne,C,0.187,2013-01-01
+112,TV046_113,42,La Métare,Saint-Etienne,C,0.232,2013-01-01
+113,TV046_114,42,Montchovet-Beaulieu 4 (HLM),Saint-Etienne,C,0.229,2013-01-01
+114,TV046_115,42,Réseau de Firminy,Firminy,C,0.261,2013-01-01
+115,TV046_116,42,ZUP RN 7,Roanne,C,0.281,2013-01-01
+116,TV046_117,42,ZUP du Parc des Sports,Roanne,C,0.258,2013-01-01
+117,TV046_118,42,ZUP de Montreynaud,Saint-Etienne,C,0.064,2013-01-01
+118,TV046_119,42,Réseau d’Andrézieux-Bouthéon,Andrézieux-Bouthéon,C,0.06,2013-01-01
+119,TV046_120,42,Réseau de Montrond-les-Bains,Montrond-les-Bains,C,0.016,2013-01-01
+120,TV046_121,43,Chaufferie de la mairie,Dunières,C,0.0,2013-01-01
+121,TV046_122,43,Chaufferie de la piscine,Dunières,C,0.0,2013-01-01
+122,TV046_123,44,Beaulieu Malakoff-Valorena,Nantes,C,0.024,2013-01-01
+123,TV046_124,44,ZUP de Bellevue Saint-Herblain,Nantes-Saint-Herblain,C,0.231,2013-01-01
+124,TV046_125,45,Socos,Orléans,C,0.278,2013-01-01
+125,TV046_126,45,Quartier centre-ville et Nord,Orléans,C,0.236,2013-01-01
+126,TV046_127,45,ZUP de Socham,Montargis,C,0.088,2013-01-01
+127,TV046_128,45,Réseau de Fleury-les-Aubrais,Fleury-les-Aubrais,C,0.25,2013-01-01
+128,TV046_129,45,Réseau UIOM de Pithiviers,Pithiviers,C,0.005,2013-01-01
+129,TV046_130,46,Réseau de Nuzéjouls,Nuzéjouls,C,0.066,2013-01-01
+130,TV046_131,47,Novergie Sud Ouest-Sogad (UIOM),Le Passage,C,0.0,2013-01-01
+131,TV046_132,49,Réseau d’Angers,Angers,C,0.08,2013-01-01
+132,TV046_133,49,ZUP de Jeanne d’Arc,Angers,C,0.23,2013-01-01
+133,TV046_134,49,CHU Angers,Angers,C,0.219,2013-01-01
+134,TV046_135,49,Chemin Vert,Saumur,C,0.259,2013-01-01
+135,TV046_136,49,Réseau de chaleur d’Andrezé,Andrezé,C,0.0,2013-01-01
+136,TV046_137,50,ZUP d’Octeville,Cherbourg,C,0.252,2013-01-01
+137,TV046_138,50,Ilot Divette,Cherbourg,C,0.261,2013-01-01
+138,TV046_139,51,ZUP Laon Neufchâtel,Reims,C,0.202,2013-01-01
+139,TV046_140,51,Réseau UIOM,Reims,C,0.114,2013-01-01
+140,TV046_141,51,Quartier Bernon,Epernay,C,0.189,2013-01-01
+141,TV046_142,51,Croix Rouge,Reims,C,0.243,2013-01-01
+142,TV046_143,52,ZUP de Gigny,Saint-Dizier,C,0.199,2013-01-01
+143,TV046_144,52,Ensemble du Vert Bois,Saint-Dizier,C,0.188,2013-01-01
+144,TV046_145,52,La Rochotte,Chaumont,C,0.24,2013-01-01
+145,TV046_146,53,ZUP de Nicolas,Laval,C,0.222,2013-01-01
+146,TV046_147,54,Nancy Energie,Nancy,C,0.163,2013-01-01
+147,TV046_148,54,Réseau de Vandœuvre,Vandœuvre-lès-Nancy,C,0.053,2013-01-01
+148,TV046_149,54,Haut du Lièvre,Nancy,C,0.096,2013-01-01
+149,TV046_150,55,Côte Sainte-Catherine,Bar-le-Duc,C,0.249,2013-01-01
+150,TV046_151,55,ZUP Anthouard,Verdun,C,0.226,2013-01-01
+151,TV046_152,57,Metz Cité,Metz,C,0.187,2013-01-01
+152,TV046_153,57,Metz Est,Metz,C,0.223,2013-01-01
+153,TV046_154,57,Réseau du Farébersviller,Farébersviller,C,0.201,2013-01-01
+154,TV046_155,57,Wenheck,Saint-Avold,C,0.227,2013-01-01
+155,TV046_156,57,Réseau de Freyming-Merlebach,Freyming-Merlebach,C,0.287,2013-01-01
+156,TV046_157,57,Réseau de Sarreguemines,Sarreguemines,C,0.258,2013-01-01
+157,TV046_158,57,Réseau de Holweg-Forbach-Behren,Forbach-Stiring-Wendel-Behren-lès-Forbach,C,0.051,2013-01-01
+158,TV046_159,57,Huchet,Saint-Avold,C,0.184,2013-01-01
+159,TV046_160,57,Côte de la Justice,Saint-Avold,C,0.233,2013-01-01
+160,TV046_161,57,Carrière,Saint-Avold,C,0.234,2013-01-01
+161,TV046_162,58,Réseau de Nevers,Nevers,C,0.239,2013-01-01
+162,TV046_163,59,Alma-Beaurepaire,Roubaix,C,0.285,2013-01-01
+163,TV046_164,59,Quartier Pont de bois,Villeneuve-d’Ascq,C,0.182,2013-01-01
+164,TV046_165,59,Domaine universitaire et scientifique,Villeneuve-d’Ascq,C,0.233,2013-01-01
+165,TV046_166,59,ZUP de Wattignies-Blanc Riez,Wattignies,C,0.184,2013-01-01
+166,TV046_167,59,Réseau de Roubaix-Wattrelos,Roubaix,C,0.229,2013-01-01
+167,TV046_168,59,ZAC des Epis,Sin-le-Noble,C,0.212,2013-01-01
+168,TV046_169,59,Monsénergie,Mons-en-Barœul,C,0.21,2013-01-01
+169,TV046_170,59,Métropole Nord,Lille,C,0.253,2013-01-01
+170,TV046_171,59,ZUP de la Caserne Joyeuse,Maubeuge,C,0.236,2013-01-01
+171,TV046_172,59,Energie Grand Littoral,Dunkerque,C,0.128,2013-01-01
+172,TV046_173,60,Réseau de Compiègne,Compiègne,C,0.242,2013-01-01
+173,TV046_174,60,La Cavée,Creil,C,0.21,2013-01-01
+174,TV046_175,60,Quartier des Obiers,Nogent-sur-Oise,C,0.241,2013-01-01
+175,TV046_176,60,Les Martinets,Montataire,C,0.213,2013-01-01
+176,TV046_177,60,Les Hironvalles,Creil,C,0.203,2013-01-01
+177,TV046_178,61,Perseigne,Alençon,C,0.209,2013-01-01
+178,TV046_179,61,ZUP de Flers,Flers,C,0.312,2013-01-01
+179,TV046_180,61,Quartier Nord-Route de Falaise,Argentan,C,0.026,2013-01-01
+180,TV046_181,61,Réseau de La Ferté-Macé,La Ferté-Macé,C,0.004,2013-01-01
+181,TV046_182,62,ZUP du quartier République,Avion,C,0.215,2013-01-01
+182,TV046_183,62,ZUP de Lens,Lens,C,0.237,2013-01-01
+183,TV046_184,62,ZUP de Béthune,Béthune,C,0.23,2013-01-01
+184,TV046_185,62,Réseau de Liévin,Liévin,C,0.237,2013-01-01
+185,TV046_186,62,Calais Energie,Calais,C,0.209,2013-01-01
+186,TV046_187,62,Réseau centre-ville,Béthune,C,0.248,2013-01-01
+187,TV046_188,62,Réseau d’Arras,Arras,C,0.193,2013-01-01
+188,TV046_189,63,Saint-Jacques (HLM),Clermont-Ferrand,C,0.212,2013-01-01
+189,TV046_190,63,ZAC du Masage,Beaumont,C,0.215,2013-01-01
+190,TV046_191,63,Campus des Cézeaux,Aubière,C,0.238,2013-01-01
+191,TV046_192,63,ZUP de la Gauthière,Clermont-Ferrand,C,0.21,2013-01-01
+192,TV046_193,63,Réseau de Royat,Royat,C,0.224,2013-01-01
+193,TV046_194,67,Elsau,Strasbourg,C,0.247,2013-01-01
+194,TV046_195,67,Hautepierre,Strasbourg,C,0.225,2013-01-01
+195,TV046_196,67,L’esplanade,Strasbourg,C,0.242,2013-01-01
+196,TV046_197,67,Cité du Wihrel,Ostwald,C,0.21,2013-01-01
+197,TV046_198,67,Cité de l’Ill,Strasbourg,C,0.091,2013-01-01
+198,TV046_199,67,Réseau de Haguenau,Haguenau,C,0.265,2013-01-01
+199,TV046_200,68,Réseau de Colmar,Colmar,C,0.147,2013-01-01
+200,TV046_201,68,L’Illberg,Didenheim,C,0.229,2013-01-01
+201,TV046_202,68,Cité Technique,Saint-Louis,C,0.238,2013-01-01
+202,TV046_203,68,Ilôt de la Gare,Saint-Louis,C,0.206,2013-01-01
+203,TV046_204,68,Réseau de Cernay,Cernay,C,0.224,2013-01-01
+204,TV046_205,68,Réseau de Volgelsheim,Volgelsheim,C,0.244,2013-01-01
+205,TV046_206,68,Montagne Verte,Colmar,C,0.227,2013-01-01
+206,TV046_207,68,Réseau d’Heimersdorf,Heimersdorf,C,0.259,2013-01-01
+207,TV046_208,68,Réseau de Rixheim,Rixheim,C,0.032,2013-01-01
+208,TV046_209,69,Les Minguettes,Vénissieux,C,0.235,2013-01-01
+209,TV046_210,69,Les Sources (HLM),Ecully,C,0.207,2013-01-01
+210,TV046_211,69,La Duchère et Lyon 9e,Champagne-au-Mont-d’Or,C,0.088,2013-01-01
+211,TV046_212,69,Réseau Lyon-Villeurbanne,Lyon-Villeurbanne,C,0.122,2013-01-01
+212,TV046_213,69,Réseau Lyon-Villeurbanne,Lyon-Villeurbanne,F,0.012,2013-01-01
+213,TV046_214,69,Réseau de Vaulx-en-Velin,Vaulx-en-Velin,C,0.328,2013-01-01
+214,TV046_215,69,Campus de la Doua,Villeurbanne,C,0.228,2013-01-01
+215,TV046_216,69,La Perralière,Villeurbanne,C,0.208,2013-01-01
+216,TV046_217,69,Les Semailles,Rillieux-la-Pape,C,0.085,2013-01-01
+217,TV046_218,69,ZUP de Bron Parilly,Bron,C,0.206,2013-01-01
+218,TV046_219,69,Les Vernes,Givors,C,0.252,2013-01-01
+219,TV046_220,69,Réseau UIOM Villefranche,Villefranche-sur-Saône,C,0.0,2013-01-01
+220,TV046_221,69,Plateau de Montmein,Oullins,C,0.226,2013-01-01
+221,TV046_222,69,Résidence des Deux Amants,Lyon,C,0.246,2013-01-01
+222,TV046_223,69,Réseau de Rillieux-la-Pape (UIOM),Rillieux-la-Pape,C,0.0,2013-01-01
+223,TV046_224,69,Belleroche Ouest,Gleize,C,0.1,2013-01-01
+224,TV046_225,69,Mermoz Sud,Lyon,C,0.192,2013-01-01
+225,TV046_226,69,Domaine de la Roue,Rillieux-la-Pape,C,0.226,2013-01-01
+226,TV046_227,70,ZUP des Capucins,Gray,C,0.032,2013-01-01
+227,TV046_228,70,Réseau de Saulnot,Saulnot,C,0.134,2013-01-01
+228,TV046_229,70,Réseau de Dampierre-sur-Linotte,Dampierre-sur-Linotte,C,0.256,2013-01-01
+229,TV046_230,71,Réseau de Chalon,Chalon-sur-Saône,C,0.233,2013-01-01
+230,TV046_231,71,Réseau de Montceau-les-mines,Montceau-les-Mines,C,0.324,2013-01-01
+231,TV046_232,71,Réseau de Mâcon,Mâcon,C,0.356,2013-01-01
+232,TV046_233,71,Réseau d’Autun,Autun,C,0.121,2013-01-01
+233,TV046_234,71,Réseau de Tramayes,Tramayes,C,0.028,2013-01-01
+234,TV046_235,72,Réseau du Mans,Le Mans,C,0.247,2013-01-01
+235,TV046_236,72,Percée Centrale,Le Mans,C,0.201,2013-01-01
+236,TV046_237,72,ZUP d’Allonnes,Le Mans-Allonnes,C,0.084,2013-01-01
+237,TV046_238,72,Bellevue,Coulaine,C,0.061,2013-01-01
+238,TV046_239,73,Bissy et Croix Rouge,Chambéry,C,0.187,2013-01-01
+239,TV046_240,73,Réseau de Notre-Dame-des-Millières,Notre-Dame-des-Millières,C,0.262,2013-01-01
+240,TV046_241,73,Réseau de Saint-Etienne-de-Cuines,Saint-Etienne-de-Cuines,C,0.075,2013-01-01
+241,TV046_242,74,Novel,Annecy,C,0.209,2013-01-01
+242,TV046_243,74,ZUP de Champ Fleury,Seynod,C,0.031,2013-01-01
+243,TV046_244,74,Réseau de la Rénovation,Thonon-les-Bains,C,0.289,2013-01-01
+244,TV046_245,74,Flaine,Arraches-la-Frasse,C,0.277,2013-01-01
+245,TV046_246,74,Réseau de la ZUP des Ewues,Cluses,C,0.246,2013-01-01
+246,TV046_247,74,ZA La Cudra,Faverges,C,0.002,2013-01-01
+247,TV046_248,74,ZUP de Cozets,Scionzier,C,0.228,2013-01-01
+248,TV046_249,75,Paris et communes limitrophes,Paris,C,0.197,2013-01-01
+249,TV046_250,75,Réseau Climespace,Paris,C,0.204,2013-01-01
+250,TV046_251,75,Réseau Climespace,Paris,F,0.01,2013-01-01
+251,TV046_252,75,Rue Legendre,Paris,C,0.215,2013-01-01
+252,TV046_253,76,Curb-Bihorel,Rouen,C,0.3,2013-01-01
+253,TV046_254,76,ZAC du Mont Gaillard,Le Havre,C,0.256,2013-01-01
+254,TV046_255,76,Réseau de Mont-Saint-Aignan,Mont-Saint-Aignan,C,0.276,2013-01-01
+255,TV046_256,76,ZUP de la Cité Verte,Canteleu,C,0.227,2013-01-01
+256,TV046_257,76,ZAC Nobel Bozel,Petit-Quevilly,C,0.249,2013-01-01
+257,TV046_258,76,Château Blanc,Saint-Etienne-du-Rouvray,C,0.043,2013-01-01
+258,TV046_259,76,Extension Nord-Thermical,Neuville-lès-Dieppe,C,0.204,2013-01-01
+259,TV046_260,76,CHU Charles Nicolle,Rouen,C,0.204,2013-01-01
+260,TV046_261,76,ZUP de Caucriauville,Le Havre,C,0.251,2013-01-01
+261,TV046_262,76,La Côte Brulée,Le Havre,C,0.236,2013-01-01
+262,TV046_263,76,Grammont,Rouen,C,0.065,2013-01-01
+263,TV046_264,77,Hôpital,Meaux,C,0.158,2013-01-01
+264,TV046_265,77,Beauval-Collinet,Meaux,C,0.177,2013-01-01
+265,TV046_266,77,Almont-Montaigu,Melun,C,0.0,2013-01-01
+266,TV046_267,77,ZUP du mont Saint-Martin (GTNM),Nemours,C,0.271,2013-01-01
+267,TV046_268,77,Réseau de Dammarie-les-Lys,Dammarie-les-Lys,C,0.234,2013-01-01
+268,TV046_269,77,Centrale de la butte Monceau,Avon,C,0.282,2013-01-01
+269,TV046_270,77,Réseau du Mée-sur-Seine,Le Mée-sur-Seine,C,0.173,2013-01-01
+270,TV046_271,77,Réseau de Vaux-le-Pénil,Vaux-le-Pénil,C,0.26,2013-01-01
+271,TV046_272,77,Réseau de Coulommiers,Coulommiers,C,0.001,2013-01-01
+272,TV046_273,77,ZUP de Surville,Montereau-Fault-Yonne,C,0.238,2013-01-01
+273,TV046_274,77,Réseau de Marne-la-Vallée,Torcy,C,0.219,2013-01-01
+274,TV046_275,77,Réseau de Chelles,Chelles,C,0.138,2013-01-01
+275,TV046_276,78,Les Nouveaux Horizons,Elancourt,C,0.233,2013-01-01
+276,TV046_277,78,Le Val Fourré,Mantes-la-Jolie,C,0.244,2013-01-01
+277,TV046_278,78,Réseau SVCU de Versailles,Versailles,C,0.25,2013-01-01
+278,TV046_279,78,Parly II-Le Chesnay,Le Chesnay,C,0.211,2013-01-01
+279,TV046_280,78,Réseau de Saint-Germain-en-Laye,Saint-Germain-en-Laye,C,0.217,2013-01-01
+280,TV046_281,78,ZAC de la Noe,Chanteloup,C,0.182,2013-01-01
+281,TV046_282,78,Quartier Grand Ouest,Les Mureaux,C,0.271,2013-01-01
+282,TV046_283,78,Réseau de Vélizy,Vélizy-Villacoublay,C,0.217,2013-01-01
+283,TV046_284,78,Domaine de Beauregard-Cogecel,La Celle-Saint-Cloud,C,0.196,2013-01-01
+284,TV046_285,78,Réseau de Carrières-Chatou,Carrières-sur-Seine,C,0.02,2013-01-01
+285,TV046_286,78,Réseau de Plaisir-Resop,Plaisir,C,0.002,2013-01-01
+286,TV046_287,79,ZUP Le Clou Bouchet,Niort,C,0.203,2013-01-01
+287,TV046_288,79,Réseau de Bressuire,Bressuire,C,0.01,2013-01-01
+288,TV046_289,80,Etouvie,Amiens,C,0.219,2013-01-01
+289,TV046_290,80,Le Pigeonnier,Amiens,C,0.199,2013-01-01
+290,TV046_291,80,Réseau de Montdidier,Montdidier,C,0.118,2013-01-01
+291,TV046_292,81,Réseau de Carmaux,Carmaux,C,0.174,2013-01-01
+292,TV046_293,81,Chauffage urbain de Mazamet,Mazamet,C,0.056,2013-01-01
+293,TV046_294,81,Réseau de Castres Lameilhé,Castres,C,0.065,2013-01-01
+294,TV046_295,82,Réseau de Montauban-Setmo,Montauban,C,0.0,2013-01-01
+295,TV046_296,83,Réseau La Beaucaire (UIOM),Toulon,C,0.0,2013-01-01
+296,TV046_297,84,Le Triennal,Avignon,C,0.227,2013-01-01
+297,TV046_298,85,OPHLM Vendée,La Roche-sur-Yon,C,0.326,2013-01-01
+298,TV046_299,85,Réseau Les Herbiers,Les Herbiers,C,0.072,2013-01-01
+299,TV046_300,86,ZUP des Couronneries,Poitiers,C,0.117,2013-01-01
+300,TV046_301,87,ZUP Val de l’Aurence,Limoges,C,0.23,2013-01-01
+301,TV046_302,87,ZAC de Beaubreuil,Limoges,C,0.013,2013-01-01
+302,TV046_303,87,Quartier de l’Hôtel de Ville,Limoges,C,0.273,2013-01-01
+303,TV046_304,88,Plateau de la Justice,Epinal,C,0.115,2013-01-01
+304,TV046_305,88,Quartier Kellerman,Saint-Dié,C,0.21,2013-01-01
+305,TV046_306,88,ZAD du Haut de Fol,Vittel,C,0.245,2013-01-01
+306,TV046_307,88,Réseau de Fresse-sur-Moselle,Fresse-sur-Moselle,C,0.029,2013-01-01
+307,TV046_308,89,ZUP des Grahuches,Sens,C,0.2,2013-01-01
+308,TV046_309,89,ZUP de Sainte-Geneviève,Auxerre,C,0.223,2013-01-01
+309,TV046_310,89,Les Chaillots,Sens,C,0.235,2013-01-01
+310,TV046_311,90,ZUP des Glacis,Belfort,C,0.227,2013-01-01
+311,TV046_312,91,Réseau de Massy-Antony,Massy,C,0.155,2013-01-01
+312,TV046_313,91,Réseau des Ulis-Thermulis,Les Ulis,C,0.172,2013-01-01
+313,TV046_314,91,Réseau d’Evry,Evry,C,0.226,2013-01-01
+314,TV046_315,91,Domaine du Bois des Roches,Saint-Michel-sur-Orge,C,0.214,2013-01-01
+315,TV046_316,91,Réseau de Grigny SOCCRAM,Grigny,C,0.201,2013-01-01
+316,TV046_317,91,Réseau de Dourdan,Dourdan,C,0.221,2013-01-01
+317,TV046_318,91,CEA DIF,Bruyères-le-Châtel,C,0.249,2013-01-01
+318,TV046_319,91,ZUP de la Croix Blanche,Vigneux-sur-Seine,C,0.107,2013-01-01
+319,TV046_320,91,Réseau d’Epinay-sous-Sénart,Epinay-sous-Sénart,C,0.072,2013-01-01
+320,TV046_321,91,Réseau de Ris-Orangis,Ris-Orangis,C,0.138,2013-01-01
+321,TV046_322,91,Réseaux ZUP de Saint-Hubert et Louis Pergaud,Sainte-Geneviève-des-Bois,C,0.209,2013-01-01
+322,TV046_323,91,Les Tarterets,Corbeil-Essonnes,C,0.221,2013-01-01
+323,TV046_324,91,Réseau de Grigny COFELY,Grigny,C,0.236,2013-01-01
+324,TV046_325,91,Réseau Parc d’activités,Villejust,C,0.206,2013-01-01
+325,TV046_326,92,Réseau de Meudon,Meudon-la-Forêt,C,0.228,2013-01-01
+326,TV046_327,92,Les Fosses Jean Nord,Colombes,C,0.323,2013-01-01
+327,TV046_328,92,Réseau de Clichy,Clichy-la-Garenne,C,0.237,2013-01-01
+328,TV046_329,92,Réseau Gennedith,Gennevilliers,C,0.235,2013-01-01
+329,TV046_330,92,Réseau de Chaville,Chaville,C,0.212,2013-01-01
+330,TV046_331,92,ZAC de Levallois-Perret,Levallois-Perret,C,0.248,2013-01-01
+331,TV046_332,92,Réseau de Châtillon-sous-Bagneux,Châtillon-sous-Bagneux,C,0.248,2013-01-01
+332,TV046_333,92,Réseau du Plessis-Robinson (HLM),Le Plessis-Robinson,C,0.207,2013-01-01
+333,TV046_334,92,ZAC du Front de Seine,Levallois-Perret,C,0.273,2013-01-01
+334,TV046_335,92,ZAC île Séguin Rives de Seine,Boulogne-Billancourt,C,0.243,2013-01-01
+335,TV046_336,92,ZAC île Séguin Rives de Seine,Boulogne-Billancourt,F,0.025,2013-01-01
+336,TV046_337,92,Le Point du Jour,Boulogne-Billancourt,C,0.195,2013-01-01
+337,TV046_338,92,Réseau du Plessis-Robinson-ZIPEC,Le Plessis-Robinson,C,0.28,2013-01-01
+338,TV046_339,92,Chauffage urbain de Suresnes,Suresnes,C,0.235,2013-01-01
+339,TV046_340,92,Réseau Soclic,Courbevoie,C,0.273,2013-01-01
+340,TV046_341,92,Réseau de La Défense-Enertherm,Courbevoie,C,0.271,2013-01-01
+341,TV046_342,92,Réseau de La Défense-Enertherm,Courbevoie,F,0.011,2013-01-01
+342,TV046_343,92,Résidence Villeneuve,Villeneuve-la-Garenne,C,0.191,2013-01-01
+343,TV046_344,92,Réseau Ciceo,Puteaux,C,0.234,2013-01-01
+344,TV046_345,92,Réseau Suc,Issy-les-Moulineaux,F,0.014,2013-01-01
+345,TV046_346,93,Réseau de Saint-Denis,Saint-Denis,C,0.224,2013-01-01
+346,TV046_347,93,ZUP de Bobigny,Bobigny,C,0.225,2013-01-01
+347,TV046_348,93,ZAC de Sevran,Sevran,C,0.236,2013-01-01
+348,TV046_349,93,ZUP des Fauvettes,Neuilly-sur-Marne,C,0.26,2013-01-01
+349,TV046_350,93,Réseau de Villepinte,Villepinte,C,0.226,2013-01-01
+350,TV046_351,93,Pariféric,Aubervilliers,C,0.208,2013-01-01
+351,TV046_352,93,Rougemont Perrin Chanteloup,Sevran,C,0.194,2013-01-01
+352,TV046_353,93,Réseau ADP Le Bouget,Le Bourget,C,0.262,2013-01-01
+353,TV046_354,93,Le Chêne Pointu,Clichy-sous-Bois,C,0.127,2013-01-01
+354,TV046_355,93,Le Gros Saule,Aulnay-sous-Bois,C,0.2,2013-01-01
+355,TV046_356,93,La Courneuve Quartier Nord,La Courneuve,C,0.08,2013-01-01
+356,TV046_357,93,Tremblay-en-France,Tremblay-en-France,C,0.243,2013-01-01
+357,TV046_358,93,Réseau du Blanc-Mesnil,Le Blanc-Mesnil,C,0.205,2013-01-01
+358,TV046_359,93,Garonor,Aulnay-sous-bois,C,0.326,2013-01-01
+359,TV046_360,93,Aulnay 3000-Rose des Vents,Aulnay-sous-bois,C,0.2,2013-01-01
+360,TV046_361,93,Stade Energies Sésas,Saint-Denis,C,0.243,2013-01-01
+361,TV046_362,93,Stade Energies,Saint-Denis,F,0.012,2013-01-01
+362,TV046_363,93,La Courneuve Quartier Sud,La Courneuve,C,0.168,2013-01-01
+363,TV046_364,93,Résidence Les Lilas,Les Lilas,C,0.206,2013-01-01
+364,TV046_365,94,Réseau de Créteil-Scuc,Créteil,C,0.143,2013-01-01
+365,TV046_366,94,Réseau de Vitry-sur-Seine,Vitry-sur-Seine,C,0.216,2013-01-01
+366,TV046_367,94,Fontenay-sous-Bois,Fontenay-sous-Bois,C,0.217,2013-01-01
+367,TV046_368,94,Fresnes Sud,Fresnes,C,0.205,2013-01-01
+368,TV046_369,94,Réseau de Sucy-en-Brie,Sucy-en-Brie,C,0.025,2013-01-01
+369,TV046_370,94,Réseau de Cachan,Cachan,C,0.056,2013-01-01
+370,TV046_371,94,Réseau de Champigny-sur-Marne,Champigny-sur-Marne,C,0.085,2013-01-01
+371,TV046_372,94,Réseau de Maisons-Alfort,Maisons-Alfort,C,0.1,2013-01-01
+372,TV046_373,94,Réseau de Thiais,Thiais,C,0.047,2013-01-01
+373,TV046_374,94,Réseau de Bonneuil-sur-Marne (UIOM),Bonneuil-sur-Marne,C,0.084,2013-01-01
+374,TV046_375,94,Réseau de Chevilly-Larue et L’Hay ¨-les-Roses,L’Hay ¨-les-Roses,C,0.095,2013-01-01
+375,TV046_376,94,Quartier Nord,Fresnes,C,0.157,2013-01-01
+376,TV046_377,94,Réseau d’Orly,Orly,C,0.056,2013-01-01
+377,TV046_378,94,Réseau d’Alfortville-Smag,Alfortville,C,0.057,2013-01-01
+378,TV046_379,94,Réseau d’Ivry,Ivry,C,0.235,2013-01-01
+379,TV046_380,94,Réseau de Villeneuve-Saint-Georges,Villeneuve-Saint-Georges,C,0.075,2013-01-01
+380,TV046_381,94,Réseau ADP Orly,Orly,C,0.201,2013-01-01
+381,TV046_382,94,Réseau ADP Orly,Orly,F,0.009,2013-01-01
+382,TV046_383,95,Réseau de la ZAC Croix Rouge,Taverny,C,0.24,2013-01-01
+383,TV046_384,95,Grand Ensemble Sarcelles-Locheres,Sarcelles,C,0.164,2013-01-01
+384,TV046_385,95,Réseau de Cergy-Pontoise,Cergy-Pontoise,C,0.201,2013-01-01
+385,TV046_386,95,Van Gogh,Garges-lès-Gonesse,C,0.187,2013-01-01
+386,TV046_387,95,ZUP de Sannois-Ermont-Franconville,Franconville,C,0.231,2013-01-01
+387,TV046_388,95,Réseau d’Argenteuil,Argenteuil,C,0.04,2013-01-01
+388,TV046_389,95,Réseaux ADP Roissy,Roissy,C,0.211,2013-01-01
+389,TV046_390,95,Réseau ADP Roissy,Roissy,F,0.012,2013-01-01
+390,TV046_391,95,ZUP de l’Epine Guyon,Franconville,C,0.249,2013-01-01
+391,TV046_392,95,Réseau de Villiers-le-Bel,Villiers-le-Bel,C,0.236,2013-01-01
+392,TV046_393,95,Réseau de Villiers-le-Bel-Gonesse,Villiers-le-Bel,C,0.142,2013-01-01
+393,TV046_394,95,Réseau de Pontoise,Pontoise,C,0.208,2013-01-01
+394,TV046_395,95,ZAC Montedour,Franconville,C,0.249,2013-01-01

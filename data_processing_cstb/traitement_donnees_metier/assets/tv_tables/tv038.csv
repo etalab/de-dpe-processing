@@ -1,0 +1,22 @@
+,Code,Type de chaudière,Type d'installation,Année d'installation,Pdim,Pn
+0,TV038_001,Chaudière individuelle,Chaudière murale,A partir de 2006,Pdim ≤ 5,5
+1,TV038_002,Chaudière individuelle,Chaudière murale,A partir de 2006,5 < Pdim ≤ 10,10
+2,TV038_003,Chaudière individuelle,Chaudière murale,A partir de 2006,10 < Pdim ≤ 13,13
+3,TV038_004,Chaudière individuelle,Chaudière murale,A partir de 2006,13 < Pdim ≤ 18,18
+4,TV038_005,Chaudière individuelle,Chaudière murale,A partir de 2006,18 < Pdim ≤ 24,24
+5,TV038_006,Chaudière individuelle,Chaudière murale,A partir de 2006,24 < Pdim ≤ 28,28
+6,TV038_007,Chaudière individuelle,Chaudière murale,A partir de 2006,28 < Pdim ≤ 32,32
+7,TV038_008,Chaudière individuelle,Chaudière murale,A partir de 2006,32 < Pdim ≤ 40,40
+8,TV038_009,Chaudière individuelle,Chaudière murale,A partir de 2006,40 < Pdim,[Entier(Pdim/5)+1]x5
+9,TV038_010,Chaudière individuelle,Chaudière murale,Avant 2006,13 < Pdim ≤ 18,18
+10,TV038_011,Chaudière individuelle,Chaudière murale,Avant 2006,18 < Pdim ≤ 24,24
+11,TV038_012,Chaudière individuelle,Chaudière murale,Avant 2006,24 < Pdim ≤ 28,28
+12,TV038_013,Chaudière individuelle,Chaudière murale,Avant 2006,28 < Pdim ≤ 32,32
+13,TV038_014,Chaudière individuelle,Chaudière murale,Avant 2006,32 < Pdim ≤ 40,40
+14,TV038_015,Chaudière individuelle,Chaudière murale,Avant 2006,40 < Pdim,[Entier(Pdim/5)+1]x5
+15,TV038_016,Chaudière individuelle,Chaudière sur sol,,13 < Pdim ≤ 18,18
+16,TV038_017,Chaudière individuelle,Chaudière sur sol,,18 < Pdim ≤ 24,24
+17,TV038_018,Chaudière individuelle,Chaudière sur sol,,24 < Pdim ≤ 28,28
+18,TV038_019,Chaudière individuelle,Chaudière sur sol,,28 < Pdim ≤ 32,32
+19,TV038_020,Chaudière individuelle,Chaudière sur sol,,32 < Pdim ≤ 40,40
+20,TV038_021,Chaudière individuelle,Chaudière sur sol,,40 < Pdim,[Entier(Pdim/5)+1]x5

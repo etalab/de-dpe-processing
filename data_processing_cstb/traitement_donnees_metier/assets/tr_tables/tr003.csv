@@ -1,0 +1,12 @@
+id,code,description,est_efface,simu_ordre,simulateur,solaire,nb_systeme_chauffage,simulateur_appartement
+1.0,TR003_001,Installation de chauffage simple,0.0,,1.0,0.0,1.0,1.0
+2.0,TR003_002,Installation de chauffage avec chauffage solaire,0.0,,1.0,1.0,1.0,0.0
+3.0,TR003_003,Installation de chauffage avec insert ou poêle bois en appoint,0.0,,1.0,0.0,2.0,1.0
+4.0,TR003_004,"Installation de chauffage par insert, poêle bois (ou biomasse) avec un chauffage électrique dans la salle de bain",0.0,,1.0,0.0,2.0,0.0
+5.0,TR003_005,Installation de chauffage avec en appoint un insert ou poêle bois et un chauffage électrique dans la salle de bain (différent du chauffage principal),0.0,,1.0,0.0,3.0,0.0
+6.0,TR003_006,Installation de chauffage avec chaudière  gaz ou fioul en  relève  d’une chaudière bois,0.0,,1.0,0.0,2.0,1.0
+7.0,TR003_007,Installation de chauffage avec chauffage solaire et insert ou poêle bois en appoint,0.0,,1.0,1.0,2.0,0.0
+8.0,TR003_008,Installation de chauffage avec chaudière en relève de PAC,0.0,,1.0,0.0,2.0,1.0
+9.0,TR003_009,Installation de chauffage avec chaudière en relève de PAC avec insert ou poêle bois en appoint,0.0,,1.0,0.0,3.0,1.0
+10.0,TR003_010,Installation de chauffage collectif avec Base + appoint,0.0,,0.0,0.0,1.0,1.0
+11.0,TR003_011,Convecteurs bi-jonction,0.0,,0.0,0.0,1.0,1.0

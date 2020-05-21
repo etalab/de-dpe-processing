@@ -1,0 +1,31 @@
+,Code,Energie,Méthode,Type de production,"Taux de conversion
+kg/kWh"
+0,TV045_001,"Bois, biomasse",Méthode de calcul,Chauffage,0.013
+1,TV045_002,Gaz naturel,Méthode de calcul,Chauffage,0.234
+2,TV045_003,Fioul domestique,Méthode de calcul,Chauffage,0.3
+3,TV045_004,Charbon,Méthode de calcul,Chauffage,0.342
+4,TV045_005,Gaz propane ou butane,Méthode de calcul,Chauffage,0.274
+5,TV045_006,Autres combustibles fossiles,Méthode de calcul,Chauffage,0.32
+6,TV045_007,Electricité d'origine renouvelable utilisée dans le bâtiment,Méthode de calcul,Chauffage,0.0
+7,TV045_008,Electricité (hors électricité d'origine renouvelable utilisée dans le bâtiment),Méthode de calcul,Chauffage,0.18
+8,TV045_009,"Bois, biomasse",Méthode de calcul,ECS,0.013
+9,TV045_010,Gaz naturel,Méthode de calcul,ECS,0.234
+10,TV045_011,Fioul domestique,Méthode de calcul,ECS,0.3
+11,TV045_012,Charbon,Méthode de calcul,ECS,0.342
+12,TV045_013,Gaz propane ou butane,Méthode de calcul,ECS,0.274
+13,TV045_014,Autres combustibles fossiles,Méthode de calcul,ECS,0.32
+14,TV045_015,Electricité d'origine renouvelable utilisée dans le bâtiment,Méthode de calcul,ECS,0.0
+15,TV045_016,Electricité (hors électricité d'origine renouvelable utilisée dans le bâtiment),Méthode de calcul,ECS,0.04
+16,TV045_017,Gaz naturel,Méthode de calcul,Refroidissement,0.234
+17,TV045_018,Fioul domestique,Méthode de calcul,Refroidissement,0.3
+18,TV045_019,Gaz propane ou butane,Méthode de calcul,Refroidissement,0.274
+19,TV045_020,Electricité d'origine renouvelable utilisée dans le bâtiment,Méthode de calcul,Refroidissement,0.0
+20,TV045_021,Electricité (hors électricité d'origine renouvelable utilisée dans le bâtiment),Méthode de calcul,Refroidissement,0.04
+21,TV045_022,"Bois, biomasse",Factures ou mesures,Tous usages,0.013
+22,TV045_023,Gaz naturel,Factures ou mesures,Tous usages,0.234
+23,TV045_024,Fioul domestique,Factures ou mesures,Tous usages,0.3
+24,TV045_025,Charbon,Factures ou mesures,Tous usages,0.384
+25,TV045_026,Gaz propane ou butane,Factures ou mesures,Tous usages,0.274
+26,TV045_027,Autres combustibles fossiles,Factures ou mesures,Tous usages,0.32
+27,TV045_028,Electricité d'origine renouvelable utilisée dans le bâtiment,Factures ou mesures,Tous usages,0.0
+28,TV045_029,Electricité (hors électricité d'origine renouvelable utilisée dans le bâtiment),Factures ou mesures,Tous usages,0.084

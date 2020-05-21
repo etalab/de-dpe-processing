@@ -1,0 +1,116 @@
+,Code,Type de bâtiment,Type d'installation,Type de chauffage,Type de régulation,Type d'émetteur,Inertie,Equipement d'intermittence,Comptage individuelle,I0
+0,TV025_001,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Planchers chauffant,Légère ou Moyenne,Absent,,0.9
+1,TV025_002,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Planchers chauffant,Légère ou Moyenne,Central sans minimum de température,,0.89
+2,TV025_003,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Planchers chauffant,Légère ou Moyenne,Central avec minimum de température,,0.88
+3,TV025_004,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Planchers chauffant,Légère ou Moyenne,Par pièce avec minimum de température,,0.86
+4,TV025_005,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Planchers chauffant,Lourde ou Très Lourde,Absent,,0.92
+5,TV025_006,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Planchers chauffant,Lourde ou Très Lourde,Central sans minimum de température,,0.91
+6,TV025_007,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Planchers chauffant,Lourde ou Très Lourde,Central avec minimum de température,,0.9
+7,TV025_008,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Planchers chauffant,Lourde ou Très Lourde,Par pièce avec minimum de température,,0.88
+8,TV025_009,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Autres systèmes,Légère ou Moyenne,Absent,,0.84
+9,TV025_010,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Autres systèmes,Légère ou Moyenne,Central sans minimum de température,,0.83
+10,TV025_011,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Autres systèmes,Légère ou Moyenne,Central avec minimum de température,,0.81
+11,TV025_012,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Autres systèmes,Légère ou Moyenne,Par pièce avec minimum de température,,0.77
+12,TV025_013,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Autres systèmes,Lourde ou Très Lourde,Absent,,0.86
+13,TV025_014,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Autres systèmes,Lourde ou Très Lourde,Central sans minimum de température,,0.85
+14,TV025_015,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Autres systèmes,Lourde ou Très Lourde,Central avec minimum de température,,0.83
+15,TV025_016,Maison individuelle,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Autres systèmes,Lourde ou Très Lourde,Par pièce avec minimum de température,,0.8
+16,TV025_017,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Air soufflé,Légère ou Moyenne,Absent,,0.86
+17,TV025_018,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Air soufflé,Légère ou Moyenne,Central sans minimum de température,,0.85
+18,TV025_019,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Air soufflé,Légère ou Moyenne,Central avec minimum de température,,0.83
+19,TV025_020,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Air soufflé,Légère ou Moyenne,Par pièce avec minimum de température,,0.79
+20,TV025_021,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Air soufflé,Lourde ou Très Lourde,Absent,,0.88
+21,TV025_022,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Air soufflé,Lourde ou Très Lourde,Central sans minimum de température,,0.87
+22,TV025_023,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Air soufflé,Lourde ou Très Lourde,Central avec minimum de température,,0.85
+23,TV025_024,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Air soufflé,Lourde ou Très Lourde,Par pièce avec minimum de température,,0.82
+24,TV025_025,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Radiateurs,Légère ou Moyenne,Absent,,0.88
+25,TV025_026,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Radiateurs,Légère ou Moyenne,Central sans minimum de température,,0.87
+26,TV025_027,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Radiateurs,Légère ou Moyenne,Central avec minimum de température,,0.85
+27,TV025_028,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Radiateurs,Légère ou Moyenne,Par pièce avec minimum de température,,0.82
+28,TV025_029,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Radiateurs,Lourde ou Très Lourde,Absent,,0.9
+29,TV025_030,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Radiateurs,Lourde ou Très Lourde,Central sans minimum de température,,0.89
+30,TV025_031,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Radiateurs,Lourde ou Très Lourde,Central avec minimum de température,,0.87
+31,TV025_032,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Radiateurs,Lourde ou Très Lourde,Par pièce avec minimum de température,,0.85
+32,TV025_033,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Planchers chauffant,Légère ou Moyenne,Absent,,0.9
+33,TV025_034,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Planchers chauffant,Légère ou Moyenne,Central sans minimum de température,,0.89
+34,TV025_035,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Planchers chauffant,Légère ou Moyenne,Central avec minimum de température,,0.88
+35,TV025_036,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Planchers chauffant,Légère ou Moyenne,Par pièce avec minimum de température,,0.86
+36,TV025_037,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Planchers chauffant,Lourde ou Très Lourde,Absent,,0.92
+37,TV025_038,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Planchers chauffant,Lourde ou Très Lourde,Central sans minimum de température,,0.91
+38,TV025_039,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Planchers chauffant,Lourde ou Très Lourde,Central avec minimum de température,,0.9
+39,TV025_040,Maison individuelle,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Planchers chauffant,Lourde ou Très Lourde,Par pièce avec minimum de température,,0.88
+40,TV025_041,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Air soufflé,Légère ou Moyenne,Absent,,0.9
+41,TV025_042,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Air soufflé,Légère ou Moyenne,Central sans minimum de température,,0.89
+42,TV025_043,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Air soufflé,Légère ou Moyenne,Central avec minimum de température,,0.87
+43,TV025_044,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Air soufflé,Lourde ou Très Lourde,Absent,,0.91
+44,TV025_045,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Air soufflé,Lourde ou Très Lourde,Central sans minimum de température,,0.91
+45,TV025_046,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Air soufflé,Lourde ou Très Lourde,Central avec minimum de température,,0.89
+46,TV025_047,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Radiateurs,Légère ou Moyenne,Absent,,0.91
+47,TV025_048,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Radiateurs,Légère ou Moyenne,Central sans minimum de température,,0.9
+48,TV025_049,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Radiateurs,Légère ou Moyenne,Central avec minimum de température,,0.88
+49,TV025_050,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Radiateurs,Lourde ou Très Lourde,Absent,,0.93
+50,TV025_051,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Radiateurs,Lourde ou Très Lourde,Central sans minimum de température,,0.92
+51,TV025_052,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Radiateurs,Lourde ou Très Lourde,Central avec minimum de température,,0.9
+52,TV025_053,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Planchers chauffant,Légère ou Moyenne,Absent,,0.92
+53,TV025_054,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Planchers chauffant,Légère ou Moyenne,Central sans minimum de température,,0.91
+54,TV025_055,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Planchers chauffant,Légère ou Moyenne,Central avec minimum de température,,0.9
+55,TV025_056,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Planchers chauffant,Lourde ou Très Lourde,Absent,,0.94
+56,TV025_057,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Planchers chauffant,Lourde ou Très Lourde,Central sans minimum de température,,0.93
+57,TV025_058,Maison individuelle,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Planchers chauffant,Lourde ou Très Lourde,Central avec minimum de température,,0.92
+58,TV025_059,Immeuble Collectif ou Appartement,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Air soufflé,,Absent,,0.9
+59,TV025_060,Immeuble Collectif ou Appartement,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Air soufflé,,Central sans minimum de température,,0.89
+60,TV025_061,Immeuble Collectif ou Appartement,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Air soufflé,,Central avec minimum de température,,0.88
+61,TV025_062,Immeuble Collectif ou Appartement,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Air soufflé,,Par pièce avec minimum de température,,0.86
+62,TV025_063,Immeuble Collectif ou Appartement,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Radiateurs,,Absent,,0.9
+63,TV025_064,Immeuble Collectif ou Appartement,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Radiateurs,,Central sans minimum de température,,0.89
+64,TV025_065,Immeuble Collectif ou Appartement,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Radiateurs,,Central avec minimum de température,,0.88
+65,TV025_066,Immeuble Collectif ou Appartement,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Radiateurs,,Par pièce avec minimum de température,,0.86
+66,TV025_067,Immeuble Collectif ou Appartement,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Planchers chauffant,,Absent,,0.95
+67,TV025_068,Immeuble Collectif ou Appartement,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Planchers chauffant,,Central sans minimum de température,,0.94
+68,TV025_069,Immeuble Collectif ou Appartement,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Planchers chauffant,,Central avec minimum de température,,0.93
+69,TV025_070,Immeuble Collectif ou Appartement,Chauffage Individuelle,Divisé,Avec régulation pièce par pièce,Planchers chauffant,,Par pièce avec minimum de température,,0.91
+70,TV025_071,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Air soufflé,,Absent,,0.91
+71,TV025_072,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Air soufflé,,Central sans minimum de température,,0.9
+72,TV025_073,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Air soufflé,,Central avec minimum de température,,0.89
+73,TV025_074,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Air soufflé,,Par pièce avec minimum de température,,0.87
+74,TV025_075,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Radiateurs,,Absent,,0.93
+75,TV025_076,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Radiateurs,,Central sans minimum de température,,0.92
+76,TV025_077,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Radiateurs,,Central avec minimum de température,,0.91
+77,TV025_078,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Radiateurs,,Par pièce avec minimum de température,,0.89
+78,TV025_079,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Planchers chauffant,,Absent,,0.95
+79,TV025_080,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Planchers chauffant,,Central sans minimum de température,,0.94
+80,TV025_081,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Planchers chauffant,,Central avec minimum de température,,0.93
+81,TV025_082,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Avec régulation pièce par pièce,Planchers chauffant,,Par pièce avec minimum de température,,0.91
+82,TV025_083,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Air soufflé,,Absent,,0.95
+83,TV025_084,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Air soufflé,,Central sans minimum de température,,0.94
+84,TV025_085,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Air soufflé,,Central avec minimum de température,,0.93
+85,TV025_086,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Radiateurs,,Absent,,0.96
+86,TV025_087,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Radiateurs,,Central sans minimum de température,,0.95
+87,TV025_088,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Radiateurs,,Central avec minimum de température,,0.94
+88,TV025_089,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Planchers chauffant,,Absent,,0.97
+89,TV025_090,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Planchers chauffant,,Central sans minimum de température,,0.96
+90,TV025_091,Immeuble Collectif ou Appartement,Chauffage Individuelle,Central,Sans régulation pièce par pièce,Planchers chauffant,,Central avec minimum de température,,0.95
+91,TV025_092,Immeuble Collectif,Chauffage Collectif,Central,Avec régulation pièce par pièce,Air soufflé,,Absent,Absent,1.01
+92,TV025_093,Immeuble Collectif,Chauffage Collectif,Central,Avec régulation pièce par pièce,Air soufflé,,Absent,Présent,0.93
+93,TV025_094,Immeuble Collectif,Chauffage Collectif,Central,Avec régulation pièce par pièce,Air soufflé,,Central Collectif,Absent,0.99
+94,TV025_095,Immeuble Collectif,Chauffage Collectif,Central,Avec régulation pièce par pièce,Air soufflé,,Central Collectif,Présent,0.91
+95,TV025_096,Immeuble Collectif,Chauffage Collectif,Central,Avec régulation pièce par pièce,Radiateurs,,Absent,Absent,1.03
+96,TV025_097,Immeuble Collectif,Chauffage Collectif,Central,Avec régulation pièce par pièce,Radiateurs,,Absent,Présent,0.95
+97,TV025_098,Immeuble Collectif,Chauffage Collectif,Central,Avec régulation pièce par pièce,Radiateurs,,Central Collectif,Absent,1.01
+98,TV025_099,Immeuble Collectif,Chauffage Collectif,Central,Avec régulation pièce par pièce,Radiateurs,,Central Collectif,Présent,0.93
+99,TV025_100,Immeuble Collectif,Chauffage Collectif,Central,Avec régulation pièce par pièce,Planchers chauffant,,Absent,Absent,1.05
+100,TV025_101,Immeuble Collectif,Chauffage Collectif,Central,Avec régulation pièce par pièce,Planchers chauffant,,Absent,Présent,0.97
+101,TV025_102,Immeuble Collectif,Chauffage Collectif,Central,Avec régulation pièce par pièce,Planchers chauffant,,Central Collectif,Absent,1.03
+102,TV025_103,Immeuble Collectif,Chauffage Collectif,Central,Avec régulation pièce par pièce,Planchers chauffant,,Central Collectif,Présent,0.95
+103,TV025_104,Immeuble Collectif,Chauffage Collectif,Central,Sans régulation pièce par pièce,Air soufflé,,Absent,Absent,1.03
+104,TV025_105,Immeuble Collectif,Chauffage Collectif,Central,Sans régulation pièce par pièce,Air soufflé,,Absent,Présent,0.95
+105,TV025_106,Immeuble Collectif,Chauffage Collectif,Central,Sans régulation pièce par pièce,Air soufflé,,Central Collectif,Absent,1.01
+106,TV025_107,Immeuble Collectif,Chauffage Collectif,Central,Sans régulation pièce par pièce,Air soufflé,,Central Collectif,Présent,0.93
+107,TV025_108,Immeuble Collectif,Chauffage Collectif,Central,Sans régulation pièce par pièce,Radiateurs,,Absent,Absent,1.05
+108,TV025_109,Immeuble Collectif,Chauffage Collectif,Central,Sans régulation pièce par pièce,Radiateurs,,Absent,Présent,0.97
+109,TV025_110,Immeuble Collectif,Chauffage Collectif,Central,Sans régulation pièce par pièce,Radiateurs,,Central Collectif,Absent,1.03
+110,TV025_111,Immeuble Collectif,Chauffage Collectif,Central,Sans régulation pièce par pièce,Radiateurs,,Central Collectif,Présent,0.95
+111,TV025_112,Immeuble Collectif,Chauffage Collectif,Central,Sans régulation pièce par pièce,Planchers chauffant,,Absent,Absent,1.07
+112,TV025_113,Immeuble Collectif,Chauffage Collectif,Central,Sans régulation pièce par pièce,Planchers chauffant,,Absent,Présent,0.99
+113,TV025_114,Immeuble Collectif,Chauffage Collectif,Central,Sans régulation pièce par pièce,Planchers chauffant,,Central Collectif,Absent,1.05
+114,TV025_115,Immeuble Collectif,Chauffage Collectif,Central,Sans régulation pièce par pièce,Planchers chauffant,,Central Collectif,Présent,0.97

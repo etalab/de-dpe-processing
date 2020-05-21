@@ -1,0 +1,14 @@
+,Code,Inclinaison de la paroi,Orientation de la paroi,Type de baie,C1
+0,TV020_001,≥ 75°,Sud,,1.1
+1,TV020_002,≥ 75°,Ouest,,0.57
+2,TV020_003,≥ 75°,Est,,0.57
+3,TV020_004,≥ 75°,Nord,,0.2
+4,TV020_005,75° >  ≥ 25°,Sud,,1.2
+5,TV020_006,75° >  ≥ 25°,Ouest,,0.75
+6,TV020_007,75° >  ≥ 25°,Est,,0.75
+7,TV020_008,75° >  ≥ 25°,Nord,,0.32
+8,TV020_009,< 25°,Sud,,0.9
+9,TV020_010,< 25°,Ouest,,0.8
+10,TV020_011,< 25°,Est,,0.8
+11,TV020_012,< 25°,Nord,,0.67
+12,TV020_013,Paroi Horizontale,,,0.8

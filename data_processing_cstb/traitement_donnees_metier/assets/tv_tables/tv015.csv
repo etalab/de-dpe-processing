@@ -1,0 +1,16 @@
+,Code,Type,Smeaconv,Qvarep,Coef Hvent
+0,TV015_001,Ventilation par ouverture des fenêtres,0.0,1.2,0.34
+1,TV015_002,Système de ventilation par entrées d’air hautes et basses,4.0,2.145,0.34
+2,TV015_003,Ventilation mécanique auto réglable « avant 1982 »,2.0,1.8975,0.34
+3,TV015_004,Ventilation mécanique auto réglable « après 1982 »,2.0,1.65,0.34
+4,TV015_005,Ventilation mécanique à extraction hygroréglable,2.0,1.2375,0.34
+5,TV015_006,Ventilation mécanique gaz hygroréglable,2.0,1.4025,0.34
+6,TV015_007,Ventilation mécanique à extraction et entrées d’air hygroréglables,1.5,1.0725,0.34
+7,TV015_008,Ventilation mécanique double flux sans échangeur,0.0,1.65,0.34
+8,TV015_009,Ventilation naturelle par conduit,4.0,2.145,0.34
+9,TV015_010,Ventilation hybride,3.0,2.0625,0.34
+10,TV015_011,Extracteur mécanique sur conduit non modifié de ventilation naturelle existante,4.0,2.2425,0.34
+11,TV015_012,Ventilation naturelle par conduit avec entrées d’air hygroréglables,3.0,2.145,0.34
+12,TV015_013,Ventilation hybride avec entrées d’air hygroréglables,2.0,2.0625,0.34
+13,TV015_014,Ventilation mécanique double flux avec échangeur,0.0,1.65,0.136
+14,TV015_015,Puits canadien,0.0,1.65,0.2142

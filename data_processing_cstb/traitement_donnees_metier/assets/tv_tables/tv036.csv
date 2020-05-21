@@ -1,0 +1,49 @@
+,Code,Type de Chaudière,Type de génération,Ancienneté,Pn,Rpn,Rpint,Qp0,Veilleuse
+0,TV036_001,Chaudière Gaz,Classique,Avant 1980,,79+2log Pn,73+3log Pn,0.04,240.0
+1,TV036_002,Chaudière Gaz,Classique,1981-1985,,82+2log Pn,76+3log Pn,0.02,150.0
+2,TV036_003,Chaudière Gaz,Classique,1986-1990,,83+2log Pn,79+3log Pn,0.015,150.0
+3,TV036_004,Chaudière Gaz,Standard,1991-2000,,84+2log Pn,80+3log Pn,0.012,120.0
+4,TV036_005,Chaudière Gaz,Standard,Après 2000,,84+2log Pn ,80+3log Pn,0.01,
+5,TV036_006,Chaudière Gaz,Basse Température,1991-2000,,"87,5+1,5log Pn","87,5+1,5log Pn",0.012,120.0
+6,TV036_007,Chaudière Gaz,Basse Température,Après 2000,,"87,5+1,5log Pn","87,5+1,5log Pn",0.01,
+7,TV036_008,Chaudière Gaz,Condensation,1981-1985,,91+1log Pn,97+1log Pn,0.01,150.0
+8,TV036_009,Chaudière Gaz,Condensation,1986-2000,,91+1log Pn,97+1log Pn,0.01,120.0
+9,TV036_010,Chaudière Gaz,Condensation,Après 2000,,91+1log Pn,97+1log Pn,0.01,
+10,TV036_011,Chaudière Fioul,Classique,Avant 1970,,74+2log Pn,63+3log Pn,0.04,
+11,TV036_012,Chaudière Fioul,Classique,1970-1975,,77+2log Pn,71+3log Pn,0.03,
+12,TV036_013,Chaudière Fioul,Classique,1976-1980,,78+2log Pn,76+3log Pn,0.02,
+13,TV036_014,Chaudière Fioul,Classique,1981-1990,,80+2log Pn,78+3log Pn,0.01,
+14,TV036_015,Chaudière Fioul,Standard,Depuis 1991,,84+2log Pn,80+3log Pn,0.01,
+15,TV036_016,Chaudière Fioul,Basse Température,Depuis 1991,,"87,5+1,5log Pn","87,5+1,5log Pn",0.01,
+16,TV036_017,Chaudière Fioul,Condensation,Depuis 1991,,91+1log Pn,97+1log Pn,0.01,
+17,TV036_018,Chauffe-eau gaz,,Avant 1980,≤ 10,0.7,,0.04,150.0
+18,TV036_019,Chauffe-eau gaz,,Avant 1980,>10,0.7,,0.04,150.0
+19,TV036_020,Chauffe-eau gaz,,1981-1989,≤ 10,0.75,,0.02,120.0
+20,TV036_021,Chauffe-eau gaz,,1981-1989,>10,0.75,,0.02,120.0
+21,TV036_022,Chauffe-eau gaz,,1990-2000,≤ 10,0.81,,0.02,120.0
+22,TV036_023,Chauffe-eau gaz,,1990-2000,>10,0.82,,0.012,120.0
+23,TV036_024,Chauffe-eau gaz,,Après 2000,≤ 10,0.82,,0.01,100.0
+24,TV036_025,Chauffe-eau gaz,,Après 2000,>10,0.84,,0.01,100.0
+25,TV036_026,Accumulateur gaz,Classique,Avant 1990,,0.81,,0.02,200.0
+26,TV036_027,Accumulateur gaz,Classique,1990-2000,,0.84,,0.012,150.0
+27,TV036_028,Accumulateur gaz,Classique,Après 2000,,0.84,,0.01,150.0
+28,TV036_029,Accumulateur gaz,Condensation,1996-2000,,0.98,,0.01,
+29,TV036_030,Accumulateur gaz,Condensation,Après 2000,,0.98,,0.01,
+30,TV036_031,Générateur d'air chaud,,Avant 2006,,0.77,0.74,,
+31,TV036_032,Générateur d'air chaud,générateur standard,Après 2006,,0.84,0.77,,
+32,TV036_033,Générateur d'air chaud,générateur à condensation,Après 2006,,0.9,0.83,,
+33,TV036_034,Radiateur à gaz,,Après 2006,< 5,80+log Pn,,,
+34,TV036_035,Radiateur à gaz,,Après 2006,≥ 5,82+log Pn,,,
+35,TV036_036,Radiateur à gaz,,Avant 2006,< 5,0.7,,,
+36,TV036_037,Radiateur à gaz,,Avant 2006,≥ 5,0.73,,,
+37,TV036_038,Chaudière bois,Classe 5,,,87+log Pn,88+log Pn,,
+38,TV036_039,Chaudière bois,Classe 4,,,80+2xlog Pn,81+2xlog Pn,,
+39,TV036_040,Chaudière bois,Classe 3,,,67+6xlog Pn,68++6log Pn,,
+40,TV036_041,Chaudière bois,Classe 2,,,57+6xlog Pn,58+6xlog Pn,,
+41,TV036_042,Chaudière bois,Classe 1,,,47+6xlog Pn,48+6xlog Pn,,
+42,TV036_043,Chaudière atmosphérique à biomasse,,Avant 1978,,,,"Pnx0,08%xPn-0,27",
+43,TV036_044,Chaudière atmosphérique à biomasse,,1978-1994,,,,"Pnx0,07%xPn-0,30",
+44,TV036_045,Chaudière atmosphérique à biomasse,,Après 1994,,,,"Pnx0,085%xPn-0,30",
+45,TV036_046,Chaudière à biomasse assisté par ventilateur,,Avant 1978,,,,"Pnx0,09%xPn-0,30",
+46,TV036_047,Chaudière à biomasse assisté par ventilateur,,1978-1994,,,,"Pnx0,075%xPn-0,30",
+47,TV036_048,Chaudière à biomasse assisté par ventilateur,,Après 1994,,,,"Pnx0,085%xPn-0,30",

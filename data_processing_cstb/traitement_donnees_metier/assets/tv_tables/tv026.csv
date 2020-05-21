@@ -1,0 +1,9 @@
+,Code,Plancher bas,Plancher haut,Paroi Verticale,Classe d'inertie
+0,TV026_001,Lourd,Lourd,Lourde,Très lourde
+1,TV026_002,Léger,Lourd,Lourde,Lourde
+2,TV026_003,Lourd,Léger,Lourde,Lourde
+3,TV026_004,Lourd,Lourd,Légère,Lourde
+4,TV026_005,Léger,Léger,Lourde,Moyenne
+5,TV026_006,Léger,Lourd,Légère,Moyenne
+6,TV026_007,Lourd,Léger,Légère,Moyenne
+7,TV026_008,Léger,Léger,Légère,Légère

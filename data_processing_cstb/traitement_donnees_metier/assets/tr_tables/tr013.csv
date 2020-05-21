@@ -1,0 +1,31 @@
+id,code,type,tr013_type_erp_categorie_id,est_efface
+1.0,TR013_001,J : Structures d’accueil pour personnes âgées ou personnes handicapées,1.0,0.0
+2.0,TR013_002,"L : Salles d'auditions, de conférences, de réunions, de spectacles ou à usage multiple",1.0,0.0
+3.0,TR013_003,"M : Magasins de vente, centres commerciaux",1.0,0.0
+4.0,TR013_004,N : Restaurants et débits de boisson,1.0,0.0
+5.0,TR013_005,O : Hôtels et pensions de famille,1.0,0.0
+6.0,TR013_006,P : Salles de danse et salles de jeux,1.0,0.0
+7.0,TR013_007,"R : Établissements d’éveil, d’enseignement, de formation, centres de vacances, centres de loisirs sans hébergement",1.0,0.0
+8.0,TR013_008,"S : Bibliothèques, centres de documentation",1.0,0.0
+9.0,TR013_009,T : Salles d'exposition à vocation commerciale,1.0,0.0
+10.0,TR013_010,U : Établissements de soins,1.0,0.0
+11.0,TR013_011,V : Établissements de divers cultes,1.0,0.0
+12.0,TR013_012,"W : Administrations, banques, bureaux",1.0,0.0
+13.0,TR013_013,X : Établissements sportifs couverts,1.0,0.0
+14.0,TR013_014,Y : Musées,1.0,0.0
+15.0,TR013_015,PA : Établissements de Plein Air,2.0,0.0
+16.0,TR013_016,"CTS : Chapiteaux, Tentes et Structures toile",2.0,0.0
+17.0,TR013_017,SG : Structures Gonflables,2.0,0.0
+18.0,TR013_018,PS : Parcs de Stationnement couverts,2.0,0.0
+19.0,TR013_019,OA : Hôtels-restaurants d'Altitude,2.0,0.0
+20.0,TR013_020,"GA : Gares Accessibles au public (chemins de fer, téléphériques, remonte-pentes...)",2.0,0.0
+21.0,TR013_021,EF : Établissements flottants (eaux intérieures),2.0,0.0
+22.0,TR013_022,REF : REFuges de montagne,2.0,0.0
+23.0,TR013_023,GHA : Habitation,3.0,0.0
+24.0,TR013_024,GHO : Hôtel,3.0,0.0
+25.0,TR013_025,GHR : Enseignement,3.0,0.0
+26.0,TR013_026,GHS : Dépôt d'archives,3.0,0.0
+27.0,TR013_027,GHTC : tour de contrôle,3.0,0.0
+28.0,TR013_028,GHU : Usage sanitaire,3.0,0.0
+29.0,TR013_029,GHW : Bureaux,3.0,0.0
+30.0,TR013_030,GHZ : Usage mixte,3.0,0.0

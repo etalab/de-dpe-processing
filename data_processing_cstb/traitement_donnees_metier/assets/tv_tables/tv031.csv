@@ -1,0 +1,7 @@
+,Code,Méthode de Génération,Type de Générateur,Rg
+0,TV031_001,Générateurs autres qu'à combustion,Générateur à effet joule direct,1.0
+1,TV031_002,Générateurs autres qu'à combustion,Chaudières électriques,0.77
+2,TV031_003,Générateurs autres qu'à combustion,Réseau de chaleur,0.97
+3,TV031_004,Générateurs à combustion,Poêle ou insert bois/charbon installé avant 2001 ou sans label flamme verte ,0.66
+4,TV031_005,Générateurs à combustion,Poêle ou insert bois/charbon installé à partir de 2001 avec label flamme verte,0.78
+5,TV031_006,Générateurs à combustion,Poêle fioul ou GPL ,0.72

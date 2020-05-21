@@ -1,0 +1,12 @@
+id,code,description,est_efface
+1.0,TR006_001,Chauffage,0.0
+2.0,TR006_002,Eau Chaude sanitaire,0.0
+3.0,TR006_003,Refroidissement,0.0
+4.0,TR006_004,Eclairage,0.0
+5.0,TR006_005,Bureautique,0.0
+6.0,TR006_006,Ascenseur(s),0.0
+7.0,TR006_007,Autres usages,0.0
+8.0,TR006_008,Production d'électricité à demeure,0.0
+9.0,TR006_009,Abonnements,0.0
+10.0,TR006_010,Transports mécaniques,0.0
+11.0,TR006_011,Chauffage & Eau chaude sanitaire,0.0
