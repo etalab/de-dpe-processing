@@ -61,7 +61,7 @@ td008_types = {'id': 'object',
 
 
 def post_processing_td008(td008):
-    from .assets_orm import DPEMetaData
+    from assets_orm import DPEMetaData
     meta = DPEMetaData()
     table = td008
     table = meta.merge_all_tr_table(table)
@@ -103,3 +103,4 @@ def post_processing_td008(td008):
     table['fen_lib_from_tv021'] += table['tv021_Matériaux'].astype('string').fillna('')
     table['fen_lib_from_tv021'] = table['fen_lib_from_tv021'].fillna('NONDEF')
 
+    return table
