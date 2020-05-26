@@ -16,4 +16,4 @@ def post_processing_td001(td001):
 
     td001.loc[is_facture, 'nom_methode_dpe_norm'] = 'FACTURE'
     td001.loc[is_thc, 'nom_methode_dpe_norm'] = 'THBCE(RT2012)/THC(RT2005)'
-    td001.loc[is_vierge, 'nom_methode_dpe_norm'] = 'is_vierge'
+    td001.loc[is_vierge, 'nom_methode_dpe_norm'] = 'DPE vierge'

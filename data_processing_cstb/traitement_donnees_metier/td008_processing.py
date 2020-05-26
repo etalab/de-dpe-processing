@@ -1,3 +1,5 @@
+import pandas as pd
+import numpy as np
 td008_types = {'id': 'object',
                'td007_paroi_opaque_id': 'object',
                'reference': 'object',
@@ -59,17 +61,23 @@ td008_types = {'id': 'object',
                'tv020_Type de baie': 'category',
                'tv020_C1': 'category'}
 
-
-def post_processing_td008(td008):
+def merge_td008_tr_tv(td008):
     from assets_orm import DPEMetaData
     meta = DPEMetaData()
-    table = td008
+    table = td008.copy()
     table = meta.merge_all_tr_table(table)
 
     table = meta.merge_all_tv_table(table)
+
+    return table
+
+def post_processing_td008(td008):
+    from utils import intervals_to_category
+
+    table = td008.copy()
     table = table.astype(td008_types)
 
-    # orientation processing from tv020 and name.
+    # orientation processing avec tv020 et reference.
     table['orientation_infer'] = table['tv020_Orientation de la paroi'].astype('string').fillna('NONDEF')
     nondef = table.orientation_infer == 'NONDEF'
     horiz = table['tv020_coefficient_orientation_id'] == "TV020_013"
@@ -85,9 +93,7 @@ def post_processing_td008(td008):
     table.loc[(ouest & est & nondef), 'orientation_infer'] = "Est ou Ouest"
     table.orientation_infer = table.orientation_infer.astype('category')
 
-
-    # fen lib
-
+    # type vitrage processing avec tv009, tv010, tv021 et reference
     table['fen_lib_from_tv009'] = table['tv009_Type de vitrage'].astype('string') + ' ' + table[
         'tv009_Remplissage'].astype('string').fillna('') + ' '
     table['fen_lib_from_tv009'] += table[
@@ -102,5 +108,113 @@ def post_processing_td008(td008):
         'tv021_Type de Vitrage'].astype('string').fillna('') + ' '
     table['fen_lib_from_tv021'] += table['tv021_Matériaux'].astype('string').fillna('')
     table['fen_lib_from_tv021'] = table['fen_lib_from_tv021'].fillna('NONDEF')
+
+    double_vitrage = table.fen_lib_from_tv009.str.lower().str.contains(
+        'double') | table.fen_lib_from_tv021.str.lower().str.contains('double')
+
+    triple_vitrage = table.fen_lib_from_tv009.str.lower().str.contains(
+        'triple') | table.fen_lib_from_tv021.str.lower().str.contains('triple')
+
+    simple_vitrage = table.fen_lib_from_tv009.str.lower().str.contains(
+        'simple') | table.fen_lib_from_tv021.str.lower().str.contains('simple')
+
+    porte = table['tv010_Type de matériaux'].astype(str).fillna('').str.lower().str.contains(
+        'portes ')  # l'espace à la fin est important sinon confusion portes-fenetres
+    porte = porte | table['tv010_Type de Baie'].astype(str).fillna('').str.lower().str.contains('porte ')
+    porte = porte | table['reference'].fillna('').str.lower().str.contains('porte ')
+    porte = porte | table['reference'].fillna('').str.lower().str.contains('portes ')
+
+    table['type_vitrage_simple_infer'] = 'NONDEF'
+
+    table.loc[double_vitrage, 'type_vitrage_simple_infer'] = 'double vitrage'
+    table.loc[triple_vitrage, 'type_vitrage_simple_infer'] = 'triple vitrage'
+    table.loc[simple_vitrage, 'type_vitrage_simple_infer'] = 'simple vitrage'
+
+    table.loc[simple_vitrage & double_vitrage, 'type_vitrage_simple_infer'] = "INCOHERENT"
+    table.loc[simple_vitrage & triple_vitrage, 'type_vitrage_simple_infer'] = "INCOHERENT"
+    table.loc[triple_vitrage & double_vitrage, 'type_vitrage_simple_infer'] = "INCOHERENT"
+    table.loc[porte, 'type_vitrage_simple_infer'] = "porte"
+
+    # distinction brique de verre
+
+    brique = table['tv010_Type de matériaux'].astype(str).fillna('').str.lower().str.contains('brique')
+
+    brique = brique | table['tv010_Type de matériaux'].astype(str).fillna('').str.lower().str.contains('polycarb')
+
+    brique = brique | table.reference.str.lower().str.contains('brique')
+
+    brique = brique | table.reference.str.lower().str.contains('polycarb')
+
+    table.loc[brique, 'type_vitrage_simple_infer'] = "brique de verre ou polycarbonate"
+
+    table.type_vitrage_simple_infer = table.type_vitrage_simple_infer.astype('category')
+
+    # traitement avancé en utilisant les valeurs.
+    # s_type_from_value = intervals_to_category(table.coefficient_transmission_thermique_baie,infer_type_by_value)
+
+    # infer_type_by_value = {'simple vitrage':[3.7,7],
+    #                       'double vitrage':[2,3.69],
+    #                       'triple vitrage':[1,2],
+    #                       'INCOHERENT':[0,0.99]}
+
+    # inc=table.type_vitrage_simple_infer=='INCOHERENT'
+    # nondef=table.type_vitrage_simple_infer=='NONDEF'
+    # inc_or_nondef=inc|nondef
+
+    # table.loc[inc_or_nondef,'type_vitrage_simple_infer'] = s_type_from_value[inc_or_nondef]
+
+
+    # quantitatifs (EXPERIMENTAL)
+    table['nb_baie_calc'] = (
+                table.deperdition / (table.surface * table.coefficient_transmission_thermique_baie)).round(0)
+    null = (table.surface == 0) | (table.coefficient_transmission_thermique_baie == 0) | (table.deperdition == 0)
+    table.loc[null, 'nb_baie_calc'] = np.nan
+    zeros = table.nb_baie_calc == 0
+    table.loc[zeros, 'nb_baie_calc'] = np.nan
+
+    table['surfacexnb_baie_calc'] = table.surface * table.nb_baie_calc
+
+    # TYPE MENUISERIE
+    ## type menuiserie en fonction des caractéristiques déjà inférée
+    baie = table.type_vitrage_simple_infer.str.contains('vitrage')
+    porte = table.type_vitrage_simple_infer.str.contains('porte')
+    brique = table.type_vitrage_simple_infer.str.contains('brique')
+
+    table['cat_baie_simple_infer'] = 'NONDEF'
+    table.loc[baie, 'cat_baie_simple_infer'] = 'baie vitrée'
+    table.loc[porte, 'cat_baie_simple_infer'] = 'porte'
+    table.loc[brique, 'cat_baie_simple_infer'] = 'paroi en brique de verre ou polycarbonate'
+
+    nondef = table.cat_baie_simple_infer == "NONDEF"
+    ## pour les non def on va chercher dans le string de description
+    # type menuiserie en fonction des caractéristiques déjà inférée
+    baie = table.type_vitrage_simple_infer.str.contains('vitrage')
+    porte = table.type_vitrage_simple_infer.str.contains('porte')
+    brique = table.type_vitrage_simple_infer.str.contains('brique')
+
+    table['cat_baie_simple_infer'] = 'NONDEF'
+    table.loc[baie, 'cat_baie_simple_infer'] = 'baie vitrée'
+    table.loc[porte, 'cat_baie_simple_infer'] = 'porte'
+
+    nondef = table.cat_baie_simple_infer == "NONDEF"
+    # pour les non def on va chercher dans le string de description
+    baie = table.reference.str.lower().str.contains('fen')
+    ref = table.reference.str.lower()
+    baie = baie | ref.str.contains('baie')
+    baie = baie | ref.str.startswith('f')
+    baie = baie | ref.str.startswith('pf')
+    baie = baie | ref.str.startswith('sv')
+    baie = baie | ref.str.contains('velux')
+    baie = baie | (~table.tv009_coefficient_transmission_thermique_vitrage_id.isnull())
+    baie = baie | ref.str.contains('velux')
+    baie = baie | (table.tv009_coefficient_transmission_thermique_vitrage_id.isnull())
+    baie = baie | table['tv010_Type de Baie'].str.lower().str.contains('fen')
+    baie = baie | table.reference.str.lower().str.contains('vitr')
+    porte = table.reference.str.lower().str.contains('porte') & (~baie)
+    table.loc[nondef & baie, 'cat_baie_simple_infer'] = 'baie vitrée'
+    table.loc[nondef & porte, 'cat_baie_simple_infer'] = 'porte'
+    table.loc[brique, 'cat_baie_simple_infer'] = 'paroi en brique de verre ou polycarbonate'
+    table.cat_baie_simple_infer = table.cat_baie_simple_infer.astype('category')
+
 
     return table

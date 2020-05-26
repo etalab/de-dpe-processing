@@ -1,7 +1,8 @@
 import pandas as pd
 
-def merge_enveloppe(td001,td006,td007,td008):
+def merge_count_subtables(td001,td006,td007,td008):
 
+    # ENVELOPPE
     td006 = td006.rename(columns={"id": "td006_batiment_id"})
     td007 = td007.rename(columns={"id": "td007_paroi_opaque_id"})
     td001 = td001.rename(columns={"id": "td001_dpe_id"})
