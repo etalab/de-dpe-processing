@@ -71,7 +71,7 @@ def merge_td008_tr_tv(td008):
 
     return table
 
-def post_processing_td008(td008):
+def postprocessing_td008(td008):
     from utils import intervals_to_category
 
     table = td008.copy()

@@ -1,4 +1,4 @@
-def post_processing_td001(td001):
+def postprocessing_td001(td001):
     # NORMALISATION METHODE CALCUL.
     td001['nom_methode_dpe_norm'] = 'NON DEFINI'
 

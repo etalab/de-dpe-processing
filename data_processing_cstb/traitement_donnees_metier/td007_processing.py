@@ -56,3 +56,20 @@ td007_types = {'id': 'str',
                'tv007_Uph': 'category',
                'tv008_Matériaux': 'category',
                'tv008_Uph0': 'category'}
+
+
+def merge_td007_tr_tv(td007):
+    from assets_orm import DPEMetaData
+    meta = DPEMetaData()
+    table = td007.copy()
+    table = meta.merge_all_tr_table(table)
+
+    table = meta.merge_all_tv_table(table)
+
+    return table
+
+
+def postprocessing_td007(td007):
+    table = td007.copy()
+    table = table.astype(td007_types)
+    return table
