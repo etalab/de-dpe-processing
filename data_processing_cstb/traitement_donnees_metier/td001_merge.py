@@ -25,3 +25,11 @@ def merge_count_subtables(td001,td006,td007,td008):
     td001 = td001.merge(td001_agg.reset_index(), on='td001_dpe_id', how='left')
 
     td001[['is_td008', 'is_td007', 'is_td006']] = td001[['td008_count', 'td007_count', 'td006_count']] > 0
+
+def merge_td001_dpe_id_envelope(td001, td006, td007, td008):
+    td006 = td006.rename(columns={"id": "td006_batiment_id"})
+    td007 = td007.rename(columns={"id": "td007_paroi_opaque_id"})
+    td001 = td001.rename(columns={"id": "td001_dpe_id"})
+    td007 = td007.merge(td006[['td006_batiment_id', 'td001_dpe_id']], on='td006_batiment_id', how='left')
+    td008 = td008.merge(td007[['td007_paroi_opaque_id', 'td001_dpe_id']], on='td007_paroi_opaque_id', how='left')
+    return td007,td008

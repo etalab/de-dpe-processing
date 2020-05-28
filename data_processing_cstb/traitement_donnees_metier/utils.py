@@ -129,14 +129,50 @@ def agg_pond_top_freq(table,enum_col,pond, by, bool_filter_col=None, bool_filter
 
     pond_col = 'pond9999999'
     table = _prep_agg_pond(table, pond, bool_filter_col, pond_col, bool_filter_not)
-    tuple_list = list()
-    for index, row in table.groupby([by, enum_col])[pond_col].sum().unstack().iterrows():
-        row = row.sort_values(ascending=False).dropna()
-        if row.shape[0] > 0:
-            tuple_list.append((index, row.index[0]))
-        else:
-            tuple_list.append((index, np.nan))
-    s = pd.Series([el[1] for el in tuple_list], [el[0] for el in tuple_list])
-    s.index.name = by
+    grp = table.groupby([by, enum_col])[pond_col].sum()
+    s = grp.reset_index().sort_values([by, pond_col],ascending=False).drop_duplicates(subset=by).set_index(by)[enum_col]
 
     return s
+
+
+def affect_lib_by_matching_score(txt, lib_dict):
+    """
+    function that rank matching score for associating a string
+    to an enum depending on the matching with different keywords associated to that enum. The matching score is the sum
+    of the occurences of all keywords. if a keyword is missing it decrease the score by 1.
+
+    Parameters
+    ----------
+    txt :str
+    text to be matched
+    lib_dict :dict
+    key : enum , value is a list of keyword or tuple of keywords.
+    if there is tuple of keyword it match any of the keywords inside the tuple
+
+    Returns
+    -------
+
+    """
+    def compare_(txt, comp):
+        if isinstance(comp, tuple):
+            count = np.max([txt.count(x) for x in comp])
+        else:
+            count = txt.count(comp)
+
+        if count > 0:
+            return count
+        else:
+            return -1
+
+    comp_score_dict = dict()
+    for k, v in lib_dict.items():
+        comp_score_dict[k] = np.sum([compare_(txt, el) for el in v])
+
+    comp = pd.Series(comp_score_dict).sort_values(ascending=False)
+    if comp.max() > 0:
+        comp = comp.loc[comp == comp.max()]
+
+        affectation = comp.sort_index().index[0]  # sorting index in case of conflicts
+        return affectation
+    else:
+        return 'non affecté'
