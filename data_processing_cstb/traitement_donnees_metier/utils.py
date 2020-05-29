@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import uuid
 
 
 def intervals_to_category(s, cat_dict):
@@ -60,7 +61,7 @@ def _prep_agg_pond(table, pond, bool_filter_col, pond_col, bool_filter_not):
     return table
 
 
-def agg_pond_avg(table, value_col,pond,by,bool_filter_col=None, bool_filter_not=False):
+def agg_pond_avg(table, value_col, pond, by, bool_filter_col=None, bool_filter_not=False):
     """
     function to make an average ponderate serie from a table column
     Parameters
@@ -84,24 +85,23 @@ def agg_pond_avg(table, value_col,pond,by,bool_filter_col=None, bool_filter_not=
     serie of ponderate avg of value_col
 
     """
-    pond_col = 'pond9999999'
+    pond_col = str(uuid.uuid4())
     table = _prep_agg_pond(table, pond, bool_filter_col, pond_col, bool_filter_not)
-    grp = table.groupby(by).apply(lambda x: _agg_pond_avg_core(x, value_col, pond_col))
-    if pond_col in grp:
-        del grp[pond_col]
-    return grp
+    pond_value_col_temp = str(uuid.uuid4())
+    table[pond_value_col_temp] = table[pond_col] * table[value_col]
+    null = table[pond_value_col_temp].isnull()
+    null = null | table[pond_col].isnull()
+    table.loc[null, [pond_col, pond_value_col_temp]] = np.nan
+    grp = table.groupby(by)[[pond_col, pond_value_col_temp]].sum()
+    grp[grp[pond_col] <= 0] = np.nan
+    s_grp = grp[pond_value_col_temp] / grp[pond]
+    del table[pond_col]
+    del table[pond_value_col_temp]
+
+    return s_grp
 
 
-def _agg_pond_avg_core(x, value_col, pond_col):
-    pond_col_sum = x[pond_col].sum()
-
-    if pond_col_sum == 0:
-        return x[value_col].mean()
-    else:
-        return (x[value_col] * x[pond_col]).sum() / (x[pond_col].sum())
-
-
-def agg_pond_top_freq(table,enum_col,pond, by, bool_filter_col=None, bool_filter_not=False):
+def agg_pond_top_freq(table, enum_col, pond, by, bool_filter_col=None, bool_filter_not=False):
     """
     function to make an topfreq ponderate serie from a table column
 
@@ -130,7 +130,8 @@ def agg_pond_top_freq(table,enum_col,pond, by, bool_filter_col=None, bool_filter
     pond_col = 'pond9999999'
     table = _prep_agg_pond(table, pond, bool_filter_col, pond_col, bool_filter_not)
     grp = table.groupby([by, enum_col])[pond_col].sum()
-    s = grp.reset_index().sort_values([by, pond_col],ascending=False).drop_duplicates(subset=by).set_index(by)[enum_col]
+    s = grp.reset_index().sort_values([by, pond_col], ascending=False).drop_duplicates(subset=by).set_index(by)[
+        enum_col]
 
     return s
 
@@ -153,6 +154,7 @@ def affect_lib_by_matching_score(txt, lib_dict):
     -------
 
     """
+
     def compare_(txt, comp):
         if isinstance(comp, tuple):
             count = np.max([txt.count(x) for x in comp])

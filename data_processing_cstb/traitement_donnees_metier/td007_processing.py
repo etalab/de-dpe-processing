@@ -225,3 +225,53 @@ def calc_surface_paroi_opaque(td007, td008):
     td007_m.loc[is_non_ext, 'surface_paroi_opaque_exterieur_infer'] = np.nan
 
     return td007_m
+
+def agg_surface_envelope(td007,td008):
+
+    # SURFACES
+
+    td008_porte = td008.loc[td008.cat_baie_simple_infer == 'porte']
+
+    td008_vitree = td008.loc[td008.cat_baie_simple_infer.isin(['baie vitrée',
+
+                                                               'paroi en brique de verre ou polycarbonate'])]
+    surf_vitree = td008_vitree.groupby('td001_dpe_id')['surfacexnb_baie_calc'].sum()
+    surf_vitree.name = 'surface_vitree_totale'
+    surf_porte = td008_porte.groupby('td001_dpe_id')['surfacexnb_baie_calc'].sum()
+    surf_porte.name = 'surface_porte_totale'
+
+    surf_vitree_orient = td008_vitree.pivot_table(index='td001_dpe_id', columns='orientation_infer',
+                                                  values='surfacexnb_baie_calc', aggfunc='sum')
+
+    surf_vitree_orient.columns = [f'surfaces_vitree_orientee_{el.lower().replace(" ", "_")}' for el in
+                                  surf_vitree_orient.columns]
+
+    td007_murs = td007.loc[td007.tr014_type_parois_opaque_id.isin(['TR014_002', 'TR014_001'])]
+    td007_pb = td007.loc[td007.tr014_type_parois_opaque_id == 'TR014_003']
+    td007_ph = td007.loc[td007.tr014_type_parois_opaque_id == 'TR014_004']
+
+    surf_mur = td007_murs.groupby('td001_dpe_id')[['surface_paroi_opaque_infer',
+                                                   'surface_paroi_opaque_deperditive_infer',
+                                                   'surface_paroi_opaque_exterieur_infer']].sum()
+    surf_pb = td007_pb.groupby('td001_dpe_id')[['surface_paroi_opaque_infer',
+                                                'surface_paroi_opaque_deperditive_infer']].sum()
+
+    surf_ph = td007_ph.groupby('td001_dpe_id')[['surface_paroi_opaque_infer',
+                                                'surface_paroi_opaque_deperditive_infer']].sum()
+
+    surf_mur.columns = ['surf_murs_totale', 'surf_murs_deper', 'surf_murs_ext']
+    surf_pb.columns = ['surf_pb_totale', 'surf_pb_deper']
+    surf_ph.columns = ['surf_ph_totale', 'surf_ph_deper']
+
+    quantitatif = pd.concat([surf_mur, surf_pb, surf_ph, surf_vitree, surf_porte, surf_vitree_orient], axis=1)
+    quantitatif[quantitatif < 0] = np.nan
+    quantitatif['ratio_surface_vitree'] = quantitatif.surface_vitree_totale / quantitatif.surf_murs_ext
+    ratio_surface_vitree = quantitatif['ratio_surface_vitree']
+    anomaly_ratio_surface_vitree = ratio_surface_vitree > 0.95
+    quantitatif.loc[anomaly_ratio_surface_vitree, 'ratio_surface_vitree'] = np.nan
+    is_not_surf_ext = quantitatif.surf_murs_ext == 0
+    quantitatif.loc[is_not_surf_ext, 'ratio_surface_vitree'] = np.nan
+
+    return quantitatif
+
+
