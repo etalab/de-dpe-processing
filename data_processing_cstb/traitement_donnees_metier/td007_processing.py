@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from utils import agg_pond_avg,agg_pond_top_freq
 td007_types = {'id': 'str',
                'td006_batiment_id': 'str',
                'tr014_type_parois_opaque_id': 'category',
@@ -265,7 +264,9 @@ def agg_surface_envelope(td007,td008):
 
     quantitatif = pd.concat([surf_mur, surf_pb, surf_ph, surf_vitree, surf_porte, surf_vitree_orient], axis=1)
     quantitatif[quantitatif < 0] = np.nan
-    quantitatif['ratio_surface_vitree'] = quantitatif.surface_vitree_totale / quantitatif.surf_murs_ext
+    quantitatif['ratio_surface_vitree_exterieur'] = quantitatif.surface_vitree_totale / quantitatif.surf_murs_ext
+    quantitatif['ratio_surface_vitree_deperditif'] = quantitatif.surface_vitree_totale / quantitatif.surf_murs_deper
+    quantitatif['ratio_surface_vitree_total'] = quantitatif.surface_vitree_totale / quantitatif.surf_murs_totale
     ratio_surface_vitree = quantitatif['ratio_surface_vitree']
     anomaly_ratio_surface_vitree = ratio_surface_vitree > 0.95
     quantitatif.loc[anomaly_ratio_surface_vitree, 'ratio_surface_vitree'] = np.nan

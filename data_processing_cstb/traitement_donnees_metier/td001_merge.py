@@ -36,3 +36,21 @@ def merge_td001_dpe_id_envelope(td001, td006, td007, td008):
     td008 = td008.merge(td007[['td007_paroi_opaque_id', 'td001_dpe_id']], on='td007_paroi_opaque_id', how='left')
 
     return td001,td006,td007,td008
+
+
+def merge_td001_dpe_id_system(td001, td006, td011, td012,td013,td014):
+    td001 = td001.rename(columns={"id": "td001_dpe_id"})
+    td006 = td006.rename(columns={"id": "td006_batiment_id"})
+    td011 = td011.rename(columns={"id": "td011_installation_chauffage_id"})
+    td012 = td012.rename(columns={"id": "td012_generateur_chauffage_id"})
+    td013 = td013.rename(columns={"id": "td013_installation_ecs_id"})
+    td014 = td014.rename(columns={"id": "td014_generateur_ecs_id"})
+
+    td011 = td011.merge(td006[['td006_batiment_id', 'td001_dpe_id']], on='td006_batiment_id', how='left')
+    td012 = td012.merge(td011[['td011_installation_chauffage_id', 'td001_dpe_id']], on='td011_installation_chauffage_id', how='left')
+
+    td013 = td013.merge(td006[['td006_batiment_id', 'td001_dpe_id']], on='td006_batiment_id', how='left')
+    td014 = td014.merge(td013[['td013_installation_ecs_id', 'td001_dpe_id']], on='td013_installation_ecs_id', how='left')
+
+
+    return td001,td006,td011, td012,td013,td014

@@ -201,4 +201,4 @@ def affect_lib_by_matching_score(txt, lib_dict):
         affectation = comp.sort_index().index[0]  # sorting index in case of conflicts
         return affectation
     else:
-        return 'non affecté'
+        return 'non affecte'
