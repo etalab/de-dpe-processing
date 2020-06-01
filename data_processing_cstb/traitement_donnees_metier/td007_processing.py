@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+from utils import agg_pond_avg,agg_pond_top_freq
 td007_types = {'id': 'str',
                'td006_batiment_id': 'str',
                'tr014_type_parois_opaque_id': 'category',
@@ -139,7 +139,7 @@ def postprocessing_td007(td007, td008):
     tv_col_isole = [col for col in table.columns.sort_values() if col.endswith(' Isolé')]
     # we consider an insulated paroi if it has more than 2cm of insulation.
     table['is_paroi_isole'] = (table.epaisseur_isolation_calc > 2) | (
-            table.coefficient_transmission_thermique_paroi < 0.8)
+            table.coefficient_transmission_thermique_paroi < 0.6)
     is_tv_isole = table[tv_col_isole].isin(['Oui', 'Terre Plein']).sum(axis=1) > 0
 
     table['is_paroi_isole'] = table['is_paroi_isole'] | is_tv_isole
@@ -275,3 +275,62 @@ def agg_surface_envelope(td007,td008):
     return quantitatif
 
 
+def agg_td007_to_td001_essential(td007):
+    td007_murs = td007.loc[td007.tr014_type_parois_opaque_id.isin(['TR014_002', 'TR014_001'])]
+    td007_pb = td007.loc[td007.tr014_type_parois_opaque_id == 'TR014_003']
+    td007_ph = td007.loc[td007.tr014_type_parois_opaque_id == 'TR014_004']
+
+    Umurs_ext_avg = agg_pond_avg(td007_murs, 'coefficient_transmission_thermique_paroi', 'surface_paroi_opaque_exterieur_infer',
+                             'td001_dpe_id').to_frame('Umurs_ext_avg')
+
+    Umurs_avg = agg_pond_avg(td007_murs, 'coefficient_transmission_thermique_paroi', 'surface_paroi_opaque_deperditive_infer',
+                             'td001_dpe_id').to_frame('Umurs_deper_avg')
+
+
+
+    Uplancher_avg = agg_pond_avg(td007_pb, 'coefficient_transmission_thermique_paroi', 'surface_paroi_opaque_deperditive_infer',
+                             'td001_dpe_id').to_frame('Uplancher_bas_deper_avg')
+
+
+
+    Uplafond_avg = agg_pond_avg(td007_ph, 'coefficient_transmission_thermique_paroi', 'surface_paroi_opaque_deperditive_infer',
+                             'td001_dpe_id').to_frame('Uplancher_haut_deper_avg')
+
+    is_pb_isole = agg_pond_top_freq(td007_pb, 'is_paroi_isole', 'surface_paroi_opaque_deperditive_infer',
+                             'td001_dpe_id').to_frame('is_plancher_bas_deper_isole')
+
+    is_ph_isole = agg_pond_top_freq(td007_ph, 'is_paroi_isole', 'surface_paroi_opaque_deperditive_infer',
+                             'td001_dpe_id').to_frame('is_plancher_haut_deper_isole')
+
+    is_mext_isole = agg_pond_top_freq(td007_murs, 'is_paroi_isole', 'surface_paroi_opaque_exterieur_infer',
+                             'td001_dpe_id').to_frame('is_murs_ext_isole')
+
+    is_mdeper_isole = agg_pond_top_freq(td007_murs, 'is_paroi_isole', 'surface_paroi_opaque_deperditive_infer',
+                             'td001_dpe_id').to_frame('is_murs_deper_isole')
+
+    mat_murs_deper_agg = agg_pond_top_freq(td007_murs, 'materiaux_structure', 'surface_paroi_opaque_deperditive_infer',
+                                     'td001_dpe_id').to_frame('mat_murs_deper_top')
+
+    mat_murs_ext_agg = agg_pond_top_freq(td007_murs, 'materiaux_structure', 'surface_paroi_opaque_exterieur_infer',
+                                     'td001_dpe_id').to_frame('mat_murs_ext_top')
+
+    mat_pb_agg = agg_pond_top_freq(td007_pb, 'materiaux_structure', 'surface_paroi_opaque_deperditive_infer',
+                                   'td001_dpe_id').to_frame('mat_plancher_bas_deper_top')
+
+    mat_ph_agg = agg_pond_top_freq(td007_ph, 'materiaux_structure', 'surface_paroi_opaque_deperditive_infer',
+                                   'td001_dpe_id').to_frame('mat_plancher_haut_deper_top')
+
+    agg = pd.concat([Umurs_ext_avg,
+                     Umurs_avg,
+                    Uplancher_avg,
+                    Uplafond_avg,
+                    is_pb_isole,
+                    is_ph_isole,
+                    is_mext_isole,
+                    is_mdeper_isole,
+                    mat_murs_deper_agg,
+                    mat_murs_ext_agg,
+                    mat_pb_agg,
+                    mat_ph_agg,
+                    ], axis=1)
+    return agg

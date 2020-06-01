@@ -1,6 +1,30 @@
 import pandas as pd
 import numpy as np
 import uuid
+import unicodedata
+import re
+
+def clean_str(x):
+    x = x.strip()
+    x = re.sub(' +', ' ', x)
+    return x
+
+
+def strip_accents(s):
+    """
+    remove accents from a string.
+    Parameters
+    ----------
+    s :str
+    string
+
+    Returns
+    -------
+
+    """
+    s = s.replace('\xb0C', 'degC')
+    s = s.replace('\xb5', 'u')
+    return ''.join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')
 
 
 def intervals_to_category(s, cat_dict):
@@ -94,7 +118,7 @@ def agg_pond_avg(table, value_col, pond, by, bool_filter_col=None, bool_filter_n
     table.loc[null, [pond_col, pond_value_col_temp]] = np.nan
     grp = table.groupby(by)[[pond_col, pond_value_col_temp]].sum()
     grp[grp[pond_col] <= 0] = np.nan
-    s_grp = grp[pond_value_col_temp] / grp[pond]
+    s_grp = grp[pond_value_col_temp] / grp[pond_col]
     del table[pond_col]
     del table[pond_value_col_temp]
 

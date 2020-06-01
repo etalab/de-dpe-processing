@@ -68,6 +68,7 @@ def merge_td008_tr_tv(td008):
     from assets_orm import DPEMetaData
     meta = DPEMetaData()
     table = td008.copy()
+
     table = meta.merge_all_tr_table(table)
 
     table = meta.merge_all_tv_table(table)
