@@ -19,8 +19,14 @@ def load_tr_table_dict(tr_dir_path):
 
     return tr_table_dict
 
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
 
-class DPEMetaData():
+class DPEMetaData(metaclass=Singleton):
 
     def __init__(self ,assets_dir=Path(__file__).parent/'assets'):
 

@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from utils import agg_pond_avg,agg_pond_top_freq
 td007_types = {'id': 'str',
                'td006_batiment_id': 'str',
                'tr014_type_parois_opaque_id': 'category',

@@ -74,6 +74,7 @@ def merge_td008_tr_tv(td008):
     table = meta.merge_all_tv_table(table)
 
     table = table.astype({k: v for k, v in td008_types.items() if k in table})
+    table = table.loc[:, ~table.columns.duplicated()]
     return table
 
 
@@ -229,15 +230,15 @@ def agg_td008_to_td001_essential(td008):
     td008_vitree = td008.loc[td008.cat_baie_simple_infer.isin(['baie vitrée',
                                                                'paroi en brique de verre ou polycarbonate'])]
     orientation_agg = td008_vitree.groupby('td001_dpe_id')['orientation_infer'].apply(
-        lambda x: ','.join(list(set(x.tolist()))))
+        lambda x: ' + '.join(list(set(x.tolist()))))
 
     est_double = orientation_agg.str.count('Est') > 1
     ouest_double = orientation_agg.str.count('Ouest') > 1
     est_and_ouest_double = (est_double & ouest_double)
 
-    orientation_agg.loc[est_and_ouest_double] = orientation_agg.loc[est_and_ouest_double].str.replace('Est ou Ouest,',
+    orientation_agg.loc[est_and_ouest_double] = orientation_agg.loc[est_and_ouest_double].str.replace('Est ou Ouest + ',
                                                                                                       '').str.replace(
-        ',Est ou Ouest', '')
+        ' + Est ou Ouest', '')
 
     # AGG top freq type vitrage
 

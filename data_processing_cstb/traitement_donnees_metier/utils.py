@@ -10,6 +10,8 @@ def clean_str(x):
     return x
 
 
+
+
 def strip_accents(s):
     """
     remove accents from a string.
@@ -202,3 +204,49 @@ def affect_lib_by_matching_score(txt, lib_dict):
         return affectation
     else:
         return 'non affecte'
+
+
+def concat_string_cols(table, cols, join_string=None, is_unique=False, is_sorted=False):
+    """
+
+    Parameters
+    ----------
+    table :pd.DataFrame
+    cols : list
+    list of columns to concatenate
+    join_string : str,None
+    string to be used as separator for join method when concatenate
+    is_unique : bool
+    if True will remove duplicated strings to concatenate
+    is_sorted : bool
+    if True will sort string before concatenate
+
+    Returns
+    -------
+
+    """
+    if join_string is None:
+        join_string = ''
+
+    list_concat = list()
+
+    for col in cols:
+        list_concat.append(list(table[col].astype('string').replace('nan', pd.NA).values))
+
+    list_concat = zip(*list_concat)
+    t = list(list_concat)
+
+    if is_unique is True and is_sorted is True:
+        concat = [join_string.join(sorted(list(set([st for st in el if not pd.isna(st)])))) for el in t]
+    elif is_unique is True:
+        concat = [join_string.join(list(set([st for st in el if not pd.isna(st)]))) for el in t]
+    elif is_sorted is True:
+        concat = [join_string.join(sorted([st for st in el if not pd.isna(st)])) for el in t]
+    else:
+        concat = [join_string.join([st for st in el if not pd.isna(st)]) for el in t]
+
+    s_concat = pd.Series(concat, index=table.index)
+
+    s_concat = s_concat.replace('', pd.NA)
+
+    return s_concat

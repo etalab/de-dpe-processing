@@ -23,16 +23,43 @@ def run_enveloppe_processing(td001, td006, td007, td008):
     agg_td008 = agg_td008_to_td001_essential(td008)
     agg_surfaces = agg_surface_envelope(td007, td008)
 
-    agg = pd.concat([agg_td007, agg_td008, agg_surfaces], axis=1)
+    td001_enveloppe_agg = pd.concat([agg_td007, agg_td008, agg_surfaces], axis=1)
 
-    agg.index.name = 'td001_dpe_id'
+    td001_enveloppe_agg.index.name = 'td001_dpe_id'
     cols = [el for el in td008.columns if el not in td008_raw_cols]
     cols.append('td008_baie_id')
     td008_p = td008[cols]
     cols = [el for el in td007.columns if el not in td007_raw_cols]
     cols.append('td007_paroi_opaque_id')
     td007_p = td007[cols]
-    return agg, td008_p, td007_p
+    return td001_enveloppe_agg, td008_p, td007_p
+
+
+def run_system_processing(td001, td006, td011, td012, td013, td014):
+    from td012_processing import merge_td012_tr_tv, postprocessing_td012
+    from td011_processing import merge_td011_tr_tv, agg_systeme_chauffage_essential
+    from td001_merge import merge_td001_dpe_id_system
+    td011_raw_cols = td011.columns
+    td012_raw_cols = td012.columns
+    td013_raw_cols = td013.columns
+    td014_raw_cols = td014.columns
+    td001, td006, td011, td012, td013, td014 = merge_td001_dpe_id_system(td001, td006, td011, td012, td013, td014)
+    td011 = merge_td011_tr_tv(td011)
+    td012 = merge_td012_tr_tv(td012)
+    td012 = postprocessing_td012(td012)
+
+    cols = [el for el in td011.columns if el not in td011_raw_cols]
+    cols.append('td012_generateur_chauffage_id')
+    td011_p = td011[cols]
+
+    cols = [el for el in td012.columns if
+            el not in td012_raw_cols + ['besoin_chauffage_infer', 'gen_ch_concat_txt_desc']]
+    cols.append('td012_generateur_chauffage_id')
+    td012_p = td012[cols]
+
+    td001_sys_ch_agg = agg_systeme_chauffage_essential(td001, td011, td012)
+
+    return td011_p, td012_p, td001_sys_ch_agg
 
 
 if __name__ == '__main__':
@@ -47,7 +74,18 @@ if __name__ == '__main__':
         td008 = td008.drop('td008_baie_id', axis=1)
 
         # ENVELOPPE PROCESSING
-        agg, td008_p, td007_p = run_enveloppe_processing(td001, td006, td007, td008)
-        agg.to_csv(dept_dir / 'td001_annexe_enveloppe_agg.csv')
+        td001_enveloppe_agg, td008_p, td007_p = run_enveloppe_processing(td001, td006, td007, td008)
+        td001_enveloppe_agg.to_csv(dept_dir / 'td001_annexe_enveloppe_agg.csv')
         td007.to_csv(dept_dir / 'td007_paroi_opaque_annexe.csv')
         td008.to_csv(dept_dir / 'td008_baie_annexe.csv')
+
+        # SYSTEM PROCESSING
+
+        td011 = pd.read_csv(dept_dir / 'td011_installation_chauffage.csv', dtype=str)
+        td012 = pd.read_csv(dept_dir / 'td012_generateur_chauffage.csv', dtype=str)
+        td013 = pd.read_csv(dept_dir / 'td013_installation_ecs.csv', dtype=str)
+        td014 = pd.read_csv(dept_dir / 'td014_generateur_ecs.csv', dtype=str)
+        td011_p, td012_p, td001_sys_ch_agg = run_system_processing(td001, td006, td011, td012, td013, td014)
+        td001_sys_ch_agg.to_csv(dept_dir / 'td001_annexe_enveloppe_agg.csv')
+        td011_p.to_csv(dept_dir / 'td011_installation_chauffage_annexe.csv')
+        td012_p.to_csv(dept_dir / 'td012_generateur_chauffage_annexe.csv')

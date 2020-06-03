@@ -32,3 +32,6 @@ desc_surfaces = {
     'surfaces_vitree_orientee_sud': 'surfaces vitrées orientées sud',
     'ratio_surface_vitree': 'ratio entre la surface vitrée totale et la surface de murs extérieurs.',
 }
+
+desc_td007_annexes={}
+

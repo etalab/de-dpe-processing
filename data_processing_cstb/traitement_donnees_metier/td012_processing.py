@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 from utils import agg_pond_avg,agg_pond_top_freq,clean_str,strip_accents,affect_lib_by_matching_score
+from assets_orm import DPEMetaData
+
 td012_types = {'id': 'str',
                'systeme_chauffage_cogeneration_id': 'string',
                'td011_installation_chauffage_id': 'str',
@@ -104,12 +106,24 @@ poele_dict = {0.78: 'poele ou insert bois',
               0.72: "poele ou insert fioul/gpl"}
 
 
+def merge_td012_tr_tv(td012):
+
+    meta = DPEMetaData()
+    table = td012.copy()
+    table = meta.merge_all_tr_table(table)
+    table = meta.merge_all_tv_table(table)
+    table = table.astype({k: v for k, v in td012_types.items() if k in table})
+    table = table.rename(columns={'id': 'td012_generateur_chauffage_id'})
+
+    return table
+
 def postprocessing_td012(td012):
     table = td012.copy()
 
     is_rpn = table.rpn > 0
     is_rpint = table.rpint > 0
     is_chaudiere = is_rpint | is_rpn
+    is_chaudiere = is_chaudiere | ~table.tv038_puissance_nominale_id.isnull()
     # all text description raw concat
     gen_ch_concat_txt_desc = table['tv031_Type de Générateur'].astype('string').replace(np.nan, '') + ' '
     gen_ch_concat_txt_desc.loc[is_chaudiere] += 'chaudiere '
@@ -168,4 +182,21 @@ def postprocessing_td012(td012):
     table.loc[(bool_ej) & (bool_ce), 'gen_ch_lib_infer'] = 'chaudiere electrique'
 
     table['type_energie_chauffage'] = table['tr004_description']
+
+    rendement_gen_u = table[['rendement_generation', 'coefficient_performance']].max(axis=1)
+
+    s_rendement = pd.Series(index=table.index)
+    s_rendement[:] = 1
+    for rendement in ['rendement_distribution_systeme_chauffage',
+                      'rendement_emission_systeme_chauffage']:
+        r = table[rendement].astype(float)
+        r[r == 0] = 1
+        r[r.isnull()] = 1
+        s_rendement = s_rendement * r
+
+    rendement_gen_u[rendement_gen_u == 0] = 1
+    rendement_gen_u[rendement_gen_u.isnull()] = 1
+    s_rendement = s_rendement * rendement_gen_u
+    table['besoin_chauffage_infer'] = table['consommation_chauffage'] * s_rendement
+
     return table
