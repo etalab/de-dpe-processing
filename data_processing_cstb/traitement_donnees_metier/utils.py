@@ -250,3 +250,17 @@ def concat_string_cols(table, cols, join_string=None, is_unique=False, is_sorted
     s_concat = s_concat.replace('', pd.NA)
 
     return s_concat
+
+
+def merge_without_duplicate_columns(table, other_table,on, merge_kwargs=None):
+    if merge_kwargs is None:
+        merge_kwargs = {}
+    if isinstance(on,(str,int,float)):
+        on = [on]
+    cols = table.columns
+    other_cols = other_table.columns
+    other_cols = [col for col in other_cols if col not in cols]  # preserve order
+    other_cols = list(other_cols)
+    other_cols.extend(list(on))
+    table = table.merge(other_table[other_cols],on=on, **merge_kwargs)
+    return table

@@ -1,0 +1,6 @@
+"id","type_masque","simu_ordre","simulateur"
+"1","Absence de masque proche","NULL","1"
+"3","Fond de balcon ou fond et flanc de loggias","NULL","1"
+"4","Baie sous un balcon ou auvent","NULL","1"
+"5","Baie masquée par une paroi latérale","NULL","1"
+"6","Baie donnant sur un local non chauffé","NULL","1"

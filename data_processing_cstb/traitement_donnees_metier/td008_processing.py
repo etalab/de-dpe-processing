@@ -2,13 +2,13 @@ import pandas as pd
 import numpy as np
 from utils import agg_pond_top_freq, agg_pond_avg
 
-td008_types = {'id': 'object',
-               'td007_paroi_opaque_id': 'object',
-               'reference': 'object',
-               'td008_baie_id': 'object',
+td008_types = {'id': 'str',
+               'td007_paroi_opaque_id': 'str',
+               'reference': 'str',
+               'td008_baie_id': 'str',
                'deperdition': 'float',
                'tv009_coefficient_transmission_thermique_vitrage_id': 'category',
-               'presence_survitrage': 'bool',
+               'presence_survitrage': 'str',
                'coefficient_transmission_thermique_baie': 'float',
                'tv010_coefficient_transmission_thermique_baie_id': 'category',
                'tv011_resistance_additionnelle_id': 'category',
@@ -19,62 +19,24 @@ td008_types = {'id': 'object',
                'facteur_solaire': 'float',
                'tv021_facteur_solaire_id': 'category',
                'tv022_coefficient_masques_proches_id': 'category',
-               'coefficient_masques_lointains_non_homogenes': 'float',
+               'coefficient_masques_lointains_non_homogenes': 'category',
                'tv023_coefficient_masques_lointains_homogenes_id': 'category',
-               'tv020_coefficient_orientation_id': 'category',
-               'tv009_Type de vitrage': 'category',
-               'tv009_Orientation': 'category',
-               'tv009_Remplissage': 'category',
-               'tv009_Epaisseur Lame': 'category',
-               'tv009_Traitement du vitrage': 'category',
-               'tv009_Ug': 'category',
-               'tv010_Type de matériaux': 'category',
-               'tv010_Type de Baie': 'category',
-               'tv010_Ug': 'category',
-               'tv010_Uw': 'category',
-               'tv011_Fermetures': 'category',
-               'tv011_∆R': 'category',
-               'tv012_Uw': 'category',
-               'tv012_∆R': 'category',
-               'tv012_Ujn': 'category',
-               'tv013_Type de liaison': 'category',
-               'tv013_Isolation Mur': 'category',
-               'tv013_Isolation Plancher bas': 'category',
-               'tv013_Largeur du dormant': 'category',
-               'tv013_Type de pose': 'category',
-               "tv013_Retour d'isolation": 'category',
-               'tv013_K': 'category',
-               'tv021_Type de Pose': 'category',
-               'tv021_Matériaux': 'category',
-               'tv021_Type de Baie': 'category',
-               'tv021_Type de Vitrage': 'category',
-               'tv021_Fts': 'category',
-               'tv022_Type de maque': 'category',
-               'tv022_Avancé L': 'category',
-               'tv022_Orientation': 'category',
-               'tv022_Rapport L1/L2': 'category',
-               'tv022_β & γ': 'category',
-               'tv022_Fe1': 'category',
-               'tv023_Hauteur α (°)': 'category',
-               'tv023_Orientation': 'category',
-               'tv023_Fe2': 'category',
-               'tv020_Inclinaison de la paroi': 'category',
-               'tv020_Orientation de la paroi': 'category',
-               'tv020_Type de baie': 'category',
-               'tv020_C1': 'category'}
+               'tv020_coefficient_orientation_id': 'category'}
 
 
 def merge_td008_tr_tv(td008):
     from assets_orm import DPEMetaData
     meta = DPEMetaData()
     table = td008.copy()
+    table = table.rename(columns={
+        'tv012_coef_transmission_thermique_baie_protection_solaire_id': 'tv012_coefficient_transmission_thermique_baie_protection_solaire_id'})
+    table = meta.merge_all_tr_tables(table)
 
-    table = meta.merge_all_tr_table(table)
-
-    table = meta.merge_all_tv_table(table)
+    table = meta.merge_all_tv_tables(table)
 
     table = table.astype({k: v for k, v in td008_types.items() if k in table})
     table = table.loc[:, ~table.columns.duplicated()]
+
     return table
 
 
@@ -84,9 +46,9 @@ def postprocessing_td008(td008):
     table = td008.copy()
 
     # orientation processing avec tv020 et reference.
-    table['orientation_infer'] = table['tv020_Orientation de la paroi'].astype('string').fillna('NONDEF')
+    table['orientation_infer'] = table['tv020_orientation_paroi'].astype('string').fillna('NONDEF')
     nondef = table.orientation_infer == 'NONDEF'
-    horiz = table['tv020_coefficient_orientation_id'] == "TV020_013"
+    horiz = table['tv020_coefficient_orientation_id'] == "13"
     table.loc[horiz, 'orientation_infer'] = 'Horizontale'
     ouest = table.reference.str.lower().str.contains('ouest')
     nord = table.reference.str.lower().str.contains('nord')
@@ -100,19 +62,17 @@ def postprocessing_td008(td008):
     table.orientation_infer = table.orientation_infer.astype('category')
 
     # type vitrage processing avec tv009, tv010, tv021 et reference
-    table['fen_lib_from_tv009'] = table['tv009_Type de vitrage'].astype('string') + ' ' + table[
-        'tv009_Remplissage'].astype('string').fillna('') + ' '
-    table['fen_lib_from_tv009'] += table[
-                                       'tv009_Epaisseur Lame'].astype('Int32').fillna(0).astype(int).astype(
-        str).replace('0', '').apply(
-        lambda x: x + ' mm ' if x != '' else x) + table['tv010_Type de matériaux'].astype('string').fillna('') + ' ' + \
+    table['fen_lib_from_tv009'] = table['tv009_type_vitrage'].astype('string') + ' ' + table[
+        'tv009_remplissage'].astype('string').fillna('') + ' '
+    table['fen_lib_from_tv009'] += table['tv009_epaisseur_lame'].fillna('0').astype(int).astype(str).replace('0', '').apply(
+        lambda x: x + ' mm ' if x != '' else x) + table['tv010_type_materiaux'].astype('string').fillna('') + ' ' + \
                                    table[
-                                       'tv009_Traitement du vitrage'].astype('string').fillna('')
+                                       'tv009_traitement_vitrage'].astype('string').fillna('')
     table['fen_lib_from_tv009'] = table['fen_lib_from_tv009'].fillna('NONDEF')
 
-    table['fen_lib_from_tv021'] = table['tv021_Type de Baie'].astype('string') + ' ' + table[
-        'tv021_Type de Vitrage'].astype('string').fillna('') + ' '
-    table['fen_lib_from_tv021'] += table['tv021_Matériaux'].astype('string').fillna('')
+    table['fen_lib_from_tv021'] = table['tv021_type_baie'].astype('string') + ' ' + table[
+        'tv021_type_vitrage'].astype('string').fillna('') + ' '
+    table['fen_lib_from_tv021'] += table['tv021_materiaux'].astype('string').fillna('')
     table['fen_lib_from_tv021'] = table['fen_lib_from_tv021'].fillna('NONDEF')
 
     double_vitrage = table.fen_lib_from_tv009.str.lower().str.contains(
@@ -124,9 +84,9 @@ def postprocessing_td008(td008):
     simple_vitrage = table.fen_lib_from_tv009.str.lower().str.contains(
         'simple') | table.fen_lib_from_tv021.str.lower().str.contains('simple')
 
-    porte = table['tv010_Type de matériaux'].astype(str).fillna('').str.lower().str.contains(
+    porte = table['tv010_type_materiaux'].astype(str).fillna('').str.lower().str.contains(
         'portes ')  # l'espace à la fin est important sinon confusion portes-fenetres
-    porte = porte | table['tv010_Type de Baie'].astype(str).fillna('').str.lower().str.contains('porte ')
+    porte = porte | table['tv010_type_baie'].astype(str).fillna('').str.lower().str.contains('porte ')
     porte = porte | table['reference'].fillna('').str.lower().str.contains('porte ')
     porte = porte | table['reference'].fillna('').str.lower().str.contains('portes ')
 
@@ -143,9 +103,9 @@ def postprocessing_td008(td008):
 
     # distinction brique de verre
 
-    brique = table['tv010_Type de matériaux'].astype(str).fillna('').str.lower().str.contains('brique')
+    brique = table['tv010_type_materiaux'].astype(str).fillna('').str.lower().str.contains('brique')
 
-    brique = brique | table['tv010_Type de matériaux'].astype(str).fillna('').str.lower().str.contains('polycarb')
+    brique = brique | table['tv010_type_materiaux'].astype(str).fillna('').str.lower().str.contains('polycarb')
 
     brique = brique | table.reference.str.lower().str.contains('brique')
 
@@ -213,7 +173,7 @@ def postprocessing_td008(td008):
     baie = baie | (~table.tv009_coefficient_transmission_thermique_vitrage_id.isnull())
     baie = baie | ref.str.contains('velux')
     baie = baie | (table.tv009_coefficient_transmission_thermique_vitrage_id.isnull())
-    baie = baie | table['tv010_Type de Baie'].str.lower().str.contains('fen')
+    baie = baie | table['tv010_type_baie'].str.lower().str.contains('fen')
     baie = baie | table.reference.str.lower().str.contains('vitr')
     porte = table.reference.str.lower().str.contains('porte') & (~baie)
     table.loc[nondef & baie, 'cat_baie_simple_infer'] = 'baie vitrée'

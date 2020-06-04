@@ -2,9 +2,9 @@
 0,TV040_001,Individuelle,Electrique classique,Oui,Oui,0.9
 1,TV040_002,Individuelle,Electrique classique,Oui,Non,0.85
 2,TV040_003,Individuelle,Electrique classique,Non,,0.8
-3,TV040_004,Individuelle,Electrique thermodinamyque,Oui,Oui,0.95
-4,TV040_005,Individuelle,Electrique thermodinamyque,Oui,Non,0.9
-5,TV040_006,Individuelle,Electrique thermodinamyque,Non,,0.85
+3,TV040_004,Individuelle,Electrique thermodynamique,Oui,Oui,0.95
+4,TV040_005,Individuelle,Electrique thermodynamique,Oui,Non,0.9
+5,TV040_006,Individuelle,Electrique thermodynamique,Non,,0.85
 6,TV040_007,Individuelle,Autres types de chauffe-eau,Oui,Oui,0.92
 7,TV040_008,Individuelle,Autres types de chauffe-eau,Oui,Non,0.87
 8,TV040_009,Individuelle,Autres types de chauffe-eau,Non,,0.82
