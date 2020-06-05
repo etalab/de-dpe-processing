@@ -3,7 +3,7 @@ import numpy as np
 from assets_orm import DPEMetaData
 from utils import concat_string_cols, strip_accents, affect_lib_by_matching_score,clean_str
 
-td013_types = {'id': 'str',
+td013_types = {
                'td006_batiment_id': 'str',
                'tr005_type_installation_ecs_id': 'category',
                'nombre_appartements_echantillon': 'float',
@@ -67,23 +67,24 @@ def postprocessing_td014(td013,td014):
 
     is_chaudiere = table.rpn > 0
 
-    gen_ecs_concat_txt_desc = table["tv027_Type d'installation"].astype('string').replace(np.nan, '') + ' '
+    gen_ecs_concat_txt_desc = table["tv027_type_installation"].astype('string').replace(np.nan, '') + ' '
     gen_ecs_concat_txt_desc.loc[is_chaudiere] += 'chaudiere '
 
-    gen_ecs_concat_txt_desc += table['tv027_Type de système'].astype('string').replace(np.nan, '') + ' '
-    gen_ecs_concat_txt_desc += table["tv032_Type de Générateur"].astype('string').replace(np.nan, '') + ' '
-    gen_ecs_concat_txt_desc += table['tv036_Type de génération'].astype('string').replace(np.nan, '') + ' '
-    gen_ecs_concat_txt_desc += table['tv037_Type de Production'].astype('string').replace(np.nan, '') + ' '
-    gen_ecs_concat_txt_desc += table['tv040_Type de générateur'].astype('string').replace(np.nan, '') + ' '
-    gen_ecs_concat_txt_desc += table["tv040_Type d'installation"].astype('string').replace(np.nan, '') + ' '
+    gen_ecs_concat_txt_desc += table['tv027_type_systeme'].astype('string').replace(np.nan, '') + ' '
+    gen_ecs_concat_txt_desc += table['tv027_type_installation'].astype('string').replace(np.nan, '') + ' '
+    gen_ecs_concat_txt_desc += table["tv032_type_generateur"].astype('string').replace(np.nan, '') + ' '
+    gen_ecs_concat_txt_desc += table['tv036_type_generation'].astype('string').replace(np.nan, '') + ' '
+    gen_ecs_concat_txt_desc += table['tv037_type_production'].astype('string').replace(np.nan, '') + ' '
+    gen_ecs_concat_txt_desc += table['tv040_type_generateur'].astype('string').replace(np.nan, '') + ' '
+    gen_ecs_concat_txt_desc += table["tv040_type_installation"].astype('string').replace(np.nan, '') + ' '
     gen_ecs_concat_txt_desc += table["tr004_description"].astype('string').replace(np.nan, '') + ' '
-    gen_ecs_concat_txt_desc += table["tv045_Energie"].astype('string').replace(np.nan, '') + ' '
-    gen_ecs_concat_txt_desc += table['tv047_Type de Générateur'].astype('string').replace(np.nan, '') + ' '
+    gen_ecs_concat_txt_desc += table["tv045_energie"].astype('string').replace(np.nan, '') + ' '
+    gen_ecs_concat_txt_desc += table['tv047_type_generateur'].astype('string').replace(np.nan, '') + ' '
     gen_ecs_concat_txt_desc += table['tr005_description'].astype('string').replace(np.nan, '') + ' '
 
     gen_ecs_normalized_lib_matching_dict = {
         "ECS thermodynamique electrique(PAC ou ballon)": [
-            ('pompe a chaleur', 'pac', 'thermodynamique', 'air extrait', 'air exterieur'),
+            ('pompe a chaleur', 'pac', 'thermodynamique', 'air extrait', 'air exterieur', 'air ambiant'),
             ('electricite', 'electrique')],
         "ballon a accumulation electrique": [('ballon', 'classique', 'accumulation'), ('electricite', 'electrique')],
         "ecs electrique indeterminee": [('electricite', 'electrique')],
@@ -106,9 +107,10 @@ def postprocessing_td014(td013,td014):
         'chaudiere fioul': ["chaudiere", "fioul"],
 
     }
+
     solaire_dict = dict()
     for k, v in gen_ecs_normalized_lib_matching_dict.items():
-        k_solaire = 'ecs solaire thermique et ' + k
+        k_solaire = 'ecs solaire thermique + ' + k
         solaire_dict[k_solaire] = v + ['avec solaire']
     gen_ecs_normalized_lib_matching_dict.update(solaire_dict)
     gen_ecs_lib_simp_dict = {'ecs electrique indeterminee': 'ecs electrique indeterminee',
@@ -127,8 +129,8 @@ def postprocessing_td014(td013,td014):
                              }
     solaire_dict = dict()
     for k, v in gen_ecs_lib_simp_dict.items():
-        k_solaire = 'ecs thermique solaire et ' + k
-        v_solaire = 'ecs thermique solaire et ' + v
+        k_solaire = 'ecs thermique solaire + ' + k
+        v_solaire = 'ecs thermique solaire + ' + v
         solaire_dict[k_solaire] = v_solaire
     gen_ecs_lib_simp_dict.update(solaire_dict)
 
@@ -137,7 +139,7 @@ def postprocessing_td014(td013,td014):
                             'chaudiere': 3,
                             'ballon a accumulation': 2,
                             'electrique indeterminee': 1,
-                            'indépendant': 0}
+                            'indépendant': 0, }
 
     sys_principal_score_lib = dict()
     for k in list(gen_ecs_normalized_lib_matching_dict.keys()):
@@ -145,8 +147,7 @@ def postprocessing_td014(td013,td014):
         for term, score in sys_principal_scores.items():
             if term in k:
                 sys_principal_score_lib[k] += score
-
-
+    sys_principal_score_lib['non affecte'] = -1
     gen_ecs_concat_txt_desc = gen_ecs_concat_txt_desc.str.lower().apply(lambda x: strip_accents(x))
 
     table['gen_ecs_concat_txt_desc'] = gen_ecs_concat_txt_desc
@@ -160,10 +161,15 @@ def postprocessing_td014(td013,td014):
     table['gen_ecs_lib_infer'] = table.gen_ecs_concat_txt_desc.replace(gen_ecs_lib_infer_dict)
     is_pac = table.coefficient_performance > 2
     table.loc[is_pac, 'gen_ecs_lib_infer'] = "ECS thermodynamique electrique(PAC ou ballon)"
-
+    ecs_ind = table.gen_ecs_lib_infer == 'ecs electrique indeterminee'
+    stockage = table.volume_stockage > 20
+    table.loc[ecs_ind & stockage, 'gen_ecs_lib_infer'] = 'ballon a accumulation electrique'
+    table.loc[ecs_ind & (~stockage), 'gen_ecs_lib_infer'] = 'ballon a accumulation electrique'
     table['gen_ecs_lib_infer_simp'] = table.gen_ecs_lib_infer.replace(gen_ecs_lib_simp_dict)
 
     table['type_energie_ecs'] = table['tr004_description']
+
+    table['score_gen_ecs_lib_infer'] = table['gen_ecs_lib_infer'].replace(sys_principal_score_lib).astype(float)
 
     return table
 
@@ -196,7 +202,7 @@ def agg_systeme_ecs_essential(td001, td013, td014):
         'nombre_generateurs': 'sys_ecs_tertiaire_nb_generateurs'
     }
 
-    table = td014
+    table = td014.copy()
     is_solaire = table.gen_ecs_lib_infer.str.contains('ecs solaire thermique')
     table['nombre_generateurs'] = 1
     table.loc[is_solaire, 'nombre_generateurs'] = 2
@@ -274,7 +280,7 @@ def agg_systeme_ecs_essential(td001, td013, td014):
 
     cols_end = sys_principal.columns.tolist() + sys_secondaire.columns.tolist() + sys_tertiaire_concat.columns.tolist()
     cols_end = np.unique(cols_end).tolist()
-
+    cols_end.remove('td001_dpe_id')
     td001_sys_ecs['nombre_generateur_total'] = td001_sys_ecs.sys_ecs_principal_nb_generateur
     td001_sys_ecs['nombre_generateur_total'] += td001_sys_ecs.sys_ecs_secondaire_nb_generateur.fillna(0)
     td001_sys_ecs['nombre_generateur_total'] += td001_sys_ecs.sys_ecs_tertiaire_nb_generateurs.fillna(0)

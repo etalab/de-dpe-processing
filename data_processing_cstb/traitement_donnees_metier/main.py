@@ -9,8 +9,8 @@ def run_enveloppe_processing(td001, td006, td007, td008):
     from td007_processing import agg_td007_to_td001_essential, agg_surface_envelope
     from td008_processing import agg_td008_to_td001_essential
 
-    td008_raw_cols = td008.columns
-    td007_raw_cols = td007.columns
+    td008_raw_cols = td008.columns.tolist()
+    td007_raw_cols = td007.columns.tolist()
 
     td001, td006, td007, td008 = merge_td001_dpe_id_envelope(td001=td001, td006=td006, td007=td007, td008=td008)
 
@@ -44,13 +44,16 @@ def run_system_processing(td001, td006, td011, td012, td013, td014):
 
     from td001_merge import merge_td001_dpe_id_system
 
-    td011_raw_cols = td011.columns
-    td012_raw_cols = td012.columns
-    td013_raw_cols = td013.columns
-    td014_raw_cols = td014.columns
+    td011_raw_cols = td011.columns.tolist()
+    td012_raw_cols = td012.columns.tolist()
+    td013_raw_cols = td013.columns.tolist()
+    td014_raw_cols = td014.columns.tolist()
     td001, td006, td011, td012, td013, td014 = merge_td001_dpe_id_system(td001, td006, td011, td012, td013, td014)
     td011 = merge_td011_tr_tv(td011)
     td012 = merge_td012_tr_tv(td012)
+    td013 = merge_td013_tr_tv(td013)
+    td014 = merge_td014_tr_tv(td014)
+
     td012 = postprocessing_td012(td012)
 
     cols = [el for el in td011.columns if el not in td011_raw_cols]
@@ -64,14 +67,14 @@ def run_system_processing(td001, td006, td011, td012, td013, td014):
 
     td001_sys_ch_agg = agg_systeme_chauffage_essential(td001, td011, td012)
 
-    td014 = postprocessing_td014(td014)
+    td014 = postprocessing_td014(td013, td014)
 
     cols = [el for el in td013.columns if el not in td013_raw_cols]
     cols.append('td013_installation_ecs_id')
     td013_p = td013[cols]
 
     cols = [el for el in td014.columns if
-            el not in td014_raw_cols + ['besoin_chauffage_infer', 'gen_ch_concat_txt_desc']]
+            el not in td014_raw_cols + ['score_gen_ecs_lib_infer', 'gen_ecs_concat_txt_desc']]
     cols.append('td014_generateur_ecs_id')
     td014_p = td014[cols]
 
@@ -96,8 +99,8 @@ if __name__ == '__main__':
 
         td001_enveloppe_agg.to_csv(dept_dir / 'td001_annexe_enveloppe_agg.csv')
 
-        td007.to_csv(dept_dir / 'td007_paroi_opaque_annexe.csv')
-        td008.to_csv(dept_dir / 'td008_baie_annexe.csv')
+        td007_p.to_csv(dept_dir / 'td007_paroi_opaque_annexe.csv')
+        td008_p.to_csv(dept_dir / 'td008_baie_annexe.csv')
 
         # SYSTEM PROCESSING
 

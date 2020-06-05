@@ -10,7 +10,7 @@ td011_types = {'td011_installation_chauffage_id': 'str',
                'nombre_appartements_echantillon': 'float',
                'surface_habitable_echantillon': 'float',
                'tv025_intermittence_id': 'category',
-               'td001_dpe_id': 'str'}
+}
 
 td012_types = {'id': 'str',
                'systeme_chauffage_cogeneration_id': 'string',
@@ -144,17 +144,17 @@ def postprocessing_td012(td012):
     is_chaudiere = is_rpint | is_rpn
     is_chaudiere = is_chaudiere | ~table.tv038_puissance_nominale_id.isnull()
     # all text description raw concat
-    gen_ch_concat_txt_desc = table['tv031_Type de Générateur'].astype('string').replace(np.nan, '') + ' '
+    gen_ch_concat_txt_desc = table['tv031_type_generateur'].astype('string').replace(np.nan, '') + ' '
     gen_ch_concat_txt_desc.loc[is_chaudiere] += 'chaudiere '
-    gen_ch_concat_txt_desc += table['tv036_Type de Chaudière'].astype('string').replace(np.nan, ' ') + ' '
-    gen_ch_concat_txt_desc += table["tv030_Type d'installation"].astype('string').replace(np.nan, ' ') + ' '
-    gen_ch_concat_txt_desc += table["tv032_Type de Générateur"].astype('string').replace(np.nan, ' ') + ' '
-    gen_ch_concat_txt_desc += table['tv035_Type de Chaudière'].astype('string').replace(np.nan, ' ') + ' '
-    gen_ch_concat_txt_desc += table['tv036_Type de génération'].astype('string').replace(np.nan, ' ') + ' '
-    gen_ch_concat_txt_desc += table["tv030_Type d'installation"].astype('string').replace(np.nan, ' ') + ' '
+    gen_ch_concat_txt_desc += table['tv036_type_chaudiere'].astype('string').replace(np.nan, ' ') + ' '
+    gen_ch_concat_txt_desc += table["tv030_type_installation"].astype('string').replace(np.nan, ' ') + ' '
+    gen_ch_concat_txt_desc += table["tv032_type_generateur"].astype('string').replace(np.nan, ' ') + ' '
+    gen_ch_concat_txt_desc += table['tv035_type_chaudiere'].astype('string').replace(np.nan, ' ') + ' '
+    gen_ch_concat_txt_desc += table['tv036_type_generation'].astype('string').replace(np.nan, ' ') + ' '
+    gen_ch_concat_txt_desc += table["tv030_type_installation"].astype('string').replace(np.nan, ' ') + ' '
     gen_ch_concat_txt_desc += table["tr004_description"].astype('string').replace(np.nan, ' ') + ' '
-    gen_ch_concat_txt_desc += table["tv045_Energie"].astype('string').replace(np.nan, ' ') + ' '
-    gen_ch_concat_txt_desc += table['tv046_Nom du Réseau'].isnull().replace({False: 'réseau de chaleur',
+    gen_ch_concat_txt_desc += table["tv045_energie"].astype('string').replace(np.nan, ' ') + ' '
+    gen_ch_concat_txt_desc += table['tv046_nom_reseau'].isnull().replace({False: 'réseau de chaleur',
                                                                              True: ""})
     gen_ch_concat_txt_desc = gen_ch_concat_txt_desc.str.lower().apply(lambda x: strip_accents(x))
 
@@ -228,7 +228,7 @@ def agg_systeme_chauffage_essential(td001, td011, td012):
         'gen_ch_lib_infer_simp': 'sys_ch_principal_gen_ch_lib_infer_simp',
         'type_energie_chauffage': 'sys_ch_principal_type_energie_chauffage',
         'consommation_chauffage': 'sys_ch_principal_consommation_chauffage',
-        "tv025_Type d'installation": 'sys_ch_principal_type_installation_chauffage',
+        "tv025_type_installation": 'sys_ch_principal_type_installation_chauffage',
         'nombre_generateurs': 'sys_ch_principal_nb_generateur'
     }
 
@@ -238,7 +238,7 @@ def agg_systeme_chauffage_essential(td001, td011, td012):
         'gen_ch_lib_infer_simp': 'sys_ch_secondaire_gen_ch_lib_infer_simp',
         'type_energie_chauffage': 'sys_ch_secondaire_type_energie_chauffage',
         'consommation_chauffage': 'sys_ch_secondaire_consommation_chauffage',
-        "tv025_Type d'installation": 'sys_ch_secondaire_type_installation_chauffage',
+        "tv025_type_installation": 'sys_ch_secondaire_type_installation_chauffage',
         'nombre_generateurs': 'sys_ch_secondaire_nb_generateur'
     }
 
@@ -248,12 +248,12 @@ def agg_systeme_chauffage_essential(td001, td011, td012):
         'gen_ch_lib_infer_simp': 'sys_ch_tertiaire_gen_ch_lib_infer_simp_concat',
         'type_energie_chauffage': 'sys_ch_tertiaire_type_energie_chauffage_concat',
         'consommation_chauffage': 'sys_ch_tertiaire_consommation_chauffage',
-        "tv025_Type d'installation": 'sys_ch_tertiaire_type_installation_chauffage_concat',
+        "tv025_type_installation": 'sys_ch_tertiaire_type_installation_chauffage_concat',
         'nombre_generateurs': 'sys_ch_tertiaire_nb_generateurs'
     }
 
     td012 = td012.merge(
-        td011[['td011_installation_chauffage_id', 'tv025_intermittence_id', "tv025_Type d'installation"]],
+        td011[['td011_installation_chauffage_id', 'tv025_intermittence_id', "tv025_type_installation"]],
         on='td011_installation_chauffage_id', how='left')
     table = td012
     rendement_gen_u = table[['rendement_generation', 'coefficient_performance']].max(axis=1)
@@ -276,7 +276,7 @@ def agg_systeme_chauffage_essential(td001, td011, td012):
 
     cols = ['td001_dpe_id', 'gen_ch_lib_infer_simp', 'gen_ch_lib_infer', 'type_energie_chauffage',
             'consommation_chauffage', 'besoin_chauffage_infer']
-    cols += ['tv025_intermittence_id', "tv025_Type d'installation", 'nombre_generateurs', 'id_unique']
+    cols += ['tv025_intermittence_id', "tv025_type_installation", 'nombre_generateurs', 'id_unique']
 
     agg_cols = ['td001_dpe_id', 'gen_ch_lib_infer', 'tv025_intermittence_id']
 
@@ -296,7 +296,7 @@ def agg_systeme_chauffage_essential(td001, td011, td012):
         'type_energie_chauffage': 'first',
         'consommation_chauffage': 'sum',
         'besoin_chauffage_infer': 'sum',
-        "tv025_Type d'installation": 'first',
+        "tv025_type_installation": 'first',
         "nombre_generateurs": 'sum'
 
     }).reset_index()
@@ -323,7 +323,7 @@ def agg_systeme_chauffage_essential(td001, td011, td012):
         'type_energie_chauffage': lambda x: ' + '.join(list(set(x))),
         'consommation_chauffage': 'sum',
         'besoin_chauffage_infer': 'sum',
-        "tv025_Type d'installation": lambda x: ' + '.join(list(set(x))),
+        "tv025_type_installation": lambda x: ' + '.join(list(set(x))),
         'nombre_generateurs': 'sum'
     }).reset_index()
 
@@ -345,6 +345,7 @@ def agg_systeme_chauffage_essential(td001, td011, td012):
 
     cols_end = sys_principal.columns.tolist() + sys_secondaire.columns.tolist() + sys_tertiaire_concat.columns.tolist()
     cols_end = np.unique(cols_end).tolist()
+    cols_end.remove('td001_dpe_id')
 
     td001_sys_ch['nombre_generateur_total'] = td001_sys_ch.sys_ch_principal_nb_generateur
     td001_sys_ch['nombre_generateur_total'] += td001_sys_ch.sys_ch_secondaire_nb_generateur.fillna(0)

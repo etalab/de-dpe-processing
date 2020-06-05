@@ -197,8 +197,7 @@ def agg_td008_to_td001_essential(td008):
     est_and_ouest_double = (est_double & ouest_double)
 
     orientation_agg.loc[est_and_ouest_double] = orientation_agg.loc[est_and_ouest_double].str.replace('Est ou Ouest + ',
-                                                                                                      '').str.replace(
-        ' + Est ou Ouest', '')
+                                                                                                      '').str.replace('\+ Est ou Ouest ', '')
 
     # AGG top freq type vitrage
 

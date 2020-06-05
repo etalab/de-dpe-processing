@@ -97,12 +97,12 @@ def postprocessing_td007(td007, td008):
     table.loc[~table.is_custom_resistance_thermique_isolation, 'resistance_thermique_isolation_glob'] = table.loc[
         ~table.is_custom_resistance_thermique_isolation, 'resistance_thermique_isolation_calc']
 
-    tv_col_isole = [col for col in table.columns.sort_values() if col.endswith(' Isolé')]
+    tv_col_isole = [col for col in table.columns.sort_values() if col.endswith('_isole')]
     # we consider an insulated paroi if it has more than 5cm of insulation.
     table['is_paroi_isole'] = (table.epaisseur_isolation_glob > 5) | (
             table.coefficient_transmission_thermique_paroi < 0.6)  # equivalent U = 0.6-> 5cm d'isolation lambda = 0.04
     # TODO : distinguer terre plein
-    is_tv_isole = table[tv_col_isole].isin(['Oui']).sum(axis=1) > 0
+    is_tv_isole = table[tv_col_isole].isin(['Oui','1']).sum(axis=1) > 0
 
     table['is_paroi_isole'] = table['is_paroi_isole'] | is_tv_isole
 
@@ -186,7 +186,7 @@ def calc_surface_paroi_opaque(td007, td008):
 
     td007_m['surface_paroi_opaque_exterieur_infer'] = td007_m.surface_paroi_opaque_infer
     is_tv002 = td007_m.tv002_local_non_chauffe_id.isnull() == False
-    is_tv001_non_ext = td007_m.tv001_coefficient_reduction_deperditions_id != 'TV001_001'
+    is_tv001_non_ext = td007_m.tv001_coefficient_reduction_deperditions_id != '1'
     is_non_ext_from_b_infer = td007_m.b_infer.round(2) < 0.96
     is_non_ext = (is_tv002) | (is_tv001_non_ext) | (is_non_ext_from_b_infer)
     td007_m.loc[is_non_ext, 'surface_paroi_opaque_exterieur_infer'] = np.nan
@@ -233,7 +233,11 @@ def agg_surface_envelope(td007, td008):
     quantitatif = pd.concat([surf_mur, surf_pb, surf_ph, surf_vitree, surf_porte, surf_vitree_orient], axis=1)
     quantitatif[quantitatif < 0] = np.nan
     quantitatif['ratio_surface_vitree_exterieur'] = quantitatif.surface_vitree_totale / quantitatif.surf_murs_ext
+    is_not_surf_ext = quantitatif.surf_murs_ext == 0
+    quantitatif.loc[is_not_surf_ext, 'ratio_surface_vitree_exterieur'] = np.nan
     quantitatif['ratio_surface_vitree_deperditif'] = quantitatif.surface_vitree_totale / quantitatif.surf_murs_deper
+    is_not_surf_deper = quantitatif.surf_murs_deper == 0
+    quantitatif.loc[is_not_surf_deper, 'ratio_surface_vitree_deperditif'] = np.nan
     quantitatif['ratio_surface_vitree_total'] = quantitatif.surface_vitree_totale / quantitatif.surf_murs_totale
     for ratio_surface_vitree_col in ['ratio_surface_vitree_exterieur',
                                      'ratio_surface_vitree_deperditif',
@@ -242,8 +246,7 @@ def agg_surface_envelope(td007, td008):
         anomaly_ratio_surface_vitree = ratio_surface_vitree > 0.95
         quantitatif.loc[anomaly_ratio_surface_vitree, ratio_surface_vitree_col] = np.nan
 
-    is_not_surf_ext = quantitatif.surf_murs_ext == 0
-    quantitatif.loc[is_not_surf_ext, 'ratio_surface_vitree'] = np.nan
+
 
     return quantitatif
 
