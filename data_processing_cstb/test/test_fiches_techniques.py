@@ -1,2 +1,0 @@
-window_case_format_1 = "Fenêtres battantes Est double vitrage avec lame d'air de 16 mm et volets battant bois (tablier < 22mm)<br/>Surface : 2.84 m², Orientation : Est, Inclinaison : > 75 °, \n   Ujn : 2.2 W/m²°C, Uw : 2.6 W/m²°C, b : 1"
-window_case_format_2 = ' - Fenêtre n°1\\nFenetre battant PVC double vitrage(VNT) argon 16mm \\nPersienne avec ajours\\nAu nu intérieur\\nLargeur dormant env. 10 cm\\n\\n\\n\\n - PFenêtre n°2\\nPF avec  soubassement PVC double vitrage(VNT) argon 16mm \\nPersienne avec ajours\\nAu nu intérieur\\nLargeur dormant env. 10 cm\\n\\n\\n'

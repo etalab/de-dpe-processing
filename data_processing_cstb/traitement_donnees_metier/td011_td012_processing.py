@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from utils import concat_string_cols, strip_accents, affect_lib_by_matching_score,clean_str
-from assets_orm import DPEMetaData
 
 td011_types = {'td011_installation_chauffage_id': 'str',
                'td006_batiment_id': 'str',
@@ -116,7 +115,8 @@ poele_dict = {0.78: 'poele ou insert bois',
 
 
 def merge_td011_tr_tv(td011):
-    meta = DPEMetaData()
+    from trtvtables import DPETrTvTables
+    meta = DPETrTvTables()
     table = td011.copy()
     table = meta.merge_all_tr_tables(table)
     table = meta.merge_all_tv_tables(table)
@@ -127,7 +127,8 @@ def merge_td011_tr_tv(td011):
 
 
 def merge_td012_tr_tv(td012):
-    meta = DPEMetaData()
+    from trtvtables import DPETrTvTables
+    meta = DPETrTvTables()
     table = td012.copy()
     table = meta.merge_all_tr_tables(table)
     table = meta.merge_all_tv_tables(table)
@@ -340,16 +341,16 @@ def agg_systeme_chauffage_essential(td001, td011, td012):
     td001_sys_ch = td001_sys_ch.merge(sys_secondaire, on='td001_dpe_id', how='left')
     td001_sys_ch = td001_sys_ch.merge(sys_tertiaire_concat, on='td001_dpe_id', how='left')
     nb_installation = td011.groupby('td001_dpe_id').td011_installation_chauffage_id.count().to_frame(
-        'nombre_installations')
+        'nombre_installations_ch_total')
     td001_sys_ch = td001_sys_ch.merge(nb_installation, on='td001_dpe_id', how='left')
 
     cols_end = sys_principal.columns.tolist() + sys_secondaire.columns.tolist() + sys_tertiaire_concat.columns.tolist()
     cols_end = np.unique(cols_end).tolist()
     cols_end.remove('td001_dpe_id')
 
-    td001_sys_ch['nombre_generateur_total'] = td001_sys_ch.sys_ch_principal_nb_generateur
-    td001_sys_ch['nombre_generateur_total'] += td001_sys_ch.sys_ch_secondaire_nb_generateur.fillna(0)
-    td001_sys_ch['nombre_generateur_total'] += td001_sys_ch.sys_ch_tertiaire_nb_generateurs.fillna(0)
+    td001_sys_ch['nombre_generateurs_ch_total'] = td001_sys_ch.sys_ch_principal_nb_generateur
+    td001_sys_ch['nombre_generateurs_ch_total'] += td001_sys_ch.sys_ch_secondaire_nb_generateur.fillna(0)
+    td001_sys_ch['nombre_generateurs_ch_total'] += td001_sys_ch.sys_ch_tertiaire_nb_generateurs.fillna(0)
 
     cols = ['sys_ch_principal_type_energie_chauffage',
             'sys_ch_secondaire_type_energie_chauffage',
@@ -380,7 +381,7 @@ def agg_systeme_chauffage_essential(td001, td011, td012):
                                                                       is_unique=True, is_sorted=True)
 
     isnull = td001_sys_ch.sys_ch_principal_nb_generateur.isnull()
-    is_multiple_install = td001_sys_ch.nombre_installations > 1
+    is_multiple_install = td001_sys_ch.nombre_installations_ch_total > 1
     td001_sys_ch.loc[isnull, 'configuration_sys_chauffage'] = pd.NA
     td001_sys_ch.loc[~isnull, 'configuration_sys_chauffage'] = 'type de générateur unique/installation unique'
     isnull = td001_sys_ch.sys_ch_secondaire_nb_generateur.isnull()

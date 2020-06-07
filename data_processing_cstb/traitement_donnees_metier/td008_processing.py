@@ -25,8 +25,8 @@ td008_types = {'id': 'str',
 
 
 def merge_td008_tr_tv(td008):
-    from assets_orm import DPEMetaData
-    meta = DPEMetaData()
+    from trtvtables import DPETrTvTables
+    meta = DPETrTvTables()
     table = td008.copy()
     table = table.rename(columns={
         'tv012_coef_transmission_thermique_baie_protection_solaire_id': 'tv012_coefficient_transmission_thermique_baie_protection_solaire_id'})

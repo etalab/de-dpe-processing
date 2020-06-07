@@ -1,16 +1,15 @@
 import pandas as pd
 import numpy as np
-from assets_orm import DPEMetaData
-from utils import concat_string_cols, strip_accents, affect_lib_by_matching_score,clean_str
+from utils import concat_string_cols, strip_accents, affect_lib_by_matching_score, clean_str
 
 td013_types = {
-               'td006_batiment_id': 'str',
-               'tr005_type_installation_ecs_id': 'category',
-               'nombre_appartements_echantillon': 'float',
-               'surface_habitable_echantillon': 'float',
-               'becs': 'float',
-               'tv039_formule_becs_id': 'category',
-               'surface_alimentee': 'float'}
+    'td006_batiment_id': 'str',
+    'tr005_type_installation_ecs_id': 'category',
+    'nombre_appartements_echantillon': 'float',
+    'surface_habitable_echantillon': 'float',
+    'becs': 'float',
+    'tv039_formule_becs_id': 'category',
+    'surface_alimentee': 'float'}
 
 td014_types = {'td014_generateur_ecs_id': 'str',
                'td013_installation_ecs_id': 'str',
@@ -37,9 +36,77 @@ td014_types = {'td014_generateur_ecs_id': 'str',
                'tv027_pertes_recuperees_ecs_id': 'category',
                'td001_dpe_id': 'str'}
 
+gen_ecs_normalized_lib_matching_dict = {
+    "ECS thermodynamique electrique(PAC ou ballon)": [
+        ('pompe a chaleur', 'pac', 'thermodynamique', 'air extrait', 'air exterieur', 'air ambiant'),
+        ('electricite', 'electrique')],
+    "ballon a accumulation electrique": [('ballon', 'classique', 'accumulation'), ('electricite', 'electrique')],
+    "ecs electrique indeterminee": [('electricite', 'electrique')],
+    "ecs instantanee electrique": ['instantanee', ('electricite', 'electrique')],
+
+    'chaudiere mixte gaz': ["chaudiere", 'mixte', "gaz"],
+    'chaudiere mixte fioul': ["chaudiere", "mixte", "fioul"],
+    'chaudiere mixte bois': [("bois", "biomasse")],
+
+    'chauffe-eau gaz independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"), "gaz"],
+    'chauffe-eau gpl independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"), "gpl"],
+
+    'chauffe-eau fioul independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"),
+                                      "fioul"],
+    "ecs collective reseau chaleur": ["reseau", "chaleur"],
+
+    'chaudiere gaz': ["chaudiere", "gaz"],
+    'chaudiere gpl': ["chaudiere", "gpl"],
+
+    'chaudiere fioul': ["chaudiere", "fioul"],
+
+}
+
+solaire_dict = dict()
+for k, v in gen_ecs_normalized_lib_matching_dict.items():
+    k_solaire = 'ecs solaire thermique + ' + k
+    solaire_dict[k_solaire] = v + ['avec solaire']
+gen_ecs_normalized_lib_matching_dict.update(solaire_dict)
+gen_ecs_lib_simp_dict = {'ecs electrique indeterminee': 'ecs electrique indeterminee',
+                         'chaudiere gaz': 'chaudiere gaz',
+                         'ballon a accumulation electrique': 'ecs à effet joule electrique',
+                         'chaudiere mixte gaz': 'chaudiere gaz',
+                         'ECS thermodynamique electrique(PAC ou ballon)': 'ECS thermodynamique electrique(PAC ou ballon)',
+                         'non affecte': 'non affecte',
+                         'chaudiere fioul': 'chaudiere fioul',
+                         'chaudiere mixte fioul': 'chaudiere fioul',
+                         'chaudiere mixte bois': 'chaudiere mixte bois',
+                         'ecs collective reseau chaleur': 'ecs collective reseau chaleur',
+                         'ecs instantanee electrique': 'ecs à effet joule electrique',
+                         'chauffe-eau gaz independant': 'chauffe-eau gaz independant',
+                         'chauffe-eau fioul independant': 'chauffe-eau fioul independant',
+                         }
+solaire_dict = dict()
+for k, v in gen_ecs_lib_simp_dict.items():
+    k_solaire = 'ecs thermique solaire + ' + k
+    v_solaire = 'ecs thermique solaire + ' + v
+    solaire_dict[k_solaire] = v_solaire
+gen_ecs_lib_simp_dict.update(solaire_dict)
+
+sys_principal_scores = {'thermodynamique': 5,
+                        'solaire': 4,
+                        'chaudiere': 3,
+                        'ballon a accumulation': 2,
+                        'electrique indeterminee': 1,
+                        'indépendant': 0, }
+
+sys_principal_score_lib = dict()
+for k in list(gen_ecs_normalized_lib_matching_dict.keys()):
+    sys_principal_score_lib[k] = 0
+    for term, score in sys_principal_scores.items():
+        if term in k:
+            sys_principal_score_lib[k] += score
+sys_principal_score_lib['non affecte'] = -1
+
 
 def merge_td013_tr_tv(td013):
-    meta = DPEMetaData()
+    from trtvtables import DPETrTvTables
+    meta = DPETrTvTables()
     table = td013.copy()
     table = meta.merge_all_tr_tables(table)
     table = meta.merge_all_tv_tables(table)
@@ -50,7 +117,8 @@ def merge_td013_tr_tv(td013):
 
 
 def merge_td014_tr_tv(td014):
-    meta = DPEMetaData()
+    from trtvtables import DPETrTvTables
+    meta = DPETrTvTables()
     table = td014.copy()
     table = meta.merge_all_tr_tables(table)
     table = meta.merge_all_tv_tables(table)
@@ -59,7 +127,8 @@ def merge_td014_tr_tv(td014):
 
     return table
 
-def postprocessing_td014(td013,td014):
+
+def postprocessing_td014(td013, td014):
     table = td014.copy()
 
     table = table.merge(td013[['tr005_description', 'td013_installation_ecs_id', 'surface_habitable_echantillon']],
@@ -82,72 +151,6 @@ def postprocessing_td014(td013,td014):
     gen_ecs_concat_txt_desc += table['tv047_type_generateur'].astype('string').replace(np.nan, '') + ' '
     gen_ecs_concat_txt_desc += table['tr005_description'].astype('string').replace(np.nan, '') + ' '
 
-    gen_ecs_normalized_lib_matching_dict = {
-        "ECS thermodynamique electrique(PAC ou ballon)": [
-            ('pompe a chaleur', 'pac', 'thermodynamique', 'air extrait', 'air exterieur', 'air ambiant'),
-            ('electricite', 'electrique')],
-        "ballon a accumulation electrique": [('ballon', 'classique', 'accumulation'), ('electricite', 'electrique')],
-        "ecs electrique indeterminee": [('electricite', 'electrique')],
-        "ecs instantanee electrique": ['instantanee', ('electricite', 'electrique')],
-
-        'chaudiere mixte gaz': ["chaudiere", 'mixte', "gaz"],
-        'chaudiere mixte fioul': ["chaudiere", "mixte", "fioul"],
-        'chaudiere mixte bois': [("bois", "biomasse")],
-
-        'chauffe-eau gaz independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"), "gaz"],
-        'chauffe-eau gpl independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"), "gpl"],
-
-        'chauffe-eau fioul independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"),
-                                          "fioul"],
-        "ecs collective reseau chaleur": ["reseau", "chaleur"],
-
-        'chaudiere gaz': ["chaudiere", "gaz"],
-        'chaudiere gpl': ["chaudiere", "gpl"],
-
-        'chaudiere fioul': ["chaudiere", "fioul"],
-
-    }
-
-    solaire_dict = dict()
-    for k, v in gen_ecs_normalized_lib_matching_dict.items():
-        k_solaire = 'ecs solaire thermique + ' + k
-        solaire_dict[k_solaire] = v + ['avec solaire']
-    gen_ecs_normalized_lib_matching_dict.update(solaire_dict)
-    gen_ecs_lib_simp_dict = {'ecs electrique indeterminee': 'ecs electrique indeterminee',
-                             'chaudiere gaz': 'chaudiere gaz',
-                             'ballon a accumulation electrique': 'ecs à effet joule electrique',
-                             'chaudiere mixte gaz': 'chaudiere gaz',
-                             'ECS thermodynamique electrique(PAC ou ballon)': 'ECS thermodynamique electrique(PAC ou ballon)',
-                             'non affecte': 'non affecte',
-                             'chaudiere fioul': 'chaudiere fioul',
-                             'chaudiere mixte fioul': 'chaudiere fioul',
-                             'chaudiere mixte bois': 'chaudiere mixte bois',
-                             'ecs collective reseau chaleur': 'ecs collective reseau chaleur',
-                             'ecs instantanee electrique': 'ecs à effet joule electrique',
-                             'chauffe-eau gaz independant': 'chauffe-eau gaz independant',
-                             'chauffe-eau fioul independant': 'chauffe-eau fioul independant',
-                             }
-    solaire_dict = dict()
-    for k, v in gen_ecs_lib_simp_dict.items():
-        k_solaire = 'ecs thermique solaire + ' + k
-        v_solaire = 'ecs thermique solaire + ' + v
-        solaire_dict[k_solaire] = v_solaire
-    gen_ecs_lib_simp_dict.update(solaire_dict)
-
-    sys_principal_scores = {'thermodynamique': 5,
-                            'solaire': 4,
-                            'chaudiere': 3,
-                            'ballon a accumulation': 2,
-                            'electrique indeterminee': 1,
-                            'indépendant': 0, }
-
-    sys_principal_score_lib = dict()
-    for k in list(gen_ecs_normalized_lib_matching_dict.keys()):
-        sys_principal_score_lib[k] = 0
-        for term, score in sys_principal_scores.items():
-            if term in k:
-                sys_principal_score_lib[k] += score
-    sys_principal_score_lib['non affecte'] = -1
     gen_ecs_concat_txt_desc = gen_ecs_concat_txt_desc.str.lower().apply(lambda x: strip_accents(x))
 
     table['gen_ecs_concat_txt_desc'] = gen_ecs_concat_txt_desc
@@ -275,15 +278,15 @@ def agg_systeme_ecs_essential(td001, td013, td014):
     td001_sys_ecs = td001_sys_ecs.merge(sys_secondaire, on='td001_dpe_id', how='left')
     td001_sys_ecs = td001_sys_ecs.merge(sys_tertiaire_concat, on='td001_dpe_id', how='left')
     nb_installation = td013.groupby('td001_dpe_id').td013_installation_ecs_id.count().to_frame(
-        'nombre_installations')
+        'nombre_installations_ecs_total')
     td001_sys_ecs = td001_sys_ecs.merge(nb_installation, on='td001_dpe_id', how='left')
 
     cols_end = sys_principal.columns.tolist() + sys_secondaire.columns.tolist() + sys_tertiaire_concat.columns.tolist()
     cols_end = np.unique(cols_end).tolist()
     cols_end.remove('td001_dpe_id')
-    td001_sys_ecs['nombre_generateur_total'] = td001_sys_ecs.sys_ecs_principal_nb_generateur
-    td001_sys_ecs['nombre_generateur_total'] += td001_sys_ecs.sys_ecs_secondaire_nb_generateur.fillna(0)
-    td001_sys_ecs['nombre_generateur_total'] += td001_sys_ecs.sys_ecs_tertiaire_nb_generateurs.fillna(0)
+    td001_sys_ecs['nombre_generateurs_ecs_total'] = td001_sys_ecs.sys_ecs_principal_nb_generateur
+    td001_sys_ecs['nombre_generateurs_ecs_total'] += td001_sys_ecs.sys_ecs_secondaire_nb_generateur.fillna(0)
+    td001_sys_ecs['nombre_generateurs_ecs_total'] += td001_sys_ecs.sys_ecs_tertiaire_nb_generateurs.fillna(0)
 
     cols = ['sys_ecs_principal_type_energie_ecs',
             'sys_ecs_secondaire_type_energie_ecs',
@@ -314,7 +317,7 @@ def agg_systeme_ecs_essential(td001, td013, td014):
                                                                         is_unique=True, is_sorted=True)
 
     isnull = td001_sys_ecs.sys_ecs_principal_nb_generateur.isnull()
-    is_multiple_install = td001_sys_ecs.nombre_installations > 1
+    is_multiple_install = td001_sys_ecs.nombre_installations_ecs_total > 1
     td001_sys_ecs.loc[isnull, 'configuration_sys_ecs'] = pd.NA
     td001_sys_ecs.loc[~isnull, 'configuration_sys_ecs'] = 'type de générateur unique/installation unique'
     is_solaire = td001_sys_ecs.sys_ecs_principal_gen_ecs_lib_infer.str.contains('ecs solaire thermique')
@@ -329,5 +332,3 @@ def agg_systeme_ecs_essential(td001, td013, td014):
     cols = cols_first + cols_end
 
     return td001_sys_ecs[cols]
-
-

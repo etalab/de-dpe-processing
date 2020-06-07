@@ -23,10 +23,10 @@ td007_types = {'id': 'str',
 
 
 def merge_td007_tr_tv(td007):
-    from assets_orm import DPEMetaData
-    meta = DPEMetaData()
+    from trtvtables import DPETrTvTables
+    meta = DPETrTvTables()
     table = td007.copy()
-    table = meta.merge_all_tr_tables(table)
+    table = meta.merge_all_tr_tables(table) # merge all tr tables inside the table
     table = meta.merge_all_tv_tables(table)
     table = table.astype({k: v for k, v in td007_types.items() if k in table})
     table = table.rename(columns={'id': 'td007_paroi_opaque_id'})

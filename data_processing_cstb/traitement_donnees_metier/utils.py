@@ -264,3 +264,9 @@ def merge_without_duplicate_columns(table, other_table,on, merge_kwargs=None):
     other_cols.extend(list(on))
     table = table.merge(other_table[other_cols],on=on, **merge_kwargs)
     return table
+
+
+def round_float_cols(table,round=3):
+    float_cols = table.dtypes.astype(str).str.contains('float')
+    table.loc[:, float_cols] = table.loc[:, float_cols].round(round)
+    return table
