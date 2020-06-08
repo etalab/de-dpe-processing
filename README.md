@@ -13,7 +13,7 @@ Un certain nombre de prétraitements sont réalisés sur les données (notamment
 
 ## Prétraitements Métiers
 
-Des traitements ont été effectués pour générer des tables annexes aux différentes tables métiers sur les systèmes énergétiques et l'enveloppe par le CSTB. Les traitements et le contenu des tables sont décrits [ici](data-processing_cstb/traitement_donnees_metier/README.md)
+Des traitements ont été effectués pour générer des tables annexes aux différentes tables métiers sur les systèmes énergétiques et l'enveloppe par le CSTB. Les traitements et le contenu des tables sont décrits [ici](data_processing_cstb/traitement_donnees_metier/README.md)
 
 ## Premières analyses
 
