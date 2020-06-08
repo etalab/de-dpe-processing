@@ -36,6 +36,9 @@ td014_types = {'td014_generateur_ecs_id': 'str',
                'tv027_pertes_recuperees_ecs_id': 'category',
                'td001_dpe_id': 'str'}
 
+replace_elec_tv045_ener = {"Electricité (hors électricité d'origine renouvelab": 'Electricité non renouvelable',
+                           "Electricité d'origine renouvelable utilisée dans l": "Electricité d'origine renouvelable", }
+
 gen_ecs_normalized_lib_matching_dict = {
     "ECS thermodynamique electrique(PAC ou ballon)": [
         ('pompe a chaleur', 'pac', 'thermodynamique', 'air extrait', 'air exterieur', 'air ambiant'),
@@ -170,7 +173,12 @@ def postprocessing_td014(td013, td014):
     table.loc[ecs_ind & (~stockage), 'gen_ecs_lib_infer'] = 'ballon a accumulation electrique'
     table['gen_ecs_lib_infer_simp'] = table.gen_ecs_lib_infer.replace(gen_ecs_lib_simp_dict)
 
-    table['type_energie_ecs'] = table['tr004_description']
+    # recupération fioul
+    non_aff = table['gen_ecs_lib_infer'] == 'non affecte'
+    fioul = table['tv045_energie'] == 'Fioul domestique'
+    table.loc[fioul & non_aff, 'gen_ecs_lib_infer'] = 'chaudiere fioul'
+
+    table['type_energie_ecs'] = table['tv045_energie'].replace(replace_elec_tv045_ener)
 
     table['score_gen_ecs_lib_infer'] = table['gen_ecs_lib_infer'].replace(sys_principal_score_lib).astype(float)
 

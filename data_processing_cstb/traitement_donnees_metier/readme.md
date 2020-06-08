@@ -93,5 +93,7 @@ toutes les concaténations de texte sont effectué avec un séparateur + et de d
 # champs spéciaux :
 
 * NULL/None etc.  : information non présente
-* 'NONDEF' : libéllé spécial pour les données inférées/déduites non défini pour cette ligne (en général abscence de declaration des valeurs tv qui permettent de trouver l'information
+* NONDEF : libéllé spécial pour les données inférées/déduites non défini pour cette ligne (en général abscence de declaration des valeurs tv qui permettent de trouver l'information
 * INCOHERENT : libéllé spécial pour les données inférées/déduites quand deux informations contradictoires ne permettent pas de determiner la nature de l'objet.
+* non affecte : libéllé spécial pour les données inférées/déduites qui correspond à un echec de l'algorithme qui affecte le libéllé.
+

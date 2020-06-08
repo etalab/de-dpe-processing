@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from utils import concat_string_cols, strip_accents, affect_lib_by_matching_score,clean_str
+from utils import concat_string_cols, strip_accents, affect_lib_by_matching_score, clean_str
 
 td011_types = {'td011_installation_chauffage_id': 'str',
                'td006_batiment_id': 'str',
@@ -9,7 +9,7 @@ td011_types = {'td011_installation_chauffage_id': 'str',
                'nombre_appartements_echantillon': 'float',
                'surface_habitable_echantillon': 'float',
                'tv025_intermittence_id': 'category',
-}
+               }
 
 td012_types = {'id': 'str',
                'systeme_chauffage_cogeneration_id': 'string',
@@ -38,6 +38,9 @@ td012_types = {'id': 'str',
                'puissance_nominale': 'float',
                'tv038_puissance_nominale_id': 'category',
                'consommation_chauffage': 'float'}
+
+replace_elec_tv045_ener = {"Electricité (hors électricité d'origine renouvelab": 'Electricité non renouvelable',
+                           "Electricité d'origine renouvelable utilisée dans l": "Electricité d'origine renouvelable", }
 
 # ===================== DICTIONARIES OF NORMALIZATION AND SIMPLIFICATION OF FIELDS ====================================
 
@@ -137,6 +140,7 @@ def merge_td012_tr_tv(td012):
 
     return table
 
+
 def postprocessing_td012(td012):
     table = td012.copy()
 
@@ -156,7 +160,7 @@ def postprocessing_td012(td012):
     gen_ch_concat_txt_desc += table["tr004_description"].astype('string').replace(np.nan, ' ') + ' '
     gen_ch_concat_txt_desc += table["tv045_energie"].astype('string').replace(np.nan, ' ') + ' '
     gen_ch_concat_txt_desc += table['tv046_nom_reseau'].isnull().replace({False: 'réseau de chaleur',
-                                                                             True: ""})
+                                                                          True: ""})
     gen_ch_concat_txt_desc = gen_ch_concat_txt_desc.str.lower().apply(lambda x: strip_accents(x))
 
     table['gen_ch_concat_txt_desc'] = gen_ch_concat_txt_desc
@@ -168,6 +172,10 @@ def postprocessing_td012(td012):
     gen_ch_lib_infer_dict = {k: affect_lib_by_matching_score(k, gen_ch_normalized_lib_matching_dict) for k in
                              unique_gen_ch}
     table['gen_ch_lib_infer'] = table.gen_ch_concat_txt_desc.replace(gen_ch_lib_infer_dict)
+
+    # calcul type energie chauffage
+
+    table['type_energie_chauffage'] = table['tv045_energie'].replace(replace_elec_tv045_ener)
 
     # recup/fix PAC
     is_pac = (table.coefficient_performance > 2) | (table.rendement_generation > 2)
@@ -191,6 +199,7 @@ def postprocessing_td012(td012):
     reseau_infer = non_aff & (table.rendement_generation == 0.97) & (table.tr004_description == 'Autres énergies')
 
     table.loc[reseau_infer, 'gen_ch_lib_infer'] = 'reseau de chaleur'
+    table.loc[reseau_infer,'type_energie_chauffage'] = 'Réseau de chaleurs'
 
     table['gen_ch_lib_infer_simp'] = table.gen_ch_lib_infer.replace(gen_ch_lib_simp_dict)
 
@@ -201,7 +210,6 @@ def postprocessing_td012(td012):
 
     table.loc[(bool_ej) & (bool_ce), 'gen_ch_lib_infer'] = 'chaudiere electrique'
 
-    table['type_energie_chauffage'] = table['tr004_description']
 
     rendement_gen_u = table[['rendement_generation', 'coefficient_performance']].max(axis=1)
 
@@ -394,5 +402,3 @@ def agg_systeme_chauffage_essential(td001, td011, td012):
     cols = cols_first + cols_end
 
     return td001_sys_ch[cols]
-
-

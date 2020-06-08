@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from td011_td012_processing import gen_ch_normalized_lib_matching_dict, gen_ch_lib_simp_dict
-
 from td013_td014_processing import gen_ecs_normalized_lib_matching_dict, gen_ecs_lib_simp_dict
 
-td001_annexe_generale_desc = {'nom_methode_dpe_norm':'nom méthode dpe normalisé et simplifié (voir enum : nom_methode_dpe_norm)'}
+td001_annexe_generale_desc = {
+    'nom_methode_dpe_norm': 'nom méthode dpe normalisé et simplifié (voir enum : nom_methode_dpe_norm)'}
 
 td001_annexe_enveloppe_agg_desc = {
     'Umurs_ext_avg': "coefficient de déperdition des murs donnant sur l'extérieur moyen (pondéré à la surface)",
@@ -55,13 +55,13 @@ td001_sys_ch_agg_desc = {
     'sys_ch_principal_gen_ch_lib_infer': 'libéllé générateur chauffage pour le système de chauffage principal (voir enumerateur : gen_ch_lib_infer)',
     'sys_ch_principal_gen_ch_lib_infer_simp': 'libéllé générateur chauffage simplifié pour le système de chauffage principal (voir enumerateur : gen_ch_lib_infer_simp)',
     'sys_ch_principal_nb_generateur': 'nombre de générateurs correspondant au système de chauffage principal (si plusieurs chaudières de même type ou plusieurs emetteurs effet joule ils sont regroupés)',
-    'sys_ch_principal_type_energie_chauffage': "type d'energie de chauffage dy système de chauffage principal  (voir enumérateur type_energie_chauffage)",
+    'sys_ch_principal_type_energie_chauffage': "type d'energie de chauffage du système de chauffage principal  (voir enumérateur type_energie_chauffage)",
     'sys_ch_principal_type_installation_chauffage': "type d'installation de chauffage pour le système de chauffage principal (collectif ou individuel)",
     'sys_ch_secondaire_consommation_chauffage': 'consommation de chauffage du système de chauffage secondaire',
     'sys_ch_secondaire_gen_ch_lib_infer': 'libéllé générateur chauffage pour le système de chauffage secondaire (voir enumerateur : gen_ch_lib_infer)',
     'sys_ch_secondaire_gen_ch_lib_infer_simp': 'libéllé générateur chauffage simplifié pour le système de chauffage secondaire (voir enumerateur : gen_ch_lib_infer_simp)',
     'sys_ch_secondaire_nb_generateur': 'nombre de générateurs correspondant au système de chauffage secondaire (si plusieurs chaudières de même type ou plusieurs emetteurs effet joule ils sont regroupés)',
-    'sys_ch_secondaire_type_energie_chauffage': "type d'energie de chauffage dy système de chauffage secondaire  (voir enumérateur type_energie_chauffage)",
+    'sys_ch_secondaire_type_energie_chauffage': "type d'energie de chauffage du système de chauffage secondaire  (voir enumérateur type_energie_chauffage)",
     'sys_ch_secondaire_type_installation_chauffage': "type d'installation de chauffage pour le système de chauffage secondaire (collectif ou individuel)",
     'sys_ch_tertiaire_consommation_chauffage_concat': 'consommation de chauffage du système de chauffage tertiaire concaténé',
     'sys_ch_tertiaire_gen_ch_lib_infer_concat': 'libéllé générateur chauffage pour le système de chauffage tertiaire concaténé (voir enumerateur : gen_ch_lib_infer)',
@@ -71,32 +71,32 @@ td001_sys_ch_agg_desc = {
     'sys_ch_tertiaire_type_installation_chauffage_concat': "type d'installation de chauffage pour le système de chauffage tertiaire concaténé (collectif ou individuel)",
 }
 td001_sys_ecs_agg_desc = {
-    'td001_dpe_id': 'identifiant de la table td001_dpe_id',
-    'nombre_installations_ecs_total': "nombre d'installations totale de ecs pour le dpe.",
-    'nombre_generateurs_ecs_total': 'nombre de générateurs de ecs totaux pour le dpe ',
-    'mix_energetique_ecs': "type d'energie de ecs concaténé  (voir enumérateur type_energie_ecs)",
-    'type_installation_ecs_concat': "type d'installation de ecs concaténé (collectif ou individuel)",
-    'gen_ecs_lib_infer_concat': 'concaténation du libéllé générateur ecs (voir enumerateur : gen_ecs_lib_infer)',
-    'gen_ecs_lib_infer_simp_concat': "libéllé générateur ecs simplifié concaténé (voir enumerateur : gen_ecs_lib_infer_simp)",
-    'configuration_sys_ecs': 'configuration des systèmes de ecs pour le DPE (voir enumerateur : configuration_sys_ecs)',
-    'sys_ecs_principal_consommation_ecs': 'consommation de ecs du système de ecs principal',
-    'sys_ecs_principal_gen_ecs_lib_infer': 'libéllé générateur ecs pour le système de ecs principal (voir enumerateur : gen_ecs_lib_infer)',
-    'sys_ecs_principal_gen_ecs_lib_infer_simp': 'libéllé générateur ecs simplifié pour le système de ecs principal (voir enumerateur : gen_ecs_lib_infer_simp)',
-    'sys_ecs_principal_nb_generateur': 'nombre de générateurs correspondant au système de ecs principal (si plusieurs chaudières de même type ou plusieurs emetteurs effet joule ils sont regroupés)',
-    'sys_ecs_principal_type_energie_ecs': "type d'energie de ecs dy système de ecs principal  (voir enumérateur type_energie_ecs)",
-    'sys_ecs_principal_type_installation_ecs': "type d'installation de ecs pour le système de ecs principal (collectif ou individuel)",
-    'sys_ecs_secondaire_consommation_ecs': 'consommation de ecs du système de ecs secondaire',
-    'sys_ecs_secondaire_gen_ecs_lib_infer': 'libéllé générateur ecs pour le système de ecs secondaire (voir enumerateur : gen_ecs_lib_infer)',
-    'sys_ecs_secondaire_gen_ecs_lib_infer_simp': 'libéllé générateur ecs simplifié pour le système de ecs secondaire (voir enumerateur : gen_ecs_lib_infer_simp)',
-    'sys_ecs_secondaire_nb_generateur': 'nombre de générateurs correspondant au système de ecs secondaire (si plusieurs chaudières de même type ou plusieurs emetteurs effet joule ils sont regroupés)',
-    'sys_ecs_secondaire_type_energie_ecs': "type d'energie de ecs dy système de ecs secondaire  (voir enumérateur type_energie_ecs)",
-    'sys_ecs_secondaire_type_installation_ecs': "type d'installation de ecs pour le système de ecs secondaire (collectif ou individuel)",
-    'sys_ecs_tertiaire_consommation_ecs_concat': 'consommation de ecs du système de ecs tertiaire concaténé',
-    'sys_ecs_tertiaire_gen_ecs_lib_infer_concat': 'libéllé générateur ecs pour le système de ecs tertiaire concaténé (voir enumerateur : gen_ecs_lib_infer)',
-    'sys_ecs_tertiaire_gen_ecs_lib_infer_simp_concat': 'libéllé générateur ecs simplifié pour le système de ecs tertiaire concaténé (voir enumerateur : gen_ecs_lib_infer_simp)',
-    'sys_ecs_tertiaire_nb_generateur': 'nombre de générateurs correspondant au système de ecs tertiaire (tous types de générateurs confondus)',
-    'sys_ecs_tertiaire_type_energie_ecs_concat': "type d'energie de ecs du système de ecs tertiaire concaténé  (voir enumérateur type_energie_ecs)",
-    'sys_ecs_tertiaire_type_installation_ecs_concat': "type d'installation de ecs pour le système de ecs tertiaire concaténé (collectif ou individuel)",
+    "td001_dpe_id": "identifiant de la table td001_dpe_id",
+    "nombre_installations_ecs_total": "nombre d'installations totale d'ecs pour le dpe.",
+    "nombre_generateurs_ecs_total": "nombre de générateurs d'ecs totaux pour le dpe ",
+    "mix_energetique_ecs": "type d'energie d'ecs concaténé  (voir enumérateur type_energie_ecs)",
+    "type_installation_ecs_concat": "type d'installation d'ecs concaténé (collectif ou individuel)",
+    "gen_ecs_lib_infer_concat": "concaténation du libéllé générateur ecs (voir enumerateur : gen_ecs_lib_infer)",
+    "gen_ecs_lib_infer_simp_concat": "libéllé générateur ecs simplifié concaténé (voir enumerateur : gen_ecs_lib_infer_simp)",
+    "configuration_sys_ecs": "configuration des systèmes d'ecs pour le DPE (voir enumerateur : configuration_sys_ecs)",
+    "sys_ecs_principal_consommation_ecs": "consommation d'ecs du système d'ecs principal",
+    "sys_ecs_principal_gen_ecs_lib_infer": "libéllé générateur ecs pour le système d'ecs principal (voir enumerateur : gen_ecs_lib_infer)",
+    "sys_ecs_principal_gen_ecs_lib_infer_simp": "libéllé générateur ecs simplifié pour le système d'ecs principal (voir enumerateur : gen_ecs_lib_infer_simp)",
+    "sys_ecs_principal_nb_generateur": "nombre de générateurs correspondant au système d'ecs principal (si plusieurs chaudières de même type ou plusieurs emetteurs effet joule ils sont regroupés)",
+    "sys_ecs_principal_type_energie_ecs": "type d'energie d'ecs du système d'ecs principal  (voir enumérateur type_energie_ecs)",
+    "sys_ecs_principal_type_installation_ecs": "type d'installation d'ecs pour le système d'ecs principal (collectif ou individuel)",
+    "sys_ecs_secondaire_consommation_ecs": "consommation d'ecs du système d'ecs secondaire",
+    "sys_ecs_secondaire_gen_ecs_lib_infer": "libéllé générateur ecs pour le système d'ecs secondaire (voir enumerateur : gen_ecs_lib_infer)",
+    "sys_ecs_secondaire_gen_ecs_lib_infer_simp": "libéllé générateur ecs simplifié pour le système d'ecs secondaire (voir enumerateur : gen_ecs_lib_infer_simp)",
+    "sys_ecs_secondaire_nb_generateur": "nombre de générateurs correspondant au système d'ecs secondaire (si plusieurs chaudières de même type ou plusieurs emetteurs effet joule ils sont regroupés)",
+    "sys_ecs_secondaire_type_energie_ecs": "type d'energie d'ecs du système d'ecs secondaire  (voir enumérateur type_energie_ecs)",
+    "sys_ecs_secondaire_type_installation_ecs": "type d'installation d'ecs pour le système d'ecs secondaire (collectif ou individuel)",
+    "sys_ecs_tertiaire_consommation_ecs_concat": "consommation d'ecs du système d'ecs tertiaire concaténé",
+    "sys_ecs_tertiaire_gen_ecs_lib_infer_concat": "libéllé générateur ecs pour le système d'ecs tertiaire concaténé (voir enumerateur : gen_ecs_lib_infer)",
+    "sys_ecs_tertiaire_gen_ecs_lib_infer_simp_concat": "libéllé générateur ecs simplifié pour le système d'ecs tertiaire concaténé (voir enumerateur : gen_ecs_lib_infer_simp)",
+    "sys_ecs_tertiaire_nb_generateur": "nombre de générateurs correspondant au système d'ecs tertiaire (tous types de générateurs confondus)",
+    "sys_ecs_tertiaire_type_energie_ecs_concat": "type d'energie d'ecs du système d'ecs tertiaire concaténé  (voir enumérateur type_energie_ecs)",
+    "sys_ecs_tertiaire_type_installation_ecs_concat": "type d'installation d'ecs pour le système d'ecs tertiaire concaténé (collectif ou individuel)",
 }
 
 td007_annexe_desc = {
@@ -116,7 +116,6 @@ td007_annexe_desc = {
     'b_infer': 'coefficient b de réduction des deperditions déduit des tables tv.',
     'surface_paroi_opaque_exterieur_infer': 'surface de paroi opaque donnant sur exterieur calculé à partir de surface_paroi et des surfaces de baies et du coefficient de reduction des deperditions.(b>0.95)', }
 
-
 td008_annexe_desc = {
     'orientation_infer': 'orientation de la baie déduit des tables tv et de la description texte de la fenetre',
     'type_vitrage_simple_infer': 'catégorie de vitrage déduit des informations des tv (voir enum :cat_baie_simple_infer)',
@@ -127,31 +126,33 @@ td008_annexe_desc = {
 td012_annexe_desc = {
     'gen_ch_lib_infer': 'libéllé du générateur de chauffage déduit en utilisant les informations depuis les tv(tables de valeurs) (voir enum gen_ch_lib_infer)',
     'gen_ch_lib_infer_simp': 'libéllé simplifié du générateur de chauffage (voir enum gen_ecs_lib_infer)',
-    'type_energie_chauffage': "type d'energie de chauffage (voir enum type_energie_chauffage)"}
+    'type_energie_chauffage': "type d'energie de chauffage (voir enum type_energie_chauffage) issu de tv045_energie principalement"}
 
 td014_annexe_desc = {
-    'gen_ecs_lib_infer': 'libéllé du générateur de ecs déduit en utilisant les informations depuis les tv(tables de valeurs) (voir enum gen_ecs_lib_infer)',
-    'gen_ecs_lib_infer_simp': 'libéllé simplifié du générateur de ecs (voir enum gen_ecs_lib_infer)',
-    'type_energie_ecs': "type d'energie de ecs (voir enum type_energie_ecs)"}
-
-
+    "gen_ecs_lib_infer": "libéllé du générateur d'ecs déduit en utilisant les informations depuis les tv(tables de valeurs) (voir enum gen_ecs_lib_infer)",
+    "gen_ecs_lib_infer_simp": "libéllé simplifié du générateur d'ecs (voir enum gen_ecs_lib_infer)",
+    "type_energie_ecs": "type d'energie d'ecs (voir enum type_energie_ecs)"}
 
 enums_cstb = {
     'gen_ch_lib_infer': list(gen_ch_normalized_lib_matching_dict.keys()),
     'gen_ch_lib_infer_simp': list(gen_ch_lib_simp_dict.keys()),
-    'type_energie_chauffage': ['Electricité', 'Gaz', 'Bois, Biomasse', 'Autres énergies'],
+    'type_energie_chauffage': ['Electricité non renouvelable', 'Gaz naturel', 'Bois, biomasse',
+                               'Fioul domestique', 'Gaz propane ou butane', 'Réseau de chaleurs',
+                               "Electricité d'origine renouvelable", 'Charbon'],
     'type_installation_chauffage': ['Chauffage Individuel', 'Chauffage Collectif'],
     'configuration_sys_chauffage': ['type de générateur unique/installation unique',
                                     'types de générateur multiples/installations multiples',
                                     'types de générateur multiples/installation unique'],
     'gen_ecs_lib_infer': list(gen_ecs_normalized_lib_matching_dict.keys()),
     'gen_ecs_lib_infer_simp': list(gen_ecs_lib_simp_dict.keys()),
-    'type_energie_ecs': ['Electricité', 'Gaz', 'Bois, Biomasse', 'Autres énergies'],
+    'type_energie_ecs': ['Electricité non renouvelable', 'Gaz naturel', 'Bois, biomasse',
+                         'Fioul domestique', 'Gaz propane ou butane', 'Réseau de chaleurs',
+                         "Electricité d'origine renouvelable", 'Charbon'],
 
     'type_vitrage_simple_infer': ['INCOHERENT', 'NONDEF', 'brique de verre ou polycarbonate',
                                   'double vitrage', 'porte', 'simple vitrage', 'triple vitrage'],
     'orientation_infer': ['Est', 'Est ou Ouest', 'Horizontale', 'NONDEF', 'Nord', 'Ouest', 'Sud'],
     'cat_baie_simple_infer': ['baie vitrée', 'paroi en brique de verre ou polycarbonate', 'porte'],
-    'nom_methode_dpe_norm':['FACTURE', '3CL 2012', 'THBCE(RT2012)/THC(RT2005)', 'DPE vierge',
-       '3CL 2005', 'NON DEFINI']
+    'nom_methode_dpe_norm': ['FACTURE', '3CL 2012', 'THBCE(RT2012)/THC(RT2005)', 'DPE vierge',
+                             '3CL 2005', 'NON DEFINI']
 }
