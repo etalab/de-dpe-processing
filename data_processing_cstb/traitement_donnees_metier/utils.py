@@ -270,3 +270,8 @@ def round_float_cols(table,round=3):
     float_cols = table.dtypes.astype(str).str.contains('float')
     table.loc[:, float_cols] = table.loc[:, float_cols].round(round)
     return table
+
+def unique_ordered(seq):
+    seen = set()
+    seen_add = seen.add
+    return [x for x in seq if not (x in seen or seen_add(x))]

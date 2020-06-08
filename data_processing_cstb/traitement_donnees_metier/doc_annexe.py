@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from td011_td012_processing import gen_ch_normalized_lib_matching_dict, gen_ch_lib_simp_dict
 from td013_td014_processing import gen_ecs_normalized_lib_matching_dict, gen_ecs_lib_simp_dict
-
+from utils import unique_ordered
 td001_annexe_generale_desc = {
     'nom_methode_dpe_norm': 'nom méthode dpe normalisé et simplifié (voir enum : nom_methode_dpe_norm)'}
 
 td001_annexe_enveloppe_agg_desc = {
+    "td001_dpe_id": "identifiant de la table td001_dpe_id",
     'Umurs_ext_avg': "coefficient de déperdition des murs donnant sur l'extérieur moyen (pondéré à la surface)",
     'Umurs_deper_avg': "coefficient de déperdition des murs donnant sur l'extérieur ou un local non chauffé moyen (pondéré à la surface)",
     'Uplancher_bas_deper_avg': "coefficient de déperdition des planchers bas ne donnant pas sur un logement mitoyen moyen (pondéré à la surface)",
@@ -100,6 +101,7 @@ td001_sys_ecs_agg_desc = {
 }
 
 td007_annexe_desc = {
+    "td001_dpe_id": "identifiant de la table td001_dpe_id",
     'materiaux_structure': "matériau de structure du composant d'enveloppe considéré au sens des tables valeurs tv004,tv006,tv008",
     'is_custom_resistance_thermique_isolation': "booleen si vrai : alors le diagnostiqueur a rentré une resistance thermique d'isolation et n'est pas passé par la table tv003/tv005/tv007",
     'is_custom_epaisseur_isolation': "booleen si vrai : alors le diagnostiqueur a rentré une epaisseur d'isolant thermique et n'est pas passé par la table tv003/tv005/tv007",
@@ -117,6 +119,7 @@ td007_annexe_desc = {
     'surface_paroi_opaque_exterieur_infer': 'surface de paroi opaque donnant sur exterieur calculé à partir de surface_paroi et des surfaces de baies et du coefficient de reduction des deperditions.(b>0.95)', }
 
 td008_annexe_desc = {
+    "td001_dpe_id": "identifiant de la table td001_dpe_id",
     'orientation_infer': 'orientation de la baie déduit des tables tv et de la description texte de la fenetre',
     'type_vitrage_simple_infer': 'catégorie de vitrage déduit des informations des tv (voir enum :cat_baie_simple_infer)',
     'nb_baie_calc': 'nombre de baies calculées à partir de la surface déclarée du U de la baie et de la deperdition',
@@ -124,18 +127,20 @@ td008_annexe_desc = {
     'cat_baie_simple_infer': 'catégorie de baie déduit des informations des tv.(voir enum :cat_baie_simple_infer)', }
 
 td012_annexe_desc = {
+    "td001_dpe_id": "identifiant de la table td001_dpe_id",
     'gen_ch_lib_infer': 'libéllé du générateur de chauffage déduit en utilisant les informations depuis les tv(tables de valeurs) (voir enum gen_ch_lib_infer)',
     'gen_ch_lib_infer_simp': 'libéllé simplifié du générateur de chauffage (voir enum gen_ecs_lib_infer)',
     'type_energie_chauffage': "type d'energie de chauffage (voir enum type_energie_chauffage) issu de tv045_energie principalement"}
 
 td014_annexe_desc = {
+    "td001_dpe_id": "identifiant de la table td001_dpe_id",
     "gen_ecs_lib_infer": "libéllé du générateur d'ecs déduit en utilisant les informations depuis les tv(tables de valeurs) (voir enum gen_ecs_lib_infer)",
     "gen_ecs_lib_infer_simp": "libéllé simplifié du générateur d'ecs (voir enum gen_ecs_lib_infer)",
     "type_energie_ecs": "type d'energie d'ecs (voir enum type_energie_ecs)"}
 
 enums_cstb = {
-    'gen_ch_lib_infer': list(gen_ch_normalized_lib_matching_dict.keys()),
-    'gen_ch_lib_infer_simp': list(gen_ch_lib_simp_dict.keys()),
+    'gen_ch_lib_infer': list(gen_ch_normalized_lib_matching_dict.keys())+['non affecte'],
+    'gen_ch_lib_infer_simp': unique_ordered(list(gen_ch_lib_simp_dict.keys()))+['non affecte'],
     'type_energie_chauffage': ['Electricité non renouvelable', 'Gaz naturel', 'Bois, biomasse',
                                'Fioul domestique', 'Gaz propane ou butane', 'Réseau de chaleurs',
                                "Electricité d'origine renouvelable", 'Charbon'],
@@ -143,8 +148,8 @@ enums_cstb = {
     'configuration_sys_chauffage': ['type de générateur unique/installation unique',
                                     'types de générateur multiples/installations multiples',
                                     'types de générateur multiples/installation unique'],
-    'gen_ecs_lib_infer': list(gen_ecs_normalized_lib_matching_dict.keys()),
-    'gen_ecs_lib_infer_simp': list(gen_ecs_lib_simp_dict.keys()),
+    'gen_ecs_lib_infer': list(gen_ecs_normalized_lib_matching_dict.keys())+['non affecte'],
+    'gen_ecs_lib_infer_simp': unique_ordered(list(gen_ecs_lib_simp_dict.values()))+['non affecte'],
     'type_energie_ecs': ['Electricité non renouvelable', 'Gaz naturel', 'Bois, biomasse',
                          'Fioul domestique', 'Gaz propane ou butane', 'Réseau de chaleurs',
                          "Electricité d'origine renouvelable", 'Charbon'],
