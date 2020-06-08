@@ -1,0 +1,7 @@
+"id","code","tv031_rendement_generation_methode_generation_id","type_generateur","rg","est_efface","simu_ordre","simulateur"
+"1","TV031_001","1","Générateur à effet joule direct","1.00","0","NULL","1"
+"2","TV031_002","1","Chaudières électriques","0.77","0","NULL","1"
+"3","TV031_003","1","Réseau de chaleur","0.97","0","NULL","1"
+"4","TV031_004","2","Poêle ou insert bois/charbon installé avant 2001 ou sans label flamme verte","0.66","0","NULL","1"
+"5","TV031_005","2","Poêle ou insert bois/charbon installé à partir de 2001 avec label flamme verte","0.78","0","NULL","1"
+"6","TV031_006","2","Poêle fioul ou GPL","0.72","0","NULL","1"

@@ -1,0 +1,5 @@
+"id","inclinaison_paroi","simu_ordre","simulateur"
+"1",">= 75°","NULL","1"
+"2","75° >  >= 25°","NULL","1"
+"3","< 25°","NULL","1"
+"4","Paroi Horizontale","NULL","1"

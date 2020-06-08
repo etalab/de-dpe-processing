@@ -1,0 +1,6 @@
+"id","type_toit","simu_ordre","simulateur"
+"1","Combles","NULL","0"
+"2","Terrasse","NULL","0"
+"3","Combles perdus","NULL","1"
+"4","Combles aménagés","NULL","1"
+"5","Toiture terrasse","NULL","1"

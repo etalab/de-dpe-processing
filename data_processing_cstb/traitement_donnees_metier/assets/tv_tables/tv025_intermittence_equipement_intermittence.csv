@@ -1,0 +1,6 @@
+"id","equipement_intermittence","simu_ordre","simulateur","ordre_performance","amelioration"
+"1","Central sans minimum de température","NULL","1","3","1"
+"2","Central avec minimum de température","NULL","1","2","1"
+"3","Absent","NULL","1","NULL","0"
+"4","Central Collectif","NULL","1","NULL","0"
+"5","Par pièce avec minimum de température","NULL","1","1","1"
