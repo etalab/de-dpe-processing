@@ -140,7 +140,7 @@ td014_annexe_desc = {
 
 enums_cstb = {
     'gen_ch_lib_infer': list(gen_ch_normalized_lib_matching_dict.keys())+['non affecte'],
-    'gen_ch_lib_infer_simp': unique_ordered(list(gen_ch_lib_simp_dict.keys()))+['non affecte'],
+    'gen_ch_lib_infer_simp': unique_ordered(list(gen_ch_lib_simp_dict.values()))+['non affecte'],
     'type_energie_chauffage': ['Electricité non renouvelable', 'Gaz naturel', 'Bois, biomasse',
                                'Fioul domestique', 'Gaz propane ou butane', 'Réseau de chaleurs',
                                "Electricité d'origine renouvelable", 'Charbon'],

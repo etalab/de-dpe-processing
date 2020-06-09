@@ -1,3 +1,4 @@
 data/
 logs/
 venv/
+/data_processing_cstb/traitement_donnees_metier/.ipynb_checkpoints/

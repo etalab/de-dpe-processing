@@ -3,7 +3,7 @@ from pathlib import Path
 import json
 from td001_processing import postprocessing_td001
 from utils import round_float_cols
-
+from config import paths
 def run_enveloppe_processing(td001, td006, td007, td008):
     from td007_processing import merge_td007_tr_tv, postprocessing_td007
     from td008_processing import merge_td008_tr_tv, postprocessing_td008
@@ -110,8 +110,8 @@ def build_doc(annexe_dir):
 
 if __name__ == '__main__':
 
-    data_dir = r'D:\data\dpe_full\depts'
-    annexe_dir = r'D:\data\dpe_full\annexes_cstb'
+    data_dir = paths['DPE_DEPT_PATH']
+    annexe_dir = paths['DPE_DEPT_ANNEXE_PATH']
     annexe_dir = Path(annexe_dir)
     annexe_dir.mkdir(exist_ok=True, parents=True)
     build_doc(annexe_dir)
