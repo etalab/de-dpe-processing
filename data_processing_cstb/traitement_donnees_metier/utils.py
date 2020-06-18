@@ -10,8 +10,6 @@ def clean_str(x):
     return x
 
 
-
-
 def strip_accents(s):
     """
     remove accents from a string.
@@ -156,6 +154,8 @@ def agg_pond_top_freq(table, enum_col, pond, by, bool_filter_col=None, bool_filt
     pond_col = 'pond9999999'
     table = _prep_agg_pond(table, pond, bool_filter_col, pond_col, bool_filter_not)
     grp = table.groupby([by, enum_col])[pond_col].sum()
+    is_0 = grp[pond_col] == 0
+    grp.loc[is_0, enum_col] = np.nan
     s = grp.reset_index().sort_values([by, pond_col], ascending=False).drop_duplicates(subset=by).set_index(by)[
         enum_col]
 
@@ -252,24 +252,25 @@ def concat_string_cols(table, cols, join_string=None, is_unique=False, is_sorted
     return s_concat
 
 
-def merge_without_duplicate_columns(table, other_table,on, merge_kwargs=None):
+def merge_without_duplicate_columns(table, other_table, on, merge_kwargs=None):
     if merge_kwargs is None:
         merge_kwargs = {}
-    if isinstance(on,(str,int,float)):
+    if isinstance(on, (str, int, float)):
         on = [on]
     cols = table.columns
     other_cols = other_table.columns
     other_cols = [col for col in other_cols if col not in cols]  # preserve order
     other_cols = list(other_cols)
     other_cols.extend(list(on))
-    table = table.merge(other_table[other_cols],on=on, **merge_kwargs)
+    table = table.merge(other_table[other_cols], on=on, **merge_kwargs)
     return table
 
 
-def round_float_cols(table,round=3):
+def round_float_cols(table, round=3):
     float_cols = table.dtypes.astype(str).str.contains('float')
     table.loc[:, float_cols] = table.loc[:, float_cols].round(round)
     return table
+
 
 def unique_ordered(seq):
     seen = set()
