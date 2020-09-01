@@ -12,11 +12,9 @@ Description des différentes étapes déroulées par les scripts :
 
 | Etape | Explication |
 |---|---|
-| 0 | Préparation des dossiers |
-| 1 | Récupération des .sql (ne fonctionne pas) |
-| 2 | Extraire les dumps sql en fichiers csv |
-| 3 | Split des fichiers csv en fichiers par département |
+| 0 | Script permettant d'exécuter tout le process |
+| 1 | Création de fichier avec le minimum d'information |
+| 2 | Split des fichiers en fichiers de 100 lignes pour faciliter le géocodage |
+| 3 | Script de géocodage (powered by addok) |
 | 4 | Agrégation des différents fichiers à la maille département (un unique fichier par département) | 
-| 5 | Suppression des champs non pertinents |
-| 6 | Géocodage en plusieurs étapes |
-| 7 | Calculs de KPIs à la maille départementale |
+| 5 | Aggrégation en un fichier unique |
