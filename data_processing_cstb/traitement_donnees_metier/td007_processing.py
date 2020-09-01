@@ -233,13 +233,13 @@ def agg_surface_envelope(td007, td008):
     quantitatif = pd.concat([surf_mur, surf_pb, surf_ph, surf_vitree, surf_porte, surf_vitree_orient], axis=1)
     quantitatif[quantitatif < 0] = np.nan
     # TODO : changer ratio -> percentage (mauvaise def)
-    quantitatif['ratio_surface_vitree_exterieur'] = quantitatif.surface_vitree_totale / quantitatif.surf_murs_ext
+    quantitatif['ratio_surface_vitree_exterieur'] = quantitatif.surface_vitree_totale / (quantitatif.surf_murs_ext + quantitatif.surface_vitree_totale )
     is_not_surf_ext = quantitatif.surf_murs_ext == 0
     quantitatif.loc[is_not_surf_ext, 'ratio_surface_vitree_exterieur'] = np.nan
-    quantitatif['ratio_surface_vitree_deperditif'] = quantitatif.surface_vitree_totale / quantitatif.surf_murs_deper
+    quantitatif['ratio_surface_vitree_deperditif'] = quantitatif.surface_vitree_totale / (quantitatif.surf_murs_deper + quantitatif.surface_vitree_totale)
     is_not_surf_deper = quantitatif.surf_murs_deper == 0
     quantitatif.loc[is_not_surf_deper, 'ratio_surface_vitree_deperditif'] = np.nan
-    quantitatif['ratio_surface_vitree_total'] = quantitatif.surface_vitree_totale / quantitatif.surf_murs_totale
+    quantitatif['ratio_surface_vitree_total'] = quantitatif.surface_vitree_totale / (quantitatif.surf_murs_totale + quantitatif.surface_vitree_totale)
     for ratio_surface_vitree_col in ['ratio_surface_vitree_exterieur',
                                      'ratio_surface_vitree_deperditif',
                                      'ratio_surface_vitree_total']:
