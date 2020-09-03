@@ -151,11 +151,11 @@ def agg_pond_top_freq(table, enum_col, pond, by, bool_filter_col=None, bool_filt
 
     """
 
-    pond_col = 'pond9999999'
+    pond_col = str(uuid.uuid4())
     table = _prep_agg_pond(table, pond, bool_filter_col, pond_col, bool_filter_not)
     grp = table.groupby([by, enum_col])[pond_col].sum()
-    is_0 = grp[pond_col] == 0
-    grp.loc[is_0, enum_col] = np.nan
+    is_0 = grp <= 0
+    grp.loc[is_0] = np.nan
     s = grp.reset_index().sort_values([by, pond_col], ascending=False).drop_duplicates(subset=by).set_index(by)[
         enum_col]
 

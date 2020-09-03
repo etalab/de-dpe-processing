@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 import json
 from td001_processing import postprocessing_td001
-from utils import round_float_cols
+from utils import round_float_cols,unique_ordered
 from config import paths
 def run_enveloppe_processing(td001, td006, td007, td008):
     from td007_processing import merge_td007_tr_tv, postprocessing_td007
@@ -32,11 +32,13 @@ def run_enveloppe_processing(td001, td006, td007, td008):
     cols = [el for el in td008.columns if el not in td008_raw_cols + ['fen_lib_from_tv009',
                                                                       'fen_lib_from_tv021']]
     cols.append('td008_baie_id')
+    cols = unique_ordered(cols)
     td008_p = td008[cols]
     cols = [el for el in td007.columns if
             el not in td007_raw_cols + ["qualif_surf", 'surface_paroi_opaque_calc', 'surface_paroi_totale_calc_v1',
                                         'surface_paroi_totale_calc_v2']]
     cols.append('td007_paroi_opaque_id')
+    cols = unique_ordered(cols)
     td007_p = td007[cols]
     return td001_enveloppe_agg, td008_p, td007_p
 
@@ -62,11 +64,13 @@ def run_system_processing(td001, td006, td011, td012, td013, td014):
 
     cols = [el for el in td011.columns if el not in td011_raw_cols]
     cols.append('td011_installation_chauffage_id')
+    cols = unique_ordered(cols)
     td011_p = td011[cols]
 
     cols = [el for el in td012.columns if
             el not in td012_raw_cols + ['besoin_chauffage_infer', 'gen_ch_concat_txt_desc']]
     cols.append('td012_generateur_chauffage_id')
+    cols = unique_ordered(cols)
     td012_p = td012[cols]
 
     td001_sys_ch_agg = agg_systeme_chauffage_essential(td001, td011, td012)
@@ -75,11 +79,13 @@ def run_system_processing(td001, td006, td011, td012, td013, td014):
 
     cols = [el for el in td013.columns if el not in td013_raw_cols]
     cols.append('td013_installation_ecs_id')
+    cols = unique_ordered(cols)
     td013_p = td013[cols]
 
     cols = [el for el in td014.columns if
             el not in td014_raw_cols + ['score_gen_ecs_lib_infer', 'gen_ecs_concat_txt_desc']]
     cols.append('td014_generateur_ecs_id')
+    cols = unique_ordered(cols)
     td014_p = td014[cols]
 
     td001_sys_ecs_agg = agg_systeme_ecs_essential(td001, td013, td014)

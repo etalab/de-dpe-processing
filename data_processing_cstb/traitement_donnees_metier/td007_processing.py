@@ -116,6 +116,121 @@ def postprocessing_td007(td007, td008):
     return table
 
 
+def generate_mur_table(td007):
+
+    td007_murs = td007.loc[td007.tr014_type_parois_opaque_id.isin(['2', '1'])].copy()
+
+    float_cols = ['coefficient_transmission_thermique_paroi_non_isolee', 'coefficient_transmission_thermique_paroi',
+                  'epaisseur_isolation', 'resistance_thermique_isolation']
+    td007_murs[float_cols] = td007_murs[float_cols].astype(float)
+
+    # ## label uniforme tv003
+
+    td007_murs['tv003_periode_isolation_uniforme'] = td007_murs.tv003_annee_construction.astype('string')
+
+    td007_murs['tv003_label_isolation_uniforme'] = td007_murs.tv003_annee_construction.astype('string')
+
+    null = td007_murs['tv003_label_isolation_uniforme'].isnull()
+
+    td007_murs.loc[null, 'tv003_label_isolation_uniforme'] = td007_murs.loc[null, 'tv003_annee_isolation'].astype(
+        'string')
+
+    inconnu = td007_murs.tv003_mur_isole.isnull() & (~td007_murs.tv003_annee_construction.isnull())
+    non_isole = td007_murs.tv003_mur_isole == '0'
+    isole = td007_murs.tv003_mur_isole == '1'
+    is_construction = ~td007_murs.tv003_annee_construction.isnull()
+
+    td007_murs.loc[inconnu, 'tv003_label_isolation_uniforme'] = 'isol. inconnue periode constr : ' + td007_murs.loc[
+        inconnu, 'tv003_label_isolation_uniforme']
+    td007_murs.loc[non_isole, 'tv003_label_isolation_uniforme'] = 'non isolé'
+    td007_murs.loc[isole & is_construction, 'tv003_label_isolation_uniforme'] = 'isolé periode constr : ' + \
+                                                                                td007_murs.loc[
+                                                                                    isole & is_construction, 'tv003_label_isolation_uniforme']
+    td007_murs.loc[isole & (~is_construction), 'tv003_label_isolation_uniforme'] = 'isolé periode isolation :' + \
+                                                                                   td007_murs.loc[isole & (
+                                                                                       ~is_construction), 'tv003_label_isolation_uniforme']
+
+    # annee isolation uniforme.
+
+    td007_murs['annee_isole_uniforme_min'] = td007_murs.tv003_annee_construction_min.astype('string')
+    td007_murs['annee_isole_uniforme_max'] = td007_murs.tv003_annee_construction_max.astype('string')
+    td007_murs.loc[isole, 'annee_isole_uniforme_min'] = td007_murs.tv003_annee_isolation_min.astype('string')
+    td007_murs.loc[isole, 'annee_isole_uniforme_max'] = td007_murs.tv003_annee_isolation_max.astype('string')
+
+
+    td007_murs.tv003_label_isolation_uniforme.value_counts()
+
+    # ## label méthode calcul  U
+
+    td007_murs['meth_calc_U'] = 'INCONNUE'
+
+    # calc booleens
+    U = td007_murs.coefficient_transmission_thermique_paroi.round(2)
+    U_non_isolee = td007_murs.coefficient_transmission_thermique_paroi_non_isolee.round(2)
+    bool_U_egal_0 = U.round(2) == 0.00
+    bool_U_U0 = U.round(2) == U_non_isolee.round(2)
+    bool_U_2 = U.round(2) >= 2 | non_isole
+    bool_U_U0 = bool_U_U0 & (~bool_U_2)
+    bool_U_U0_auto_isol = bool_U_U0 & (U_non_isolee < 1)
+    bool_U_brut = (U <= 1) & (~bool_U_U0)
+    bool_U_brut_non_isole = (U > 1) & (~bool_U_U0)
+    bool_U_par_e = td007_murs.epaisseur_isolation > 0
+    bool_U_par_r = td007_murs.resistance_thermique_isolation > 0
+
+    # imputation labels
+
+    td007_murs.loc[bool_U_brut, 'meth_calc_U'] = 'U SAISI DIRECTEMENT : ISOLE'
+    td007_murs.loc[bool_U_brut_non_isole, 'meth_calc_U'] = 'U SAISI DIRECTEMENT : NON ISOLE'
+    td007_murs.loc[bool_U_par_e, 'meth_calc_U'] = 'EPAISSEUR ISOLATION SAISIE'
+    td007_murs.loc[bool_U_par_r, 'meth_calc_U'] = 'RESISTANCE ISOLATION SAISIE'
+    td007_murs.loc[bool_U_2, 'meth_calc_U'] = 'MUR NON ISOLE U=2'
+    td007_murs.loc[bool_U_U0, 'meth_calc_U'] = 'MUR NON ISOLE U<2'
+    td007_murs.loc[bool_U_U0_auto_isol, 'meth_calc_U'] = 'STRUCTURE ISOLANTE (ITR) U<1'
+    td007_murs.loc[inconnu, 'meth_calc_U'] = 'PAR DEFAUT PERIODE : ISOLATION INCONNUE'
+    td007_murs.loc[isole, 'meth_calc_U'] = 'PAR DEFAUT PERIODE : ISOLE'
+    td007_murs.loc[isole, 'meth_calc_U'] = 'PAR DEFAUT PERIODE : ISOLE'
+    td007_murs.loc[bool_U_egal_0, 'meth_calc_U'] = 'ERREUR : U=0'
+
+    # ## label isolatoin
+
+    td007_murs['isolation'] = 'NON ISOLE'
+    is_isole = ~td007_murs.meth_calc_U.str.contains('NON ISOLE|INCONNUE')
+    td007_murs.loc[is_isole, 'isolation'] = 'ISOLE SAISI'
+    is_isole_defaut = is_isole & (td007_murs.meth_calc_U.str.contains('DEFAUT'))
+    td007_murs.loc[is_isole_defaut, 'isolation'] = 'ISOLE DEFAUT PRE 1988'
+
+    inconnu = td007_murs.meth_calc_U.str.contains('INCONNUE')
+    post_88 = td007_murs.loc[isole, 'annee_isole_uniforme_min'] >= "1988"
+
+    td007_murs.loc[inconnu, 'isolation'] = 'ISOLATION INCONNUE (DEFAUT)'
+
+    td007_murs.loc[(inconnu | is_isole_defaut) & post_88, 'isolation'] = 'ISOLE DEFAUT POST 1988'
+
+    is_isole_struc = is_isole & (td007_murs.meth_calc_U.str.contains('STRUCTURE'))
+    td007_murs.loc[is_isole_struc, 'isolation'] = 'STRUCTURE ISOLANTE (ITR)'
+
+    is_err = td007_murs.meth_calc_U.str.contains('ERREUR')
+
+    td007_murs.loc[is_err, 'isolation'] = 'NONDEF'
+
+    # ## label adjacence
+
+    td007_murs['type_adjacence'] = 'EXTERIEUR'
+
+    not_null = ~td007_murs.tv002_local_non_chauffe.isnull()
+
+    td007_murs.loc[not_null, 'type_adjacence'] = 'LNC'
+
+    is_lnc = td007_murs.tv001_code.astype('string') > 'TV001_004'
+
+    td007_murs.loc[is_lnc, 'type_adjacence'] = 'LNC'
+
+    is_adj = td007_murs.tv001_code == 'TV001_004'
+
+    td007_murs.loc[is_adj, 'type_adjacence'] = 'BAT_ADJ'
+
+    return td007_murs
+
 def calc_surface_paroi_opaque(td007, td008):
     # calcul des surfaces parois_opaque + paroi vitrée
 
