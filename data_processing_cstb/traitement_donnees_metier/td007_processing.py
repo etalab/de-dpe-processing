@@ -38,7 +38,7 @@ def postprocessing_td007(td007, td008):
     table = td007.copy()
 
     # calcul matériau
-    table['materiaux_structure'] = 'NONDEF'
+    table['materiaux_structure'] = np.nan
     is_tv004 = ~table['tv004_materiaux'].isnull()
 
     table.loc[is_tv004, 'materiaux_structure'] = table.loc[is_tv004, 'tv004_materiaux']
