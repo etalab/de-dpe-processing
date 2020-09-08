@@ -26,7 +26,7 @@ def merge_td007_tr_tv(td007):
     from trtvtables import DPETrTvTables
     meta = DPETrTvTables()
     table = td007.copy()
-    table = meta.merge_all_tr_tables(table) # merge all tr tables inside the table
+    table = meta.merge_all_tr_tables(table)  # merge all tr tables inside the table
     table = meta.merge_all_tv_tables(table)
     table = table.astype({k: v for k, v in td007_types.items() if k in table})
     table = table.rename(columns={'id': 'td007_paroi_opaque_id'})
@@ -102,7 +102,7 @@ def postprocessing_td007(td007, td008):
     table['is_paroi_isole'] = (table.epaisseur_isolation_glob > 5) | (
             table.coefficient_transmission_thermique_paroi < 0.6)  # equivalent U = 0.6-> 5cm d'isolation lambda = 0.04
     # TODO : distinguer terre plein
-    is_tv_isole = table[tv_col_isole].isin(['Oui','1']).sum(axis=1) > 0
+    is_tv_isole = table[tv_col_isole].isin(['Oui', '1']).sum(axis=1) > 0
 
     table['is_paroi_isole'] = table['is_paroi_isole'] | is_tv_isole
 
@@ -116,8 +116,8 @@ def postprocessing_td007(td007, td008):
     return table
 
 
+# ================================== TRAITEMENT DES MURS ==============================================================
 def generate_mur_table(td007):
-
     td007_murs = td007.loc[td007.tr014_type_parois_opaque_id.isin(['2', '1'])].copy()
 
     float_cols = ['coefficient_transmission_thermique_paroi_non_isolee', 'coefficient_transmission_thermique_paroi',
@@ -138,27 +138,27 @@ def generate_mur_table(td007):
     inconnu = td007_murs.tv003_mur_isole.isnull() & (~td007_murs.tv003_annee_construction.isnull())
     non_isole = td007_murs.tv003_mur_isole == '0'
     isole = td007_murs.tv003_mur_isole == '1'
-    is_construction = ~td007_murs.tv003_annee_construction.isnull()
+    is_annee_construction = ~td007_murs.tv003_annee_construction.isnull()
+    is_annee_isolation = ~td007_murs.tv003_annee_isolation.isnull()
 
     td007_murs.loc[inconnu, 'tv003_label_isolation_uniforme'] = 'isol. inconnue periode constr : ' + td007_murs.loc[
         inconnu, 'tv003_label_isolation_uniforme']
     td007_murs.loc[non_isole, 'tv003_label_isolation_uniforme'] = 'non isolé'
-    td007_murs.loc[isole & is_construction, 'tv003_label_isolation_uniforme'] = 'isolé periode constr : ' + \
-                                                                                td007_murs.loc[
-                                                                                    isole & is_construction, 'tv003_label_isolation_uniforme']
-    td007_murs.loc[isole & (~is_construction), 'tv003_label_isolation_uniforme'] = 'isolé periode isolation :' + \
-                                                                                   td007_murs.loc[isole & (
-                                                                                       ~is_construction), 'tv003_label_isolation_uniforme']
+    td007_murs.loc[isole & is_annee_construction, 'tv003_label_isolation_uniforme'] = 'isolé periode constr : ' + \
+                                                                                      td007_murs.loc[
+                                                                                          isole & is_annee_construction, 'tv003_label_isolation_uniforme']
+    td007_murs.loc[isole & (~is_annee_construction), 'tv003_label_isolation_uniforme'] = 'isolé periode isolation :' + \
+                                                                                         td007_murs.loc[isole & (
+                                                                                             ~is_annee_construction), 'tv003_label_isolation_uniforme']
 
     # annee isolation uniforme.
 
     td007_murs['annee_isole_uniforme_min'] = td007_murs.tv003_annee_construction_min.astype('string')
     td007_murs['annee_isole_uniforme_max'] = td007_murs.tv003_annee_construction_max.astype('string')
-    td007_murs.loc[isole, 'annee_isole_uniforme_min'] = td007_murs.tv003_annee_isolation_min.astype('string')
-    td007_murs.loc[isole, 'annee_isole_uniforme_max'] = td007_murs.tv003_annee_isolation_max.astype('string')
-
-
-    td007_murs.tv003_label_isolation_uniforme.value_counts()
+    td007_murs.loc[is_annee_isolation, 'annee_isole_uniforme_min'] = td007_murs.loc[
+        is_annee_isolation, 'tv003_annee_isolation_min'].astype('string')
+    td007_murs.loc[is_annee_isolation, 'annee_isole_uniforme_max'] = td007_murs.loc[
+        is_annee_isolation, 'tv003_annee_isolation_max'].astype('string')
 
     # ## label méthode calcul  U
 
@@ -176,6 +176,11 @@ def generate_mur_table(td007):
     bool_U_brut_non_isole = (U > 1) & (~bool_U_U0)
     bool_U_par_e = td007_murs.epaisseur_isolation > 0
     bool_U_par_r = td007_murs.resistance_thermique_isolation > 0
+
+    # remplacer 0 par nan lorsque les 0 sont des non information.
+
+    td007_murs.loc[~bool_U_par_e, 'epaisseur_isolation'] = np.nan
+    td007_murs.loc[~bool_U_par_r, 'resistance_thermique_isolation'] = np.nan
 
     # imputation labels
 
@@ -200,7 +205,7 @@ def generate_mur_table(td007):
     td007_murs.loc[is_isole_defaut, 'isolation'] = 'ISOLE DEFAUT PRE 1988'
 
     inconnu = td007_murs.meth_calc_U.str.contains('INCONNUE')
-    post_88 = td007_murs.loc[isole, 'annee_isole_uniforme_min'] >= "1988"
+    post_88 = td007_murs['annee_isole_uniforme_min'] >= "1988"
 
     td007_murs.loc[inconnu, 'isolation'] = 'ISOLATION INCONNUE (DEFAUT)'
 
@@ -215,7 +220,19 @@ def generate_mur_table(td007):
 
     # ## label adjacence
 
-    td007_murs['type_adjacence'] = 'EXTERIEUR'
+    td007_murs['type_adjacence'] = 'NONDEF'
+
+    ext = td007_murs.tv001_code == 'TV001_001'
+
+    td007_murs.loc[ext, 'type_adjacence'] = 'EXTERIEUR'
+
+    is_dep = td007_murs.b_infer.round(1) >= 0.9
+
+    td007_murs.loc[is_dep, 'type_adjacence'] = 'EXTERIEUR'
+
+    enterre = td007_murs.tv001_code == 'TV001_002'
+
+    td007_murs.loc[enterre, 'type_adjacence'] = 'PAROI_ENTERREE'
 
     not_null = ~td007_murs.tv002_local_non_chauffe.isnull()
 
@@ -230,6 +247,42 @@ def generate_mur_table(td007):
     td007_murs.loc[is_adj, 'type_adjacence'] = 'BAT_ADJ'
 
     return td007_murs
+
+
+def agg_td007_murs_to_td001(td007_murs):
+    td007_murs = td007_murs.rename(columns={'tv004_epaisseur': 'epaisseur_structure',
+                                            'tv002_local_non_chauffe': 'type_local_non_chauffe',
+                                            'coefficient_transmission_thermique_paroi': 'Umur'})
+    # aggregate vars top freq
+    concat = list()
+    for type_adjacence in ['EXTERIEUR', 'LNC', 'BAT_ADJ']:
+        sel = td007_murs.loc[td007_murs.type_adjacence == type_adjacence]
+        for var in ['meth_calc_U', 'Umur', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
+                    'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'materiaux_structure',
+                    'epaisseur_structure',
+                    ]:
+            var_agg = agg_pond_top_freq(sel, var, 'surface_paroi_opaque_infer',
+                                        'td001_dpe_id').to_frame(f'{var}_murs_{type_adjacence.lower()}_top')
+            concat.append(var_agg)
+
+    table_concat = pd.concat(concat, axis=1)
+
+    # aggregate type_local_non_chauffe as array agg
+    adjacences = td007_murs.groupby('td001_dpe_id').type_local_non_chauffe.agg(lambda x: x.dropna().unique().tolist())
+    adjacences.to_frame('adjacences_LNC_murs')
+    # aggregate type_local_non_chauffe as top freq
+    var_agg = agg_pond_top_freq(td007_murs, 'type_local_non_chauffe', 'surface_paroi_opaque_infer',
+                                'td001_dpe_id').to_frame(f'adjacence_LNC_murs_top')
+    # calcul des surfaces par type d'adjacences
+    pivot = td007_murs.pivot_table(index='td001_dpe_id', columns='type_adjacence', values='surface_paroi_opaque_infer',
+                                   aggfunc='sum')
+    pivot.columns = [f'surface_murs_{col.lower()}' for col in pivot]
+
+    # aggregation finale
+    td007_murs_agg = pd.concat([table_concat, var_agg, adjacences, pivot], axis=1)
+
+    return td007_murs_agg
+
 
 def calc_surface_paroi_opaque(td007, td008):
     # calcul des surfaces parois_opaque + paroi vitrée
@@ -348,21 +401,22 @@ def agg_surface_envelope(td007, td008):
     quantitatif = pd.concat([surf_mur, surf_pb, surf_ph, surf_vitree, surf_porte, surf_vitree_orient], axis=1)
     quantitatif[quantitatif < 0] = np.nan
     # TODO : changer ratio -> percentage (mauvaise def)
-    quantitatif['ratio_surface_vitree_exterieur'] = quantitatif.surface_vitree_totale / (quantitatif.surf_murs_ext + quantitatif.surface_vitree_totale )
+    quantitatif['ratio_surface_vitree_exterieur'] = quantitatif.surface_vitree_totale / (
+                quantitatif.surf_murs_ext + quantitatif.surface_vitree_totale)
     is_not_surf_ext = quantitatif.surf_murs_ext == 0
     quantitatif.loc[is_not_surf_ext, 'ratio_surface_vitree_exterieur'] = np.nan
-    quantitatif['ratio_surface_vitree_deperditif'] = quantitatif.surface_vitree_totale / (quantitatif.surf_murs_deper + quantitatif.surface_vitree_totale)
+    quantitatif['ratio_surface_vitree_deperditif'] = quantitatif.surface_vitree_totale / (
+                quantitatif.surf_murs_deper + quantitatif.surface_vitree_totale)
     is_not_surf_deper = quantitatif.surf_murs_deper == 0
     quantitatif.loc[is_not_surf_deper, 'ratio_surface_vitree_deperditif'] = np.nan
-    quantitatif['ratio_surface_vitree_total'] = quantitatif.surface_vitree_totale / (quantitatif.surf_murs_totale + quantitatif.surface_vitree_totale)
+    quantitatif['ratio_surface_vitree_total'] = quantitatif.surface_vitree_totale / (
+                quantitatif.surf_murs_totale + quantitatif.surface_vitree_totale)
     for ratio_surface_vitree_col in ['ratio_surface_vitree_exterieur',
                                      'ratio_surface_vitree_deperditif',
                                      'ratio_surface_vitree_total']:
         ratio_surface_vitree = quantitatif[ratio_surface_vitree_col]
         anomaly_ratio_surface_vitree = ratio_surface_vitree > 0.95
         quantitatif.loc[anomaly_ratio_surface_vitree, ratio_surface_vitree_col] = np.nan
-
-
 
     return quantitatif
 

@@ -4,6 +4,7 @@ import uuid
 import unicodedata
 import re
 
+
 def clean_str(x):
     x = x.strip()
     x = re.sub(' +', ' ', x)
@@ -84,7 +85,6 @@ def _prep_agg_pond(table, pond, bool_filter_col, pond_col, bool_filter_not):
         raise BaseException('pond must be str,list or tuple not {}'.format(type(pond)))
     return table
 
-
 def agg_pond_avg(table, value_col, pond, by, bool_filter_col=None, bool_filter_not=False):
     """
     function to make an average ponderate serie from a table column
@@ -121,6 +121,9 @@ def agg_pond_avg(table, value_col, pond, by, bool_filter_col=None, bool_filter_n
     s_grp = grp[pond_value_col_temp] / grp[pond_col]
     del table[pond_col]
     del table[pond_value_col_temp]
+    by_unique = table[by].unique()
+    s_grp = s_grp.reindex(by_unique)
+    s_grp = set_groupby_index_name(s_grp, by)
 
     return s_grp
 
@@ -162,10 +165,17 @@ def agg_pond_top_freq(table, enum_col, pond, by, bool_filter_col=None, bool_filt
     s = grp.reset_index().sort_values([by, pond_col], ascending=False).dropna(subset=[pond_col]).drop_duplicates(
         subset=by).set_index(by)[
         enum_col]
-
+    by_unique = table[by].unique()
+    s = s.reindex(by_unique)
+    s = set_groupby_index_name(s, by)
     return s
 
-
+def set_groupby_index_name(s, by):
+    if isinstance(by, list):
+        s.index.names = by
+    else:
+        s.index.name = by
+    return s
 
 def affect_lib_by_matching_score(txt, lib_dict):
     """
