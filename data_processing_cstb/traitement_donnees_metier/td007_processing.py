@@ -116,8 +116,208 @@ def postprocessing_td007(td007, td008):
     return table
 
 
+
+
+def calc_surface_paroi_opaque(td007, td008):
+    # calcul des surfaces parois_opaque + paroi vitrée
+
+    def calc_surf_approx_equality(s1, s2, rtol=0.05, atol=2):
+        is_close = np.isclose(s1, s2, rtol=rtol)
+        is_close = is_close | np.isclose(s1, s2, atol=atol)
+        return is_close
+
+    surf = td008.groupby('td007_paroi_opaque_id')[['surface', 'surfacexnb_baie_calc', 'nb_baie_calc']].sum()
+    surf.columns = ['surface_baie_sum', 'surfacexnb_baie_calc_sum', 'nb_baie_calc']
+    surf['surfacexnb_baie_calc_sum'] = surf.max(axis=1)
+
+    td007_m = td007.merge(surf, on='td007_paroi_opaque_id', how='left')
+    td007_m['surface_paroi_opaque_calc'] = td007_m.deperdition_thermique / (
+            td007_m.coefficient_transmission_thermique_paroi.astype(float) * td007_m.tv001_valeur.astype(float))
+
+    td007_m['surface_paroi_totale_calc_v1'] = td007_m.surface_paroi_opaque_calc + td007_m.surfacexnb_baie_calc_sum
+    td007_m['surface_paroi_totale_calc_v2'] = td007_m.surface_paroi_opaque_calc + td007_m.surface_baie_sum
+
+    is_surface_totale_v1 = calc_surf_approx_equality(td007_m.surface_paroi, td007_m.surface_paroi_totale_calc_v1)
+    is_surface_totale_v2 = calc_surf_approx_equality(td007_m.surface_paroi, td007_m.surface_paroi_totale_calc_v2)
+    is_surface_paroi_opaque = calc_surf_approx_equality(td007_m.surface_paroi, td007_m.surface_paroi_opaque_calc)
+    is_surface_paroi_opaque_deg = calc_surf_approx_equality(td007_m.surface_paroi, td007_m.surface_paroi_opaque_calc,
+                                                            rtol=0.1)
+
+    td007_m['qualif_surf'] = 'NONDEF'
+    td007_m.loc[is_surface_paroi_opaque_deg, 'qualif_surf'] = 'surface_paroi=surface_paroi_opaque'
+    td007_m.loc[
+        is_surface_totale_v1, 'qualif_surf'] = 'surface_paroi=surface_paroi_opaque+somme(surface baiesxnb_baies) v1'
+    td007_m.loc[is_surface_totale_v2, 'qualif_surf'] = 'surface_paroi=surface_paroi_opaque+somme(surface baies) v2'
+    td007_m.loc[is_surface_paroi_opaque, 'qualif_surf'] = 'surface_paroi=surface_paroi_opaque'
+    td007_m.loc[is_surface_paroi_opaque, 'qualif_surf'] = 'surface_paroi=surface_paroi_opaque'
+    td007_m.qualif_surf = td007_m.qualif_surf.astype('category')
+
+    td007_m['surface_paroi_totale_calc_v1'] = td007_m.surface_paroi_opaque_calc + td007_m.surfacexnb_baie_calc_sum
+    td007_m['surface_paroi_totale_calc_v2'] = td007_m.surface_paroi_opaque_calc + td007_m.surface_baie_sum
+
+    # infer surface paroi opaque
+
+    td007_m['surface_paroi_opaque_infer'] = np.nan
+
+    is_surface_seul = td007_m.qualif_surf == 'surface_paroi=surface_paroi_opaque'
+    td007_m.loc[is_surface_seul, 'surface_paroi_opaque_infer'] = td007_m.surface_paroi
+
+    is_surface_sum_baie_opaque_v1 = td007_m.qualif_surf == 'surface_paroi=surface_paroi_opaque+somme(surface baiesxnb_baies) v1'
+    td007_m.loc[
+        is_surface_sum_baie_opaque_v1, 'surface_paroi_opaque_infer'] = td007_m.surface_paroi - td007_m.surfacexnb_baie_calc_sum
+
+    is_surface_sum_baie_opaque_v2 = td007_m.qualif_surf == 'surface_paroi=surface_paroi_opaque+somme(surface baies) v2'
+
+    td007_m.loc[
+        is_surface_sum_baie_opaque_v2, 'surface_paroi_opaque_infer'] = td007_m.surface_paroi - td007_m.surface_baie_sum
+
+    null = td007_m.surface_paroi_opaque_infer.isnull()
+    td007_m.loc[null, 'surface_paroi_opaque_infer'] = td007_m.loc[null, 'surface_paroi']
+
+    # infer surface paroi opaque deperditive
+
+    td007_m['surface_paroi_opaque_deperditive_infer'] = td007_m.surface_paroi_opaque_infer
+
+    is_not_deper = (td007_m.deperdition_thermique == 0) | (td007_m.tv001_valeur == 0)
+    td007_m.loc[is_not_deper, 'surface_paroi_opaque_deperditive_infer'] = np.nan
+
+    td007_m['b_infer'] = td007_m.deperdition_thermique / (
+            td007_m.surface_paroi * td007_m.coefficient_transmission_thermique_paroi)
+
+    # infer surface paroi opaque exterieure
+
+    td007_m['surface_paroi_opaque_exterieur_infer'] = td007_m.surface_paroi_opaque_infer
+    is_tv002 = td007_m.tv002_local_non_chauffe_id.isnull() == False
+    is_tv001_non_ext = td007_m.tv001_coefficient_reduction_deperditions_id != '1'
+    is_non_ext_from_b_infer = td007_m.b_infer.round(2) < 0.96
+    is_non_ext = (is_tv002) | (is_tv001_non_ext) | (is_non_ext_from_b_infer)
+    td007_m.loc[is_non_ext, 'surface_paroi_opaque_exterieur_infer'] = np.nan
+
+    return td007_m
+
+
+def agg_surface_envelope(td007, td008):
+    # SURFACES
+
+    td008_porte = td008.loc[td008.cat_baie_simple_infer == 'porte']
+
+    td008_vitree = td008.loc[td008.cat_baie_simple_infer.isin(['baie_vitree',
+                                                               'brique_ou_poly'])]
+    surf_vitree = td008_vitree.groupby('td001_dpe_id')['surfacexnb_baie_calc'].sum()
+    surf_vitree.name = 'surface_vitree_totale'
+    surf_porte = td008_porte.groupby('td001_dpe_id')['surfacexnb_baie_calc'].sum()
+    surf_porte.name = 'surface_porte_totale'
+
+    surf_vitree_orient = td008_vitree.pivot_table(index='td001_dpe_id', columns='orientation_infer',
+                                                  values='surfacexnb_baie_calc', aggfunc='sum')
+
+    surf_vitree_orient.columns = [f'surfaces_vitree_orientee_{el.lower().replace(" ", "_")}' for el in
+                                  surf_vitree_orient.columns]
+
+    td007_murs = td007.loc[td007.tr014_type_parois_opaque_id.isin(['2', '1'])]
+    td007_pb = td007.loc[td007.tr014_type_parois_opaque_id == '3']
+    td007_ph = td007.loc[td007.tr014_type_parois_opaque_id == '4']
+
+    surf_mur = td007_murs.groupby('td001_dpe_id')[['surface_paroi_opaque_infer',
+                                                   'surface_paroi_opaque_deperditive_infer',
+                                                   'surface_paroi_opaque_exterieur_infer']].sum()
+    surf_pb = td007_pb.groupby('td001_dpe_id')[['surface_paroi_opaque_infer',
+                                                'surface_paroi_opaque_deperditive_infer']].sum()
+
+    surf_ph = td007_ph.groupby('td001_dpe_id')[['surface_paroi_opaque_infer',
+                                                'surface_paroi_opaque_deperditive_infer']].sum()
+
+    surf_mur.columns = ['surf_murs_totale', 'surf_murs_deper', 'surf_murs_ext']
+    surf_pb.columns = ['surf_pb_totale', 'surf_pb_deper']
+    surf_ph.columns = ['surf_ph_totale', 'surf_ph_deper']
+
+    quantitatif = pd.concat([surf_mur, surf_pb, surf_ph, surf_vitree, surf_porte, surf_vitree_orient], axis=1)
+    quantitatif[quantitatif < 0] = np.nan
+    # TODO : changer ratio -> percentage (mauvaise def)
+    quantitatif['ratio_surface_vitree_exterieur'] = quantitatif.surface_vitree_totale / (
+            quantitatif.surf_murs_ext + quantitatif.surface_vitree_totale)
+    is_not_surf_ext = quantitatif.surf_murs_ext == 0
+    quantitatif.loc[is_not_surf_ext, 'ratio_surface_vitree_exterieur'] = np.nan
+    quantitatif['ratio_surface_vitree_deperditif'] = quantitatif.surface_vitree_totale / (
+            quantitatif.surf_murs_deper + quantitatif.surface_vitree_totale)
+    is_not_surf_deper = quantitatif.surf_murs_deper == 0
+    quantitatif.loc[is_not_surf_deper, 'ratio_surface_vitree_deperditif'] = np.nan
+    quantitatif['ratio_surface_vitree_total'] = quantitatif.surface_vitree_totale / (
+            quantitatif.surf_murs_totale + quantitatif.surface_vitree_totale)
+    for ratio_surface_vitree_col in ['ratio_surface_vitree_exterieur',
+                                     'ratio_surface_vitree_deperditif',
+                                     'ratio_surface_vitree_total']:
+        ratio_surface_vitree = quantitatif[ratio_surface_vitree_col]
+        anomaly_ratio_surface_vitree = ratio_surface_vitree > 0.95
+        quantitatif.loc[anomaly_ratio_surface_vitree, ratio_surface_vitree_col] = np.nan
+
+    return quantitatif
+
+
+def agg_td007_to_td001_essential(td007):
+    td007_murs = td007.loc[td007.tr014_type_parois_opaque_id.isin(['2', '1'])]
+    td007_pb = td007.loc[td007.tr014_type_parois_opaque_id == '3']
+    td007_ph = td007.loc[td007.tr014_type_parois_opaque_id == '4']
+
+    Umurs_ext_avg = agg_pond_avg(td007_murs, 'coefficient_transmission_thermique_paroi',
+                                 'surface_paroi_opaque_exterieur_infer',
+                                 'td001_dpe_id').to_frame('Umurs_ext_avg')
+
+    Umurs_avg = agg_pond_avg(td007_murs, 'coefficient_transmission_thermique_paroi',
+                             'surface_paroi_opaque_deperditive_infer',
+                             'td001_dpe_id').to_frame('Umurs_deper_avg')
+
+    Uplancher_avg = agg_pond_avg(td007_pb, 'coefficient_transmission_thermique_paroi',
+                                 'surface_paroi_opaque_deperditive_infer',
+                                 'td001_dpe_id').to_frame('Uplancher_bas_deper_avg')
+
+    Uplafond_avg = agg_pond_avg(td007_ph, 'coefficient_transmission_thermique_paroi',
+                                'surface_paroi_opaque_deperditive_infer',
+                                'td001_dpe_id').to_frame('Uplancher_haut_deper_avg')
+
+    # is_pb_isole = agg_pond_top_freq(td007_pb, 'is_paroi_isole', 'surface_paroi_opaque_deperditive_infer',
+    #                                 'td001_dpe_id').to_frame('is_plancher_bas_deper_isole')
+    #
+    # is_ph_isole = agg_pond_top_freq(td007_ph, 'is_paroi_isole', 'surface_paroi_opaque_deperditive_infer',
+    #                                 'td001_dpe_id').to_frame('is_plancher_haut_deper_isole')
+    #
+    # is_mext_isole = agg_pond_top_freq(td007_murs, 'is_paroi_isole', 'surface_paroi_opaque_exterieur_infer',
+    #                                   'td001_dpe_id').to_frame('is_murs_ext_isole')
+    #
+    # is_mdeper_isole = agg_pond_top_freq(td007_murs, 'is_paroi_isole', 'surface_paroi_opaque_deperditive_infer',
+    #                                     'td001_dpe_id').to_frame('is_murs_deper_isole')
+
+    mat_murs_deper_agg = agg_pond_top_freq(td007_murs, 'materiaux_structure', 'surface_paroi_opaque_deperditive_infer',
+                                           'td001_dpe_id').to_frame('mat_murs_deper_top')
+
+    mat_murs_ext_agg = agg_pond_top_freq(td007_murs, 'materiaux_structure', 'surface_paroi_opaque_exterieur_infer',
+                                         'td001_dpe_id').to_frame('mat_murs_ext_top')
+
+    mat_pb_agg = agg_pond_top_freq(td007_pb, 'materiaux_structure', 'surface_paroi_opaque_deperditive_infer',
+                                   'td001_dpe_id').to_frame('mat_plancher_bas_deper_top')
+
+    mat_ph_agg = agg_pond_top_freq(td007_ph, 'materiaux_structure', 'surface_paroi_opaque_deperditive_infer',
+                                   'td001_dpe_id').to_frame('mat_plancher_haut_deper_top')
+
+    agg = pd.concat([Umurs_ext_avg,
+                     Umurs_avg,
+                     Uplancher_avg,
+                     Uplafond_avg,
+                     # is_pb_isole,
+                     # is_ph_isole,
+                     # is_mext_isole,
+                     # is_mdeper_isole,
+                     mat_murs_deper_agg,
+                     mat_murs_ext_agg,
+                     mat_pb_agg,
+                     mat_ph_agg,
+                     ], axis=1)
+    return agg
+
+
 # ================================== TRAITEMENT DES MURS ==============================================================
-def generate_mur_table(td007):
+
+def generate_murs_table(td007):
     td007_murs = td007.loc[td007.tr014_type_parois_opaque_id.isin(['2', '1'])].copy()
 
     float_cols = ['coefficient_transmission_thermique_paroi_non_isolee', 'coefficient_transmission_thermique_paroi',
@@ -159,6 +359,8 @@ def generate_mur_table(td007):
         is_annee_isolation, 'tv003_annee_isolation_min'].astype('string')
     td007_murs.loc[is_annee_isolation, 'annee_isole_uniforme_max'] = td007_murs.loc[
         is_annee_isolation, 'tv003_annee_isolation_max'].astype('string')
+
+    td007_murs.tv003_label_isolation_uniforme.value_counts()
 
     # ## label méthode calcul  U
 
@@ -246,18 +448,50 @@ def generate_mur_table(td007):
 
     td007_murs.loc[is_adj, 'type_adjacence'] = 'BAT_ADJ'
 
+    # TODO :tv001_262 ???
+
     return td007_murs
 
 
 def agg_td007_murs_to_td001(td007_murs):
     td007_murs = td007_murs.rename(columns={'tv004_epaisseur': 'epaisseur_structure',
                                             'tv002_local_non_chauffe': 'type_local_non_chauffe',
-                                            'coefficient_transmission_thermique_paroi': 'Umur'})
-    # aggregate vars top freq
+                                            'coefficient_transmission_thermique_paroi': 'U'})
+
     concat = list()
+    type_adjacence_top = agg_pond_top_freq(td007_murs, 'type_adjacence', 'surface_paroi_opaque_infer',
+                                           'td001_dpe_id').to_frame(f'type_adjacence_top')
+
+    type_adjacence_arr_agg = td007_murs.groupby('td001_dpe_id').type_adjacence.agg(
+        lambda x: np.sort(x.dropna().unique()).tolist())
+
+    type_adjacence_arr_agg.name = 'type_adjacence_array'
+
+    concat.append(type_adjacence_top)
+    concat.append(type_adjacence_arr_agg)
+
+    type_local_non_chauffe_arr_agg = td007_murs.groupby('td001_dpe_id').type_local_non_chauffe.agg(
+        lambda x: np.sort(x.dropna().unique()).tolist())
+    type_local_non_chauffe_arr_agg = type_local_non_chauffe_arr_agg.to_frame('type_LNC_murs_array')
+    type_local_non_chauffe_agg_top = agg_pond_top_freq(td007_murs, 'type_local_non_chauffe',
+                                                       'surface_paroi_opaque_infer',
+                                                       'td001_dpe_id').to_frame(f'type_LNC_murs_top')
+
+    pivot = td007_murs.pivot_table(index='td001_dpe_id', columns='type_adjacence', values='surface_paroi_opaque_infer',
+                                   aggfunc='sum')
+    pivot.columns = [f'surface_murs_{col.lower()}' for col in pivot]
+    concat.extend([type_local_non_chauffe_arr_agg, type_local_non_chauffe_agg_top, pivot])
+
+    for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
+                'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'materiaux_structure', 'epaisseur_structure',
+                ]:
+        var_agg = agg_pond_top_freq(td007_murs, var, 'surface_paroi_opaque_infer',
+                                    'td001_dpe_id').to_frame(f'{var}_murs_top')
+        concat.append(var_agg)
+
     for type_adjacence in ['EXTERIEUR', 'LNC', 'BAT_ADJ']:
         sel = td007_murs.loc[td007_murs.type_adjacence == type_adjacence]
-        for var in ['meth_calc_U', 'Umur', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
+        for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
                     'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'materiaux_structure',
                     'epaisseur_structure',
                     ]:
@@ -265,218 +499,433 @@ def agg_td007_murs_to_td001(td007_murs):
                                         'td001_dpe_id').to_frame(f'{var}_murs_{type_adjacence.lower()}_top')
             concat.append(var_agg)
 
-    table_concat = pd.concat(concat, axis=1)
+    td007_murs_agg = pd.concat(concat, axis=1)
 
-    # aggregate type_local_non_chauffe as array agg
-    adjacences = td007_murs.groupby('td001_dpe_id').type_local_non_chauffe.agg(lambda x: x.dropna().unique().tolist())
-    adjacences.to_frame('adjacences_LNC_murs')
-    # aggregate type_local_non_chauffe as top freq
-    var_agg = agg_pond_top_freq(td007_murs, 'type_local_non_chauffe', 'surface_paroi_opaque_infer',
-                                'td001_dpe_id').to_frame(f'adjacence_LNC_murs_top')
-    # calcul des surfaces par type d'adjacences
-    pivot = td007_murs.pivot_table(index='td001_dpe_id', columns='type_adjacence', values='surface_paroi_opaque_infer',
-                                   aggfunc='sum')
-    pivot.columns = [f'surface_murs_{col.lower()}' for col in pivot]
-
-    # aggregation finale
-    td007_murs_agg = pd.concat([table_concat, var_agg, adjacences, pivot], axis=1)
+    td007_murs_agg.index.name = 'td001_dpe_id'
 
     return td007_murs_agg
 
 
-def calc_surface_paroi_opaque(td007, td008):
-    # calcul des surfaces parois_opaque + paroi vitrée
-
-    def calc_surf_approx_equality(s1, s2, rtol=0.05, atol=2):
-        is_close = np.isclose(s1, s2, rtol=rtol)
-        is_close = is_close | np.isclose(s1, s2, atol=atol)
-        return is_close
-
-    surf = td008.groupby('td007_paroi_opaque_id')[['surface', 'surfacexnb_baie_calc', 'nb_baie_calc']].sum()
-    surf.columns = ['surface_baie_sum', 'surfacexnb_baie_calc_sum', 'nb_baie_calc']
-    surf['surfacexnb_baie_calc_sum'] = surf.max(axis=1)
-
-    td007_m = td007.merge(surf, on='td007_paroi_opaque_id', how='left')
-    td007_m['surface_paroi_opaque_calc'] = td007_m.deperdition_thermique / (
-            td007_m.coefficient_transmission_thermique_paroi.astype(float) * td007_m.tv001_valeur.astype(float))
-
-    td007_m['surface_paroi_totale_calc_v1'] = td007_m.surface_paroi_opaque_calc + td007_m.surfacexnb_baie_calc_sum
-    td007_m['surface_paroi_totale_calc_v2'] = td007_m.surface_paroi_opaque_calc + td007_m.surface_baie_sum
-
-    is_surface_totale_v1 = calc_surf_approx_equality(td007_m.surface_paroi, td007_m.surface_paroi_totale_calc_v1)
-    is_surface_totale_v2 = calc_surf_approx_equality(td007_m.surface_paroi, td007_m.surface_paroi_totale_calc_v2)
-    is_surface_paroi_opaque = calc_surf_approx_equality(td007_m.surface_paroi, td007_m.surface_paroi_opaque_calc)
-    is_surface_paroi_opaque_deg = calc_surf_approx_equality(td007_m.surface_paroi, td007_m.surface_paroi_opaque_calc,
-                                                            rtol=0.1)
-
-    td007_m['qualif_surf'] = 'NONDEF'
-    td007_m.loc[is_surface_paroi_opaque_deg, 'qualif_surf'] = 'surface_paroi=surface_paroi_opaque'
-    td007_m.loc[
-        is_surface_totale_v1, 'qualif_surf'] = 'surface_paroi=surface_paroi_opaque+somme(surface baiesxnb_baies) v1'
-    td007_m.loc[is_surface_totale_v2, 'qualif_surf'] = 'surface_paroi=surface_paroi_opaque+somme(surface baies) v2'
-    td007_m.loc[is_surface_paroi_opaque, 'qualif_surf'] = 'surface_paroi=surface_paroi_opaque'
-    td007_m.loc[is_surface_paroi_opaque, 'qualif_surf'] = 'surface_paroi=surface_paroi_opaque'
-    td007_m.qualif_surf = td007_m.qualif_surf.astype('category')
-
-    td007_m['surface_paroi_totale_calc_v1'] = td007_m.surface_paroi_opaque_calc + td007_m.surfacexnb_baie_calc_sum
-    td007_m['surface_paroi_totale_calc_v2'] = td007_m.surface_paroi_opaque_calc + td007_m.surface_baie_sum
-
-    # infer surface paroi opaque
-
-    td007_m['surface_paroi_opaque_infer'] = np.nan
-
-    is_surface_seul = td007_m.qualif_surf == 'surface_paroi=surface_paroi_opaque'
-    td007_m.loc[is_surface_seul, 'surface_paroi_opaque_infer'] = td007_m.surface_paroi
-
-    is_surface_sum_baie_opaque_v1 = td007_m.qualif_surf == 'surface_paroi=surface_paroi_opaque+somme(surface baiesxnb_baies) v1'
-    td007_m.loc[
-        is_surface_sum_baie_opaque_v1, 'surface_paroi_opaque_infer'] = td007_m.surface_paroi - td007_m.surfacexnb_baie_calc_sum
-
-    is_surface_sum_baie_opaque_v2 = td007_m.qualif_surf == 'surface_paroi=surface_paroi_opaque+somme(surface baies) v2'
-
-    td007_m.loc[
-        is_surface_sum_baie_opaque_v2, 'surface_paroi_opaque_infer'] = td007_m.surface_paroi - td007_m.surface_baie_sum
-
-    null = td007_m.surface_paroi_opaque_infer.isnull()
-    td007_m.loc[null, 'surface_paroi_opaque_infer'] = td007_m.loc[null, 'surface_paroi']
-
-    # infer surface paroi opaque deperditive
-
-    td007_m['surface_paroi_opaque_deperditive_infer'] = td007_m.surface_paroi_opaque_infer
-
-    is_not_deper = (td007_m.deperdition_thermique == 0) | (td007_m.tv001_valeur == 0)
-    td007_m.loc[is_not_deper, 'surface_paroi_opaque_deperditive_infer'] = np.nan
-
-    td007_m['b_infer'] = td007_m.deperdition_thermique / (
-            td007_m.surface_paroi * td007_m.coefficient_transmission_thermique_paroi)
-
-    # infer surface paroi opaque exterieure
-
-    td007_m['surface_paroi_opaque_exterieur_infer'] = td007_m.surface_paroi_opaque_infer
-    is_tv002 = td007_m.tv002_local_non_chauffe_id.isnull() == False
-    is_tv001_non_ext = td007_m.tv001_coefficient_reduction_deperditions_id != '1'
-    is_non_ext_from_b_infer = td007_m.b_infer.round(2) < 0.96
-    is_non_ext = (is_tv002) | (is_tv001_non_ext) | (is_non_ext_from_b_infer)
-    td007_m.loc[is_non_ext, 'surface_paroi_opaque_exterieur_infer'] = np.nan
-
-    return td007_m
+# ================================== TRAITEMENT DES PLANCHERS BAS ==============================================================
 
 
-def agg_surface_envelope(td007, td008):
-    # SURFACES
+def generate_pb_table(td007):
+    td007_pb = td007.loc[td007.tr014_type_parois_opaque_id == '3'].copy()
 
-    td008_porte = td008.loc[td008.cat_baie_simple_infer == 'porte']
+    float_cols = ['coefficient_transmission_thermique_paroi_non_isolee', 'coefficient_transmission_thermique_paroi',
+                  'epaisseur_isolation', 'resistance_thermique_isolation']
+    td007_pb[float_cols] = td007_pb[float_cols].astype(float)
 
-    td008_vitree = td008.loc[td008.cat_baie_simple_infer.isin(['baie vitrée',
+    # ## label uniforme tv005
 
-                                                               'paroi en brique de verre ou polycarbonate'])]
-    surf_vitree = td008_vitree.groupby('td001_dpe_id')['surfacexnb_baie_calc'].sum()
-    surf_vitree.name = 'surface_vitree_totale'
-    surf_porte = td008_porte.groupby('td001_dpe_id')['surfacexnb_baie_calc'].sum()
-    surf_porte.name = 'surface_porte_totale'
+    td007_pb['tv005_periode_isolation_uniforme'] = td007_pb.tv005_annee_construction.astype('string')
 
-    surf_vitree_orient = td008_vitree.pivot_table(index='td001_dpe_id', columns='orientation_infer',
-                                                  values='surfacexnb_baie_calc', aggfunc='sum')
+    td007_pb['tv005_label_isolation_uniforme'] = td007_pb.tv005_annee_construction.astype('string')
 
-    surf_vitree_orient.columns = [f'surfaces_vitree_orientee_{el.lower().replace(" ", "_")}' for el in
-                                  surf_vitree_orient.columns]
+    null = td007_pb['tv005_label_isolation_uniforme'].isnull()
 
-    td007_murs = td007.loc[td007.tr014_type_parois_opaque_id.isin(['2', '1'])]
-    td007_pb = td007.loc[td007.tr014_type_parois_opaque_id == '3']
-    td007_ph = td007.loc[td007.tr014_type_parois_opaque_id == '4']
+    td007_pb.loc[null, 'tv005_label_isolation_uniforme'] = td007_pb.loc[null, 'tv005_annee_isolation'].astype(
+        'string')
 
-    surf_mur = td007_murs.groupby('td001_dpe_id')[['surface_paroi_opaque_infer',
-                                                   'surface_paroi_opaque_deperditive_infer',
-                                                   'surface_paroi_opaque_exterieur_infer']].sum()
-    surf_pb = td007_pb.groupby('td001_dpe_id')[['surface_paroi_opaque_infer',
-                                                'surface_paroi_opaque_deperditive_infer']].sum()
+    inconnu = td007_pb.tv005_pb_isole == "Inconnu"
+    non_isole = td007_pb.tv005_pb_isole == 'Non'
+    isole = td007_pb.tv005_pb_isole == '1'
+    tp = td007_pb.tv005_pb_isole == 'Terre Plein'
 
-    surf_ph = td007_ph.groupby('td001_dpe_id')[['surface_paroi_opaque_infer',
-                                                'surface_paroi_opaque_deperditive_infer']].sum()
+    is_annee_construction = ~td007_pb.tv005_annee_construction.isnull()
+    is_annee_isolation = ~td007_pb.tv005_annee_isolation.isnull()
 
-    surf_mur.columns = ['surf_murs_totale', 'surf_murs_deper', 'surf_murs_ext']
-    surf_pb.columns = ['surf_pb_totale', 'surf_pb_deper']
-    surf_ph.columns = ['surf_ph_totale', 'surf_ph_deper']
+    td007_pb.loc[inconnu, 'tv005_label_isolation_uniforme'] = 'isol. inconnue periode constr : ' + td007_pb.loc[
+        inconnu, 'tv005_label_isolation_uniforme']
+    td007_pb.loc[non_isole, 'tv005_label_isolation_uniforme'] = 'non isolé'
 
-    quantitatif = pd.concat([surf_mur, surf_pb, surf_ph, surf_vitree, surf_porte, surf_vitree_orient], axis=1)
-    quantitatif[quantitatif < 0] = np.nan
-    # TODO : changer ratio -> percentage (mauvaise def)
-    quantitatif['ratio_surface_vitree_exterieur'] = quantitatif.surface_vitree_totale / (
-                quantitatif.surf_murs_ext + quantitatif.surface_vitree_totale)
-    is_not_surf_ext = quantitatif.surf_murs_ext == 0
-    quantitatif.loc[is_not_surf_ext, 'ratio_surface_vitree_exterieur'] = np.nan
-    quantitatif['ratio_surface_vitree_deperditif'] = quantitatif.surface_vitree_totale / (
-                quantitatif.surf_murs_deper + quantitatif.surface_vitree_totale)
-    is_not_surf_deper = quantitatif.surf_murs_deper == 0
-    quantitatif.loc[is_not_surf_deper, 'ratio_surface_vitree_deperditif'] = np.nan
-    quantitatif['ratio_surface_vitree_total'] = quantitatif.surface_vitree_totale / (
-                quantitatif.surf_murs_totale + quantitatif.surface_vitree_totale)
-    for ratio_surface_vitree_col in ['ratio_surface_vitree_exterieur',
-                                     'ratio_surface_vitree_deperditif',
-                                     'ratio_surface_vitree_total']:
-        ratio_surface_vitree = quantitatif[ratio_surface_vitree_col]
-        anomaly_ratio_surface_vitree = ratio_surface_vitree > 0.95
-        quantitatif.loc[anomaly_ratio_surface_vitree, ratio_surface_vitree_col] = np.nan
+    td007_pb.loc[isole & is_annee_construction, 'tv005_label_isolation_uniforme'] = 'isolé periode constr : ' + \
+                                                                                    td007_pb.loc[
+                                                                                        isole & is_annee_construction, 'tv005_label_isolation_uniforme']
+    td007_pb.loc[isole & (~is_annee_construction), 'tv005_label_isolation_uniforme'] = 'isolé periode isolation :' + \
+                                                                                       td007_pb.loc[isole & (
+                                                                                           ~is_annee_construction), 'tv005_label_isolation_uniforme']
 
-    return quantitatif
+    td007_pb.loc[isole & (~is_annee_construction), 'tv005_label_isolation_uniforme'] = 'isolé periode isolation :' + \
+                                                                                       td007_pb.loc[isole & (
+                                                                                           ~is_annee_construction), 'tv005_label_isolation_uniforme']
+
+    td007_pb.loc[tp, 'tv005_label_isolation_uniforme'] = 'Terre Plein periode constr : ' + td007_pb.loc[
+        tp, 'tv005_label_isolation_uniforme']
+
+    # annee isolation uniforme.
+
+    td007_pb['annee_isole_uniforme_min'] = td007_pb.tv005_annee_construction_min.astype('string')
+    td007_pb['annee_isole_uniforme_max'] = td007_pb.tv005_annee_construction_max.astype('string')
+    td007_pb.loc[is_annee_isolation, 'annee_isole_uniforme_min'] = td007_pb.loc[
+        is_annee_isolation, 'tv005_annee_isolation_min'].astype('string')
+    td007_pb.loc[is_annee_isolation, 'annee_isole_uniforme_max'] = td007_pb.loc[
+        is_annee_isolation, 'tv005_annee_isolation_max'].astype('string')
+
+    # ## label méthode calcul  U
+
+    td007_pb['meth_calc_U'] = 'INCONNUE'
+
+    # calc booleens
+    U = td007_pb.coefficient_transmission_thermique_paroi.round(2)
+    U_non_isolee = td007_pb.coefficient_transmission_thermique_paroi_non_isolee.round(2)
+    bool_U_egal_0 = U.round(2) == 0.00
+    bool_U_U0 = U.round(2) == U_non_isolee.round(2)
+    bool_U_2 = U.round(2) >= 2 | non_isole
+    bool_U_U0 = bool_U_U0 & (~bool_U_2)
+    bool_U_U0_auto_isol = bool_U_U0 & (U_non_isolee < 1)
+    bool_U_brut = (U <= 1) & (~bool_U_U0)
+    bool_U_brut_non_isole = (U > 1) & (~bool_U_U0)
+    bool_U_par_e = td007_pb.epaisseur_isolation > 0
+    bool_U_par_r = td007_pb.resistance_thermique_isolation > 0
+
+    # remplacer 0 par nan lorsque les 0 sont des non information.
+
+    td007_pb.loc[~bool_U_par_e, 'epaisseur_isolation'] = np.nan
+    td007_pb.loc[~bool_U_par_r, 'resistance_thermique_isolation'] = np.nan
+
+    # imputation labels
+
+    td007_pb.loc[bool_U_brut, 'meth_calc_U'] = 'U SAISI DIRECTEMENT : ISOLE'
+    td007_pb.loc[bool_U_brut_non_isole, 'meth_calc_U'] = 'U SAISI DIRECTEMENT : NON ISOLE'
+    td007_pb.loc[bool_U_par_e, 'meth_calc_U'] = 'EPAISSEUR ISOLATION SAISIE'
+    td007_pb.loc[bool_U_par_r, 'meth_calc_U'] = 'RESISTANCE ISOLATION SAISIE'
+    td007_pb.loc[bool_U_2, 'meth_calc_U'] = 'PLANCHER NON ISOLE U=2'
+    td007_pb.loc[bool_U_U0, 'meth_calc_U'] = 'PLANCHER NON ISOLE U<2'
+    td007_pb.loc[bool_U_U0_auto_isol, 'meth_calc_U'] = 'STRUCTURE ISOLANTE U<1'
+    td007_pb.loc[inconnu, 'meth_calc_U'] = 'PAR DEFAUT PERIODE : ISOLATION INCONNUE'
+    td007_pb.loc[isole, 'meth_calc_U'] = 'PAR DEFAUT PERIODE : ISOLE'
+    td007_pb.loc[tp, 'meth_calc_U'] = 'PAR DEFAUT PERIODE : TERRE PLEIN'
+    td007_pb.loc[bool_U_egal_0, 'meth_calc_U'] = 'ERREUR : U=0'
+
+    # ## label isolatoin
+
+    td007_pb['isolation'] = 'NON ISOLE'
+    is_isole = ~td007_pb.meth_calc_U.str.contains('NON ISOLE|INCONNUE|TERRE')
+    td007_pb.loc[is_isole, 'isolation'] = 'ISOLE SAISI'
+    is_isole_defaut = is_isole & (td007_pb.meth_calc_U.str.contains('DEFAUT'))
+    td007_pb.loc[is_isole_defaut, 'isolation'] = 'ISOLE DEFAUT PRE 1982'
+
+    inconnu = td007_pb.meth_calc_U.str.contains('INCONNUE')
+    post_82 = td007_pb['annee_isole_uniforme_min'] >= "1982"
+    post_2001 = td007_pb['annee_isole_uniforme_min'] >= "2001"
+
+    td007_pb.loc[inconnu, 'isolation'] = 'ISOLATION INCONNUE (DEFAUT)'
+
+    td007_pb.loc[(inconnu | is_isole_defaut) & post_82, 'isolation'] = 'ISOLE DEFAUT POST 1982'
+
+    td007_pb.loc[tp, 'isolation'] = 'TERRE PLEIN DEFAUT PRE 2001'
+    td007_pb.loc[tp & post_2001, 'isolation'] = 'TERRE PLEIN DEFAUT POST 2001'
+
+    is_isole_struc = is_isole & (td007_pb.meth_calc_U.str.contains('STRUCTURE'))
+
+    td007_pb.loc[is_isole_struc, 'isolation'] = 'STRUCTURE ISOLANTE'
+
+    is_err = td007_pb.meth_calc_U.str.contains('ERREUR')
+
+    td007_pb.loc[is_err, 'isolation'] = 'NONDEF'
+
+    # ## label adjacence
+
+    td007_pb['type_adjacence'] = 'NONDEF'
+
+    ext = td007_pb.tv001_code == 'TV001_001'
+
+    td007_pb.loc[ext, 'type_adjacence'] = 'EXTERIEUR'
+
+    is_dep = td007_pb.b_infer.round(1) >= 0.9
+
+    td007_pb.loc[is_dep, 'type_adjacence'] = 'EXTERIEUR'
+
+    enterre = td007_pb.tv001_code == 'TV001_002'
+
+    td007_pb.loc[enterre, 'type_adjacence'] = 'PAROI_ENTERREE'
+
+    not_null = ~td007_pb.tv002_local_non_chauffe.isnull()
+
+    td007_pb.loc[not_null, 'type_adjacence'] = 'LNC'
+
+    is_lnc = td007_pb.tv001_code.astype('string') > 'TV001_004'
+
+    td007_pb.loc[is_lnc, 'type_adjacence'] = 'LNC'
+
+    is_adj = td007_pb.tv001_code == 'TV001_004'
+
+    td007_pb.loc[is_adj, 'type_adjacence'] = 'BAT_ADJ'
+
+    is_tp = td007_pb.tv001_code == 'TV001_261'
+
+    td007_pb.loc[is_tp, 'type_adjacence'] = 'TERRE_PLEIN'
+
+    is_vs = td007_pb.tv001_code == 'TV001_003'
+
+    td007_pb.loc[is_vs, 'type_adjacence'] = 'VIDE_SANITAIRE'
+
+    td007_pb.type_adjacence_simple = td007_pb.type_adjacence.replace({'TERRE_PLEIN': 'TP_VS',
+                                                                      'VIDE_SANITAIRE': 'TP_VS'})
+    return td007_pb
 
 
-def agg_td007_to_td001_essential(td007):
-    td007_murs = td007.loc[td007.tr014_type_parois_opaque_id.isin(['2', '1'])]
-    td007_pb = td007.loc[td007.tr014_type_parois_opaque_id == '3']
-    td007_ph = td007.loc[td007.tr014_type_parois_opaque_id == '4']
+def agg_td007_pb_to_td001(td007_pb):
+    td007_pb = td007_pb.rename(columns={
+        'tv002_local_non_chauffe': 'type_local_non_chauffe',
+        'coefficient_transmission_thermique_paroi': 'U'})
+    concat = list()
+    type_adjacence_top = agg_pond_top_freq(td007_pb, 'type_adjacence', 'surface_paroi_opaque_infer',
+                                           'td001_dpe_id').to_frame(f'type_adjacence_top')
 
-    Umurs_ext_avg = agg_pond_avg(td007_murs, 'coefficient_transmission_thermique_paroi',
-                                 'surface_paroi_opaque_exterieur_infer',
-                                 'td001_dpe_id').to_frame('Umurs_ext_avg')
+    type_adjacence_arr_agg = td007_pb.groupby('td001_dpe_id').type_adjacence.agg(
+        lambda x: np.sort(x.dropna().unique()).tolist())
 
-    Umurs_avg = agg_pond_avg(td007_murs, 'coefficient_transmission_thermique_paroi',
-                             'surface_paroi_opaque_deperditive_infer',
-                             'td001_dpe_id').to_frame('Umurs_deper_avg')
+    type_adjacence_arr_agg.name = 'type_adjacence_array'
 
-    Uplancher_avg = agg_pond_avg(td007_pb, 'coefficient_transmission_thermique_paroi',
-                                 'surface_paroi_opaque_deperditive_infer',
-                                 'td001_dpe_id').to_frame('Uplancher_bas_deper_avg')
+    concat.append(type_adjacence_top)
+    concat.append(type_adjacence_arr_agg)
 
-    Uplafond_avg = agg_pond_avg(td007_ph, 'coefficient_transmission_thermique_paroi',
-                                'surface_paroi_opaque_deperditive_infer',
-                                'td001_dpe_id').to_frame('Uplancher_haut_deper_avg')
+    type_local_non_chauffe_arr_agg = td007_pb.groupby('td001_dpe_id').type_local_non_chauffe.agg(
+        lambda x: np.sort(x.dropna().unique()).tolist())
+    type_local_non_chauffe_arr_agg = type_local_non_chauffe_arr_agg.to_frame('type_LNC_planchers_array')
+    type_local_non_chauffe = agg_pond_top_freq(td007_pb, 'type_local_non_chauffe', 'surface_paroi_opaque_infer',
+                                               'td001_dpe_id').to_frame(f'type_LNC_planchers_top')
 
-    is_pb_isole = agg_pond_top_freq(td007_pb, 'is_paroi_isole', 'surface_paroi_opaque_deperditive_infer',
-                                    'td001_dpe_id').to_frame('is_plancher_bas_deper_isole')
+    pivot = td007_pb.pivot_table(index='td001_dpe_id', columns='type_adjacence', values='surface_paroi_opaque_infer',
+                                 aggfunc='sum')
+    pivot.columns = [f'surface_planchers_{col.lower()}' for col in pivot]
 
-    is_ph_isole = agg_pond_top_freq(td007_ph, 'is_paroi_isole', 'surface_paroi_opaque_deperditive_infer',
-                                    'td001_dpe_id').to_frame('is_plancher_haut_deper_isole')
+    concat.extend([type_local_non_chauffe_arr_agg, type_local_non_chauffe_agg_top, pivot])
 
-    is_mext_isole = agg_pond_top_freq(td007_murs, 'is_paroi_isole', 'surface_paroi_opaque_exterieur_infer',
-                                      'td001_dpe_id').to_frame('is_murs_ext_isole')
+    for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
+                'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'materiaux_structure',
+                ]:
+        var_agg = agg_pond_top_freq(td007_pb, var, 'surface_paroi_opaque_infer',
+                                    'td001_dpe_id').to_frame(f'{var}_plancher_top')
+        concat.append(var_agg)
 
-    is_mdeper_isole = agg_pond_top_freq(td007_murs, 'is_paroi_isole', 'surface_paroi_opaque_deperditive_infer',
-                                        'td001_dpe_id').to_frame('is_murs_deper_isole')
+    for type_adjacence_simple in ['EXTERIEUR', 'TP_VS', 'LNC', 'BAT_ADJ']:
+        sel = td007_pb.loc[td007_pb.type_adjacence_simple == type_adjacence_simple]
+        for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
+                    'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'materiaux_structure',
+                    ]:
+            var_agg = agg_pond_top_freq(sel, var, 'surface_paroi_opaque_infer',
+                                        'td001_dpe_id').to_frame(f'{var}_plancher_{type_adjacence_simple.lower()}_top')
+            concat.append(var_agg)
 
-    mat_murs_deper_agg = agg_pond_top_freq(td007_murs, 'materiaux_structure', 'surface_paroi_opaque_deperditive_infer',
-                                           'td001_dpe_id').to_frame('mat_murs_deper_top')
+    td007_pb_agg = pd.concat(concat, axis=1)
 
-    mat_murs_ext_agg = agg_pond_top_freq(td007_murs, 'materiaux_structure', 'surface_paroi_opaque_exterieur_infer',
-                                         'td001_dpe_id').to_frame('mat_murs_ext_top')
+    td007_pb_agg.index.name = 'td001_dpe_id'
 
-    mat_pb_agg = agg_pond_top_freq(td007_pb, 'materiaux_structure', 'surface_paroi_opaque_deperditive_infer',
-                                   'td001_dpe_id').to_frame('mat_plancher_bas_deper_top')
+    return td007_pb_agg
 
-    mat_ph_agg = agg_pond_top_freq(td007_ph, 'materiaux_structure', 'surface_paroi_opaque_deperditive_infer',
-                                   'td001_dpe_id').to_frame('mat_plancher_haut_deper_top')
 
-    agg = pd.concat([Umurs_ext_avg,
-                     Umurs_avg,
-                     Uplancher_avg,
-                     Uplafond_avg,
-                     is_pb_isole,
-                     is_ph_isole,
-                     is_mext_isole,
-                     is_mdeper_isole,
-                     mat_murs_deper_agg,
-                     mat_murs_ext_agg,
-                     mat_pb_agg,
-                     mat_ph_agg,
-                     ], axis=1)
-    return agg
+# ================================== TRAITEMENT DES PLANCHERS HAUTS ==============================================================
+
+
+def generate_ph_table(td007):
+    td007_pb = td007.loc[td007.tr014_type_parois_opaque_id == '3'].copy()
+
+    float_cols = ['coefficient_transmission_thermique_paroi_non_isolee', 'coefficient_transmission_thermique_paroi',
+                  'epaisseur_isolation', 'resistance_thermique_isolation']
+    td007_pb[float_cols] = td007_pb[float_cols].astype(float)
+
+    # ## label uniforme tv005
+
+    td007_pb['tv005_periode_isolation_uniforme'] = td007_pb.tv005_annee_construction.astype('string')
+
+    td007_pb['tv005_label_isolation_uniforme'] = td007_pb.tv005_annee_construction.astype('string')
+
+    null = td007_pb['tv005_label_isolation_uniforme'].isnull()
+
+    td007_pb.loc[null, 'tv005_label_isolation_uniforme'] = td007_pb.loc[null, 'tv005_annee_isolation'].astype(
+        'string')
+
+    inconnu = td007_pb.tv005_pb_isole == "Inconnu"
+    non_isole = td007_pb.tv005_pb_isole == 'Non'
+    isole = td007_pb.tv005_pb_isole == '1'
+    tp = td007_pb.tv005_pb_isole == 'Terre Plein'
+
+    is_annee_construction = ~td007_pb.tv005_annee_construction.isnull()
+    is_annee_isolation = ~td007_pb.tv005_annee_isolation.isnull()
+
+    td007_pb.loc[inconnu, 'tv005_label_isolation_uniforme'] = 'isol. inconnue periode constr : ' + td007_pb.loc[
+        inconnu, 'tv005_label_isolation_uniforme']
+    td007_pb.loc[non_isole, 'tv005_label_isolation_uniforme'] = 'non isolé'
+
+    td007_pb.loc[isole & is_annee_construction, 'tv005_label_isolation_uniforme'] = 'isolé periode constr : ' + \
+                                                                                    td007_pb.loc[
+                                                                                        isole & is_annee_construction, 'tv005_label_isolation_uniforme']
+    td007_pb.loc[isole & (~is_annee_construction), 'tv005_label_isolation_uniforme'] = 'isolé periode isolation :' + \
+                                                                                       td007_pb.loc[isole & (
+                                                                                           ~is_annee_construction), 'tv005_label_isolation_uniforme']
+
+    td007_pb.loc[isole & (~is_annee_construction), 'tv005_label_isolation_uniforme'] = 'isolé periode isolation :' + \
+                                                                                       td007_pb.loc[isole & (
+                                                                                           ~is_annee_construction), 'tv005_label_isolation_uniforme']
+
+    td007_pb.loc[tp, 'tv005_label_isolation_uniforme'] = 'Terre Plein periode constr : ' + td007_pb.loc[
+        tp, 'tv005_label_isolation_uniforme']
+
+    # annee isolation uniforme.
+
+    td007_pb['annee_isole_uniforme_min'] = td007_pb.tv005_annee_construction_min.astype('string')
+    td007_pb['annee_isole_uniforme_max'] = td007_pb.tv005_annee_construction_max.astype('string')
+    td007_pb.loc[is_annee_isolation, 'annee_isole_uniforme_min'] = td007_pb.loc[
+        is_annee_isolation, 'tv005_annee_isolation_min'].astype('string')
+    td007_pb.loc[is_annee_isolation, 'annee_isole_uniforme_max'] = td007_pb.loc[
+        is_annee_isolation, 'tv005_annee_isolation_max'].astype('string')
+
+    # ## label méthode calcul  U
+
+    td007_pb['meth_calc_U'] = 'INCONNUE'
+
+    # calc booleens
+    U = td007_pb.coefficient_transmission_thermique_paroi.round(2)
+    U_non_isolee = td007_pb.coefficient_transmission_thermique_paroi_non_isolee.round(2)
+    bool_U_egal_0 = U.round(2) == 0.00
+    bool_U_U0 = U.round(2) == U_non_isolee.round(2)
+    bool_U_2 = U.round(2) >= 2 | non_isole
+    bool_U_U0 = bool_U_U0 & (~bool_U_2)
+    bool_U_U0_auto_isol = bool_U_U0 & (U_non_isolee < 1)
+    bool_U_brut = (U <= 1) & (~bool_U_U0)
+    bool_U_brut_non_isole = (U > 1) & (~bool_U_U0)
+    bool_U_par_e = td007_pb.epaisseur_isolation > 0
+    bool_U_par_r = td007_pb.resistance_thermique_isolation > 0
+
+    # remplacer 0 par nan lorsque les 0 sont des non information.
+
+    td007_pb.loc[~bool_U_par_e, 'epaisseur_isolation'] = np.nan
+    td007_pb.loc[~bool_U_par_r, 'resistance_thermique_isolation'] = np.nan
+
+    # imputation labels
+
+    td007_pb.loc[bool_U_brut, 'meth_calc_U'] = 'U SAISI DIRECTEMENT : ISOLE'
+    td007_pb.loc[bool_U_brut_non_isole, 'meth_calc_U'] = 'U SAISI DIRECTEMENT : NON ISOLE'
+    td007_pb.loc[bool_U_par_e, 'meth_calc_U'] = 'EPAISSEUR ISOLATION SAISIE'
+    td007_pb.loc[bool_U_par_r, 'meth_calc_U'] = 'RESISTANCE ISOLATION SAISIE'
+    td007_pb.loc[bool_U_2, 'meth_calc_U'] = 'PLANCHER NON ISOLE U=2'
+    td007_pb.loc[bool_U_U0, 'meth_calc_U'] = 'PLANCHER NON ISOLE U<2'
+    td007_pb.loc[bool_U_U0_auto_isol, 'meth_calc_U'] = 'STRUCTURE ISOLANTE U<1'
+    td007_pb.loc[inconnu, 'meth_calc_U'] = 'PAR DEFAUT PERIODE : ISOLATION INCONNUE'
+    td007_pb.loc[isole, 'meth_calc_U'] = 'PAR DEFAUT PERIODE : ISOLE'
+    td007_pb.loc[tp, 'meth_calc_U'] = 'PAR DEFAUT PERIODE : TERRE PLEIN'
+    td007_pb.loc[bool_U_egal_0, 'meth_calc_U'] = 'ERREUR : U=0'
+
+    # ## label isolatoin
+
+    td007_pb['isolation'] = 'NON ISOLE'
+    is_isole = ~td007_pb.meth_calc_U.str.contains('NON ISOLE|INCONNUE|TERRE')
+    td007_pb.loc[is_isole, 'isolation'] = 'ISOLE SAISI'
+    is_isole_defaut = is_isole & (td007_pb.meth_calc_U.str.contains('DEFAUT'))
+    td007_pb.loc[is_isole_defaut, 'isolation'] = 'ISOLE DEFAUT PRE 1982'
+
+    inconnu = td007_pb.meth_calc_U.str.contains('INCONNUE')
+    post_82 = td007_pb['annee_isole_uniforme_min'] >= "1982"
+    post_2001 = td007_pb['annee_isole_uniforme_min'] >= "2001"
+
+    td007_pb.loc[inconnu, 'isolation'] = 'ISOLATION INCONNUE (DEFAUT)'
+
+    td007_pb.loc[(inconnu | is_isole_defaut) & post_82, 'isolation'] = 'ISOLE DEFAUT POST 1982'
+
+    td007_pb.loc[tp, 'isolation'] = 'TERRE PLEIN DEFAUT PRE 2001'
+    td007_pb.loc[tp & post_2001, 'isolation'] = 'TERRE PLEIN DEFAUT POST 2001'
+
+    is_isole_struc = is_isole & (td007_pb.meth_calc_U.str.contains('STRUCTURE'))
+
+    td007_pb.loc[is_isole_struc, 'isolation'] = 'STRUCTURE ISOLANTE'
+
+    is_err = td007_pb.meth_calc_U.str.contains('ERREUR')
+
+    td007_pb.loc[is_err, 'isolation'] = 'NONDEF'
+
+    # ## label adjacence
+
+    td007_pb['type_adjacence'] = 'NONDEF'
+
+    ext = td007_pb.tv001_code == 'TV001_001'
+
+    td007_pb.loc[ext, 'type_adjacence'] = 'EXTERIEUR'
+
+    is_dep = td007_pb.b_infer.round(1) >= 0.9
+
+    td007_pb.loc[is_dep, 'type_adjacence'] = 'EXTERIEUR'
+
+    enterre = td007_pb.tv001_code == 'TV001_002'
+
+    td007_pb.loc[enterre, 'type_adjacence'] = 'PAROI_ENTERREE'
+
+    not_null = ~td007_pb.tv002_local_non_chauffe.isnull()
+
+    td007_pb.loc[not_null, 'type_adjacence'] = 'LNC'
+
+    is_lnc = td007_pb.tv001_code.astype('string') > 'TV001_004'
+
+    td007_pb.loc[is_lnc, 'type_adjacence'] = 'LNC'
+
+    is_adj = td007_pb.tv001_code == 'TV001_004'
+
+    td007_pb.loc[is_adj, 'type_adjacence'] = 'BAT_ADJ'
+
+    is_tp = td007_pb.tv001_code == 'TV001_261'
+
+    td007_pb.loc[is_tp, 'type_adjacence'] = 'TERRE_PLEIN'
+
+    is_vs = td007_pb.tv001_code == 'TV001_003'
+
+    td007_pb.loc[is_vs, 'type_adjacence'] = 'VIDE_SANITAIRE'
+
+    td007_pb.type_adjacence_simple = td007_pb.type_adjacence.replace({'TERRE_PLEIN': 'TP_VS',
+                                                                      'VIDE_SANITAIRE': 'TP_VS'})
+    return td007_pb
+
+
+def agg_td007_ph_to_td001(td007_pb):
+
+    td007_pb = td007_pb.rename(columns={
+        'tv002_local_non_chauffe': 'type_local_non_chauffe',
+        'coefficient_transmission_thermique_paroi': 'U'})
+    concat = list()
+    type_adjacence_top = agg_pond_top_freq(td007_pb, 'type_adjacence', 'surface_paroi_opaque_infer',
+                                           'td001_dpe_id').to_frame(f'type_adjacence_top')
+
+    type_adjacence_arr_agg = td007_pb.groupby('td001_dpe_id').type_adjacence.agg(
+        lambda x: np.sort(x.dropna().unique()).tolist())
+
+    type_adjacence_arr_agg.name = 'type_adjacence_array'
+
+    concat.append(type_adjacence_top)
+    concat.append(type_adjacence_arr_agg)
+
+    type_local_non_chauffe_arr_agg = td007_pb.groupby('td001_dpe_id').type_local_non_chauffe.agg(
+        lambda x: np.sort(x.dropna().unique()).tolist())
+    type_local_non_chauffe_arr_agg = type_local_non_chauffe_arr_agg.to_frame('type_LNC_planchers_array')
+    type_local_non_chauffe_agg_top = agg_pond_top_freq(td007_pb, 'type_local_non_chauffe', 'surface_paroi_opaque_infer',
+                                               'td001_dpe_id').to_frame(f'type_LNC_planchers_top')
+
+    pivot = td007_pb.pivot_table(index='td001_dpe_id', columns='type_adjacence', values='surface_paroi_opaque_infer',
+                                 aggfunc='sum')
+    pivot.columns = [f'surface_planchers_{col.lower()}' for col in pivot]
+
+    concat.extend([type_local_non_chauffe_arr_agg, type_local_non_chauffe_agg_top, pivot])
+
+    for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
+                'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'materiaux_structure',
+                ]:
+        var_agg = agg_pond_top_freq(td007_pb, var, 'surface_paroi_opaque_infer',
+                                    'td001_dpe_id').to_frame(f'{var}_plancher_top')
+        concat.append(var_agg)
+
+    for type_adjacence_simple in ['EXTERIEUR', 'TP_VS', 'LNC', 'BAT_ADJ']:
+        sel = td007_pb.loc[td007_pb.type_adjacence_simple == type_adjacence_simple]
+        for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
+                    'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'materiaux_structure',
+                    ]:
+            var_agg = agg_pond_top_freq(sel, var, 'surface_paroi_opaque_infer',
+                                        'td001_dpe_id').to_frame(f'{var}_plancher_{type_adjacence_simple.lower()}_top')
+            concat.append(var_agg)
+
+    td007_pb_agg = pd.concat(concat, axis=1)
+
+    td007_pb_agg.index.name = 'td001_dpe_id'
+
+    return td007_pb_agg
+
+

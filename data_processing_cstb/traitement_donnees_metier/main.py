@@ -2,19 +2,24 @@ import pandas as pd
 from pathlib import Path
 import json
 from td001_processing import postprocessing_td001
-from utils import round_float_cols,unique_ordered
+from utils import round_float_cols, unique_ordered
 from config import paths
-def run_enveloppe_processing(td001, td006, td007, td008):
-    from td007_processing import merge_td007_tr_tv, postprocessing_td007
+
+
+def run_enveloppe_processing(td001, td006, td007, td008, td010):
+    from td007_processing import merge_td007_tr_tv, postprocessing_td007,generate_pb_table,\
+        generate_ph_table,generate_murs_table,agg_td007_murs_to_td001,agg_td007_ph_to_td001,agg_td007_pb_to_td001
+
     from td008_processing import merge_td008_tr_tv, postprocessing_td008
     from td001_merge import merge_td001_dpe_id_envelope
     from td007_processing import agg_td007_to_td001_essential, agg_surface_envelope
     from td008_processing import agg_td008_to_td001_essential
-
     td008_raw_cols = td008.columns.tolist()
     td007_raw_cols = td007.columns.tolist()
 
-    td001, td006, td007, td008 = merge_td001_dpe_id_envelope(td001=td001, td006=td006, td007=td007, td008=td008)
+    td001, td006, td007, td008, td010 = merge_td001_dpe_id_envelope(td001=td001, td006=td006, td007=td007, td008=td008,
+                                                             td010=td010)
+    # TABLES SYNTHETIQUES TOUTES THEMATIQUES
 
     td008 = merge_td008_tr_tv(td008)
     td008 = postprocessing_td008(td008)
@@ -40,6 +45,20 @@ def run_enveloppe_processing(td001, td006, td007, td008):
     cols.append('td007_paroi_opaque_id')
     cols = unique_ordered(cols)
     td007_p = td007[cols]
+
+    # TABLES PAR TYPE COMPOSANT
+    td007_pb = generate_pb_table(td007_p)
+    td007_ph = generate_ph_table(td007_p)
+    td007_murs = generate_murs_table(td007_p)
+
+    # TABLES AGGREGEES PAR TYPE COMPOSANT
+    td007_murs_agg = agg_td007_murs_to_td001(td007_murs)
+    td007_ph_agg = agg_td007_ph_to_td001(td007_ph)
+    td007_pb_agg = agg_td007_pb_to_td001(td007_pb)
+
+    env_compo_dict =dict(td007_ph=td007_ph,
+                               td007_pb=td007_pb,
+                               td007_murs=td007_murs)
     return td001_enveloppe_agg, td008_p, td007_p
 
 
@@ -95,7 +114,8 @@ def run_system_processing(td001, td006, td011, td012, td013, td014):
 
 def build_doc(annexe_dir):
     from doc_annexe import td001_annexe_enveloppe_agg_desc, td001_sys_ch_agg_desc, td001_sys_ecs_agg_desc, \
-        td007_annexe_desc, td008_annexe_desc, td012_annexe_desc, td014_annexe_desc, enums_cstb,td001_annexe_generale_desc
+        td007_annexe_desc, td008_annexe_desc, td012_annexe_desc, td014_annexe_desc, enums_cstb, \
+        td001_annexe_generale_desc
 
     doc_annexe = dict()
     doc_annexe['td001_annexe_generale'] = td001_annexe_generale_desc

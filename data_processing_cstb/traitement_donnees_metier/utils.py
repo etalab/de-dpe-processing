@@ -85,6 +85,7 @@ def _prep_agg_pond(table, pond, bool_filter_col, pond_col, bool_filter_not):
         raise BaseException('pond must be str,list or tuple not {}'.format(type(pond)))
     return table
 
+
 def agg_pond_avg(table, value_col, pond, by, bool_filter_col=None, bool_filter_not=False):
     """
     function to make an average ponderate serie from a table column
@@ -168,7 +169,10 @@ def agg_pond_top_freq(table, enum_col, pond, by, bool_filter_col=None, bool_filt
     by_unique = table[by].unique()
     s = s.reindex(by_unique)
     s = set_groupby_index_name(s, by)
+
+    del table[pond_col]
     return s
+
 
 def set_groupby_index_name(s, by):
     if isinstance(by, list):
@@ -176,6 +180,7 @@ def set_groupby_index_name(s, by):
     else:
         s.index.name = by
     return s
+
 
 def affect_lib_by_matching_score(txt, lib_dict):
     """

@@ -1,5 +1,5 @@
 
-def merge_td001_dpe_id_envelope(td001, td006, td007, td008):
+def merge_td001_dpe_id_envelope(td001, td006, td007, td008,td010):
     """
     preparation des tables enveloppe en fournissant le td001_dpe_id pour toutes les tables
     """
@@ -10,8 +10,9 @@ def merge_td001_dpe_id_envelope(td001, td006, td007, td008):
     td001 = td001.rename(columns={"id": "td001_dpe_id"})
     td007 = td007.merge(td006[['td006_batiment_id', 'td001_dpe_id']], on='td006_batiment_id', how='left')
     td008 = td008.merge(td007[['td007_paroi_opaque_id', 'td001_dpe_id']], on='td007_paroi_opaque_id', how='left')
+    td010 = td010.merge(td006[['td006_batiment_id', 'td001_dpe_id']], on='td006_batiment_id', how='left')
 
-    return td001,td006,td007,td008
+    return td001,td006,td007,td008,td010
 
 
 def merge_td001_dpe_id_system(td001, td006, td011, td012,td013,td014):
