@@ -116,8 +116,6 @@ def postprocessing_td007(td007, td008):
     return table
 
 
-
-
 def calc_surface_paroi_opaque(td007, td008):
     # calcul des surfaces parois_opaque + paroi vitrée
 
@@ -318,7 +316,7 @@ def agg_td007_to_td001_essential(td007):
 # ================================== TRAITEMENT DES MURS ==============================================================
 
 def generate_murs_table(td007):
-    td007_murs = td007.loc[td007.tr014_type_parois_opaque_id.isin(['2', '1'])].copy()
+    td007_murs = td007.loc[td007.tr014_code.isin(['TR014_002', 'TR014_001'])].copy()
 
     float_cols = ['coefficient_transmission_thermique_paroi_non_isolee', 'coefficient_transmission_thermique_paroi',
                   'epaisseur_isolation', 'resistance_thermique_isolation']
@@ -510,7 +508,7 @@ def agg_td007_murs_to_td001(td007_murs):
 
 
 def generate_pb_table(td007):
-    td007_pb = td007.loc[td007.tr014_type_parois_opaque_id == '3'].copy()
+    td007_pb = td007.loc[td007.tr014_code == 'TR014_003'].copy()
 
     float_cols = ['coefficient_transmission_thermique_paroi_non_isolee', 'coefficient_transmission_thermique_paroi',
                   'epaisseur_isolation', 'resistance_thermique_isolation']
@@ -661,8 +659,8 @@ def generate_pb_table(td007):
 
     td007_pb.loc[is_vs, 'type_adjacence'] = 'VIDE_SANITAIRE'
 
-    td007_pb.type_adjacence_simple = td007_pb.type_adjacence.replace({'TERRE_PLEIN': 'TP_VS',
-                                                                      'VIDE_SANITAIRE': 'TP_VS'})
+    td007_pb['type_adjacence_simple'] = td007_pb.type_adjacence.replace({'TERRE_PLEIN': 'TP_VS',
+                                                                         'VIDE_SANITAIRE': 'TP_VS'})
     return td007_pb
 
 
@@ -685,8 +683,8 @@ def agg_td007_pb_to_td001(td007_pb):
     type_local_non_chauffe_arr_agg = td007_pb.groupby('td001_dpe_id').type_local_non_chauffe.agg(
         lambda x: np.sort(x.dropna().unique()).tolist())
     type_local_non_chauffe_arr_agg = type_local_non_chauffe_arr_agg.to_frame('type_LNC_planchers_array')
-    type_local_non_chauffe = agg_pond_top_freq(td007_pb, 'type_local_non_chauffe', 'surface_paroi_opaque_infer',
-                                               'td001_dpe_id').to_frame(f'type_LNC_planchers_top')
+    type_local_non_chauffe_agg_top = agg_pond_top_freq(td007_pb, 'type_local_non_chauffe', 'surface_paroi_opaque_infer',
+                                                       'td001_dpe_id').to_frame(f'type_LNC_planchers_top')
 
     pivot = td007_pb.pivot_table(index='td001_dpe_id', columns='type_adjacence', values='surface_paroi_opaque_infer',
                                  aggfunc='sum')
@@ -700,7 +698,7 @@ def agg_td007_pb_to_td001(td007_pb):
         var_agg = agg_pond_top_freq(td007_pb, var, 'surface_paroi_opaque_infer',
                                     'td001_dpe_id').to_frame(f'{var}_plancher_top')
         concat.append(var_agg)
-
+    print(td007_pb.columns.tolist())
     for type_adjacence_simple in ['EXTERIEUR', 'TP_VS', 'LNC', 'BAT_ADJ']:
         sel = td007_pb.loc[td007_pb.type_adjacence_simple == type_adjacence_simple]
         for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
@@ -721,65 +719,61 @@ def agg_td007_pb_to_td001(td007_pb):
 
 
 def generate_ph_table(td007):
-    td007_pb = td007.loc[td007.tr014_type_parois_opaque_id == '3'].copy()
+    td007_ph = td007.loc[td007.tr014_code == 'TR014_004'].copy()
 
     float_cols = ['coefficient_transmission_thermique_paroi_non_isolee', 'coefficient_transmission_thermique_paroi',
                   'epaisseur_isolation', 'resistance_thermique_isolation']
-    td007_pb[float_cols] = td007_pb[float_cols].astype(float)
+    td007_ph[float_cols] = td007_ph[float_cols].astype(float)
 
-    # ## label uniforme tv005
+    # ## label uniforme tv007
 
-    td007_pb['tv005_periode_isolation_uniforme'] = td007_pb.tv005_annee_construction.astype('string')
+    td007_ph['tv007_periode_isolation_uniforme'] = td007_ph.tv007_annee_construction.astype('string')
 
-    td007_pb['tv005_label_isolation_uniforme'] = td007_pb.tv005_annee_construction.astype('string')
+    td007_ph['tv007_label_isolation_uniforme'] = td007_ph.tv007_annee_construction.astype('string')
 
-    null = td007_pb['tv005_label_isolation_uniforme'].isnull()
+    null = td007_ph['tv007_label_isolation_uniforme'].isnull()
 
-    td007_pb.loc[null, 'tv005_label_isolation_uniforme'] = td007_pb.loc[null, 'tv005_annee_isolation'].astype(
+    td007_ph.loc[null, 'tv007_label_isolation_uniforme'] = td007_ph.loc[null, 'tv007_annee_isolation'].astype(
         'string')
 
-    inconnu = td007_pb.tv005_pb_isole == "Inconnu"
-    non_isole = td007_pb.tv005_pb_isole == 'Non'
-    isole = td007_pb.tv005_pb_isole == '1'
-    tp = td007_pb.tv005_pb_isole == 'Terre Plein'
+    inconnu = td007_ph.tv007_ph_isole == "0"
+    non_isole = td007_ph.tv007_ph_isole == '2'
+    isole = td007_ph.tv007_ph_isole == '1'
 
-    is_annee_construction = ~td007_pb.tv005_annee_construction.isnull()
-    is_annee_isolation = ~td007_pb.tv005_annee_isolation.isnull()
+    is_annee_construction = ~td007_ph.tv007_annee_construction.isnull()
+    is_annee_isolation = ~td007_ph.tv007_annee_isolation.isnull()
 
-    td007_pb.loc[inconnu, 'tv005_label_isolation_uniforme'] = 'isol. inconnue periode constr : ' + td007_pb.loc[
-        inconnu, 'tv005_label_isolation_uniforme']
-    td007_pb.loc[non_isole, 'tv005_label_isolation_uniforme'] = 'non isolé'
+    td007_ph.loc[inconnu, 'tv007_label_isolation_uniforme'] = 'isol. inconnue periode constr : ' + td007_ph.loc[
+        inconnu, 'tv007_label_isolation_uniforme']
+    td007_ph.loc[non_isole, 'tv007_label_isolation_uniforme'] = 'non isolé'
 
-    td007_pb.loc[isole & is_annee_construction, 'tv005_label_isolation_uniforme'] = 'isolé periode constr : ' + \
-                                                                                    td007_pb.loc[
-                                                                                        isole & is_annee_construction, 'tv005_label_isolation_uniforme']
-    td007_pb.loc[isole & (~is_annee_construction), 'tv005_label_isolation_uniforme'] = 'isolé periode isolation :' + \
-                                                                                       td007_pb.loc[isole & (
-                                                                                           ~is_annee_construction), 'tv005_label_isolation_uniforme']
+    td007_ph.loc[isole & is_annee_construction, 'tv007_label_isolation_uniforme'] = 'isolé periode constr : ' + \
+                                                                                    td007_ph.loc[
+                                                                                        isole & is_annee_construction, 'tv007_label_isolation_uniforme']
+    td007_ph.loc[isole & (~is_annee_construction), 'tv007_label_isolation_uniforme'] = 'isolé periode isolation :' + \
+                                                                                       td007_ph.loc[isole & (
+                                                                                           ~is_annee_construction), 'tv007_label_isolation_uniforme']
 
-    td007_pb.loc[isole & (~is_annee_construction), 'tv005_label_isolation_uniforme'] = 'isolé periode isolation :' + \
-                                                                                       td007_pb.loc[isole & (
-                                                                                           ~is_annee_construction), 'tv005_label_isolation_uniforme']
-
-    td007_pb.loc[tp, 'tv005_label_isolation_uniforme'] = 'Terre Plein periode constr : ' + td007_pb.loc[
-        tp, 'tv005_label_isolation_uniforme']
+    td007_ph.loc[isole & (~is_annee_construction), 'tv007_label_isolation_uniforme'] = 'isolé periode isolation :' + \
+                                                                                       td007_ph.loc[isole & (
+                                                                                           ~is_annee_construction), 'tv007_label_isolation_uniforme']
 
     # annee isolation uniforme.
 
-    td007_pb['annee_isole_uniforme_min'] = td007_pb.tv005_annee_construction_min.astype('string')
-    td007_pb['annee_isole_uniforme_max'] = td007_pb.tv005_annee_construction_max.astype('string')
-    td007_pb.loc[is_annee_isolation, 'annee_isole_uniforme_min'] = td007_pb.loc[
-        is_annee_isolation, 'tv005_annee_isolation_min'].astype('string')
-    td007_pb.loc[is_annee_isolation, 'annee_isole_uniforme_max'] = td007_pb.loc[
-        is_annee_isolation, 'tv005_annee_isolation_max'].astype('string')
+    td007_ph['annee_isole_uniforme_min'] = td007_ph.tv007_annee_construction_min.astype('string')
+    td007_ph['annee_isole_uniforme_max'] = td007_ph.tv007_annee_construction_max.astype('string')
+    td007_ph.loc[is_annee_isolation, 'annee_isole_uniforme_min'] = td007_ph.loc[
+        is_annee_isolation, 'tv007_annee_isolation_min'].astype('string')
+    td007_ph.loc[is_annee_isolation, 'annee_isole_uniforme_max'] = td007_ph.loc[
+        is_annee_isolation, 'tv007_annee_isolation_max'].astype('string')
 
     # ## label méthode calcul  U
 
-    td007_pb['meth_calc_U'] = 'INCONNUE'
+    td007_ph['meth_calc_U'] = 'INCONNUE'
 
     # calc booleens
-    U = td007_pb.coefficient_transmission_thermique_paroi.round(2)
-    U_non_isolee = td007_pb.coefficient_transmission_thermique_paroi_non_isolee.round(2)
+    U = td007_ph.coefficient_transmission_thermique_paroi.round(2)
+    U_non_isolee = td007_ph.coefficient_transmission_thermique_paroi_non_isolee.round(2)
     bool_U_egal_0 = U.round(2) == 0.00
     bool_U_U0 = U.round(2) == U_non_isolee.round(2)
     bool_U_2 = U.round(2) >= 2 | non_isole
@@ -787,106 +781,91 @@ def generate_ph_table(td007):
     bool_U_U0_auto_isol = bool_U_U0 & (U_non_isolee < 1)
     bool_U_brut = (U <= 1) & (~bool_U_U0)
     bool_U_brut_non_isole = (U > 1) & (~bool_U_U0)
-    bool_U_par_e = td007_pb.epaisseur_isolation > 0
-    bool_U_par_r = td007_pb.resistance_thermique_isolation > 0
+    bool_U_par_e = td007_ph.epaisseur_isolation > 0
+    bool_U_par_r = td007_ph.resistance_thermique_isolation > 0
 
     # remplacer 0 par nan lorsque les 0 sont des non information.
 
-    td007_pb.loc[~bool_U_par_e, 'epaisseur_isolation'] = np.nan
-    td007_pb.loc[~bool_U_par_r, 'resistance_thermique_isolation'] = np.nan
+    td007_ph.loc[~bool_U_par_e, 'epaisseur_isolation'] = np.nan
+    td007_ph.loc[~bool_U_par_r, 'resistance_thermique_isolation'] = np.nan
 
     # imputation labels
 
-    td007_pb.loc[bool_U_brut, 'meth_calc_U'] = 'U SAISI DIRECTEMENT : ISOLE'
-    td007_pb.loc[bool_U_brut_non_isole, 'meth_calc_U'] = 'U SAISI DIRECTEMENT : NON ISOLE'
-    td007_pb.loc[bool_U_par_e, 'meth_calc_U'] = 'EPAISSEUR ISOLATION SAISIE'
-    td007_pb.loc[bool_U_par_r, 'meth_calc_U'] = 'RESISTANCE ISOLATION SAISIE'
-    td007_pb.loc[bool_U_2, 'meth_calc_U'] = 'PLANCHER NON ISOLE U=2'
-    td007_pb.loc[bool_U_U0, 'meth_calc_U'] = 'PLANCHER NON ISOLE U<2'
-    td007_pb.loc[bool_U_U0_auto_isol, 'meth_calc_U'] = 'STRUCTURE ISOLANTE U<1'
-    td007_pb.loc[inconnu, 'meth_calc_U'] = 'PAR DEFAUT PERIODE : ISOLATION INCONNUE'
-    td007_pb.loc[isole, 'meth_calc_U'] = 'PAR DEFAUT PERIODE : ISOLE'
-    td007_pb.loc[tp, 'meth_calc_U'] = 'PAR DEFAUT PERIODE : TERRE PLEIN'
-    td007_pb.loc[bool_U_egal_0, 'meth_calc_U'] = 'ERREUR : U=0'
+    td007_ph.loc[bool_U_brut, 'meth_calc_U'] = 'U SAISI DIRECTEMENT : ISOLE'
+    td007_ph.loc[bool_U_brut_non_isole, 'meth_calc_U'] = 'U SAISI DIRECTEMENT : NON ISOLE'
+    td007_ph.loc[bool_U_par_e, 'meth_calc_U'] = 'EPAISSEUR ISOLATION SAISIE'
+    td007_ph.loc[bool_U_par_r, 'meth_calc_U'] = 'RESISTANCE ISOLATION SAISIE'
+    td007_ph.loc[bool_U_2, 'meth_calc_U'] = 'PLANCHER NON ISOLE U=2'
+    td007_ph.loc[bool_U_U0, 'meth_calc_U'] = 'PLANCHER NON ISOLE U<2'
+    td007_ph.loc[bool_U_U0_auto_isol, 'meth_calc_U'] = 'STRUCTURE ISOLANTE U<1'
+    td007_ph.loc[inconnu, 'meth_calc_U'] = 'PAR DEFAUT PERIODE : ISOLATION INCONNUE'
+    td007_ph.loc[isole, 'meth_calc_U'] = 'PAR DEFAUT PERIODE : ISOLE'
+    td007_ph.loc[bool_U_egal_0, 'meth_calc_U'] = 'ERREUR : U=0'
 
     # ## label isolatoin
 
-    td007_pb['isolation'] = 'NON ISOLE'
-    is_isole = ~td007_pb.meth_calc_U.str.contains('NON ISOLE|INCONNUE|TERRE')
-    td007_pb.loc[is_isole, 'isolation'] = 'ISOLE SAISI'
-    is_isole_defaut = is_isole & (td007_pb.meth_calc_U.str.contains('DEFAUT'))
-    td007_pb.loc[is_isole_defaut, 'isolation'] = 'ISOLE DEFAUT PRE 1982'
+    td007_ph['isolation'] = 'NON ISOLE'
+    is_isole = ~td007_ph.meth_calc_U.str.contains('NON ISOLE|INCONNUE|TERRE')
+    td007_ph.loc[is_isole, 'isolation'] = 'ISOLE SAISI'
+    is_isole_defaut = is_isole & (td007_ph.meth_calc_U.str.contains('DEFAUT'))
+    td007_ph.loc[is_isole_defaut, 'isolation'] = 'ISOLE DEFAUT PRE 1974'
 
-    inconnu = td007_pb.meth_calc_U.str.contains('INCONNUE')
-    post_82 = td007_pb['annee_isole_uniforme_min'] >= "1982"
-    post_2001 = td007_pb['annee_isole_uniforme_min'] >= "2001"
+    inconnu = td007_ph.meth_calc_U.str.contains('INCONNUE')
+    post_74 = td007_ph['annee_isole_uniforme_min'] >= "1974"
+    post_2001 = td007_ph['annee_isole_uniforme_min'] >= "2001"
 
-    td007_pb.loc[inconnu, 'isolation'] = 'ISOLATION INCONNUE (DEFAUT)'
+    td007_ph.loc[inconnu, 'isolation'] = 'ISOLATION INCONNUE (DEFAUT)'
 
-    td007_pb.loc[(inconnu | is_isole_defaut) & post_82, 'isolation'] = 'ISOLE DEFAUT POST 1982'
+    td007_ph.loc[(inconnu | is_isole_defaut) & post_74, 'isolation'] = 'ISOLE DEFAUT POST 1974'
 
-    td007_pb.loc[tp, 'isolation'] = 'TERRE PLEIN DEFAUT PRE 2001'
-    td007_pb.loc[tp & post_2001, 'isolation'] = 'TERRE PLEIN DEFAUT POST 2001'
+    is_isole_struc = is_isole & (td007_ph.meth_calc_U.str.contains('STRUCTURE'))
 
-    is_isole_struc = is_isole & (td007_pb.meth_calc_U.str.contains('STRUCTURE'))
+    td007_ph.loc[is_isole_struc, 'isolation'] = 'STRUCTURE ISOLANTE'
 
-    td007_pb.loc[is_isole_struc, 'isolation'] = 'STRUCTURE ISOLANTE'
+    is_err = td007_ph.meth_calc_U.str.contains('ERREUR')
 
-    is_err = td007_pb.meth_calc_U.str.contains('ERREUR')
-
-    td007_pb.loc[is_err, 'isolation'] = 'NONDEF'
+    td007_ph.loc[is_err, 'isolation'] = 'NONDEF'
 
     # ## label adjacence
 
-    td007_pb['type_adjacence'] = 'NONDEF'
+    td007_ph['type_adjacence'] = 'NONDEF'
 
-    ext = td007_pb.tv001_code == 'TV001_001'
+    ext = td007_ph.tv001_code == 'TV001_001'
 
-    td007_pb.loc[ext, 'type_adjacence'] = 'EXTERIEUR'
+    td007_ph.loc[ext, 'type_adjacence'] = 'EXTERIEUR'
 
-    is_dep = td007_pb.b_infer.round(1) >= 0.9
+    is_dep = td007_ph.b_infer.round(1) >= 0.9
 
-    td007_pb.loc[is_dep, 'type_adjacence'] = 'EXTERIEUR'
+    td007_ph.loc[is_dep, 'type_adjacence'] = 'EXTERIEUR'
 
-    enterre = td007_pb.tv001_code == 'TV001_002'
+    enterre = td007_ph.tv001_code == 'TV001_002'
 
-    td007_pb.loc[enterre, 'type_adjacence'] = 'PAROI_ENTERREE'
+    td007_ph.loc[enterre, 'type_adjacence'] = 'PAROI_ENTERREE'
 
-    not_null = ~td007_pb.tv002_local_non_chauffe.isnull()
+    not_null = ~td007_ph.tv002_local_non_chauffe.isnull()
 
-    td007_pb.loc[not_null, 'type_adjacence'] = 'LNC'
+    td007_ph.loc[not_null, 'type_adjacence'] = 'LNC'
 
-    is_lnc = td007_pb.tv001_code.astype('string') > 'TV001_004'
+    is_lnc = td007_ph.tv001_code.astype('string') > 'TV001_004'
 
-    td007_pb.loc[is_lnc, 'type_adjacence'] = 'LNC'
+    td007_ph.loc[is_lnc, 'type_adjacence'] = 'LNC'
 
-    is_adj = td007_pb.tv001_code == 'TV001_004'
+    is_adj = td007_ph.tv001_code == 'TV001_004'
 
-    td007_pb.loc[is_adj, 'type_adjacence'] = 'BAT_ADJ'
+    td007_ph.loc[is_adj, 'type_adjacence'] = 'BAT_ADJ'
 
-    is_tp = td007_pb.tv001_code == 'TV001_261'
-
-    td007_pb.loc[is_tp, 'type_adjacence'] = 'TERRE_PLEIN'
-
-    is_vs = td007_pb.tv001_code == 'TV001_003'
-
-    td007_pb.loc[is_vs, 'type_adjacence'] = 'VIDE_SANITAIRE'
-
-    td007_pb.type_adjacence_simple = td007_pb.type_adjacence.replace({'TERRE_PLEIN': 'TP_VS',
-                                                                      'VIDE_SANITAIRE': 'TP_VS'})
-    return td007_pb
+    return td007_ph
 
 
-def agg_td007_ph_to_td001(td007_pb):
-
-    td007_pb = td007_pb.rename(columns={
+def agg_td007_ph_to_td001(td007_ph):
+    td007_ph = td007_ph.rename(columns={
         'tv002_local_non_chauffe': 'type_local_non_chauffe',
         'coefficient_transmission_thermique_paroi': 'U'})
     concat = list()
-    type_adjacence_top = agg_pond_top_freq(td007_pb, 'type_adjacence', 'surface_paroi_opaque_infer',
+    type_adjacence_top = agg_pond_top_freq(td007_ph, 'type_adjacence', 'surface_paroi_opaque_infer',
                                            'td001_dpe_id').to_frame(f'type_adjacence_top')
 
-    type_adjacence_arr_agg = td007_pb.groupby('td001_dpe_id').type_adjacence.agg(
+    type_adjacence_arr_agg = td007_ph.groupby('td001_dpe_id').type_adjacence.agg(
         lambda x: np.sort(x.dropna().unique()).tolist())
 
     type_adjacence_arr_agg.name = 'type_adjacence_array'
@@ -894,38 +873,34 @@ def agg_td007_ph_to_td001(td007_pb):
     concat.append(type_adjacence_top)
     concat.append(type_adjacence_arr_agg)
 
-    type_local_non_chauffe_arr_agg = td007_pb.groupby('td001_dpe_id').type_local_non_chauffe.agg(
+    type_local_non_chauffe_arr_agg = td007_ph.groupby('td001_dpe_id').type_local_non_chauffe.agg(
         lambda x: np.sort(x.dropna().unique()).tolist())
-    type_local_non_chauffe_arr_agg = type_local_non_chauffe_arr_agg.to_frame('type_LNC_planchers_array')
-    type_local_non_chauffe_agg_top = agg_pond_top_freq(td007_pb, 'type_local_non_chauffe', 'surface_paroi_opaque_infer',
-                                               'td001_dpe_id').to_frame(f'type_LNC_planchers_top')
+    type_local_non_chauffe_arr_agg = type_local_non_chauffe_arr_agg.to_frame('type_LNC_plafonds_array')
+    type_local_non_chauffe_agg_top = agg_pond_top_freq(td007_ph, 'type_local_non_chauffe', 'surface_paroi_opaque_infer',
+                                                       'td001_dpe_id').to_frame(f'type_LNC_plafonds_top')
 
-    pivot = td007_pb.pivot_table(index='td001_dpe_id', columns='type_adjacence', values='surface_paroi_opaque_infer',
+    pivot = td007_ph.pivot_table(index='td001_dpe_id', columns='type_adjacence', values='surface_paroi_opaque_infer',
                                  aggfunc='sum')
-    pivot.columns = [f'surface_planchers_{col.lower()}' for col in pivot]
-
+    pivot.columns = [f'surface_plafonds_{col.lower()}' for col in pivot]
     concat.extend([type_local_non_chauffe_arr_agg, type_local_non_chauffe_agg_top, pivot])
 
     for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
                 'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'materiaux_structure',
                 ]:
-        var_agg = agg_pond_top_freq(td007_pb, var, 'surface_paroi_opaque_infer',
-                                    'td001_dpe_id').to_frame(f'{var}_plancher_top')
+        var_agg = agg_pond_top_freq(td007_ph, var, 'surface_paroi_opaque_infer',
+                                    'td001_dpe_id').to_frame(f'{var}_plafonds_top')
         concat.append(var_agg)
 
-    for type_adjacence_simple in ['EXTERIEUR', 'TP_VS', 'LNC', 'BAT_ADJ']:
-        sel = td007_pb.loc[td007_pb.type_adjacence_simple == type_adjacence_simple]
+    for type_adjacence in ['EXTERIEUR', 'LNC', 'BAT_ADJ']:
+        sel = td007_ph.loc[td007_ph.type_adjacence == type_adjacence]
         for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
                     'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'materiaux_structure',
                     ]:
             var_agg = agg_pond_top_freq(sel, var, 'surface_paroi_opaque_infer',
-                                        'td001_dpe_id').to_frame(f'{var}_plancher_{type_adjacence_simple.lower()}_top')
+                                        'td001_dpe_id').to_frame(f'{var}_plafonds_{type_adjacence.lower()}_top')
             concat.append(var_agg)
 
-    td007_pb_agg = pd.concat(concat, axis=1)
+    td007_ph_agg = pd.concat(concat, axis=1)
+    td007_ph_agg.index.name = 'td001_dpe_id'
 
-    td007_pb_agg.index.name = 'td001_dpe_id'
-
-    return td007_pb_agg
-
-
+    return td007_ph_agg

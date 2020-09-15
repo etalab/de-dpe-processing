@@ -7,31 +7,42 @@ from config import paths
 
 
 def run_enveloppe_processing(td001, td006, td007, td008, td010):
-    from td007_processing import merge_td007_tr_tv, postprocessing_td007,generate_pb_table,\
-        generate_ph_table,generate_murs_table,agg_td007_murs_to_td001,agg_td007_ph_to_td001,agg_td007_pb_to_td001
+    from td007_processing import merge_td007_tr_tv, postprocessing_td007, generate_pb_table, \
+        generate_ph_table, generate_murs_table, agg_td007_murs_to_td001, agg_td007_ph_to_td001, agg_td007_pb_to_td001
 
     from td008_processing import merge_td008_tr_tv, postprocessing_td008
     from td001_merge import merge_td001_dpe_id_envelope
     from td007_processing import agg_td007_to_td001_essential, agg_surface_envelope
-    from td008_processing import agg_td008_to_td001_essential
+    from td008_processing import agg_td008_to_td001_essential, agg_td008_to_td001
+    from td010_processing import merge_td010_tr_tv, postprocessing_td010, agg_td010_td001
     td008_raw_cols = td008.columns.tolist()
     td007_raw_cols = td007.columns.tolist()
+    td010_raw_cols = td010.columns.tolist()
 
     td001, td006, td007, td008, td010 = merge_td001_dpe_id_envelope(td001=td001, td006=td006, td007=td007, td008=td008,
-                                                             td010=td010)
-    # TABLES SYNTHETIQUES TOUTES THEMATIQUES
-
+                                                                    td010=td010)
+    # POSTPRO DES TABLES
     td008 = merge_td008_tr_tv(td008)
     td008 = postprocessing_td008(td008)
 
     td007 = merge_td007_tr_tv(td007)
     td007 = postprocessing_td007(td007, td008)
 
-    agg_td007 = agg_td007_to_td001_essential(td007)
-    agg_td008 = agg_td008_to_td001_essential(td008)
-    agg_surfaces = agg_surface_envelope(td007, td008)
+    td010 = merge_td010_tr_tv(td010)
+    td010 = postprocessing_td010(td010)
 
-    td001_enveloppe_agg = pd.concat([agg_td007, agg_td008, agg_surfaces], axis=1)
+    # TABLES PAR TYPE COMPOSANT
+    td007_pb = generate_pb_table(td007)
+    td007_ph = generate_ph_table(td007)
+    td007_murs = generate_murs_table(td007)
+
+    # TABLES SYNTHETIQUES TOUTES THEMATIQUES
+
+    td007_agg_essential = agg_td007_to_td001_essential(td007)
+    td008_agg_essential = agg_td008_to_td001_essential(td008)
+    surfaces_agg_essential = agg_surface_envelope(td007, td008)
+
+    td001_enveloppe_agg = pd.concat([td007_agg_essential, td008_agg_essential, surfaces_agg_essential], axis=1)
 
     td001_enveloppe_agg.index.name = 'td001_dpe_id'
     cols = [el for el in td008.columns if el not in td008_raw_cols + ['fen_lib_from_tv009',
@@ -46,20 +57,31 @@ def run_enveloppe_processing(td001, td006, td007, td008, td010):
     cols = unique_ordered(cols)
     td007_p = td007[cols]
 
-    # TABLES PAR TYPE COMPOSANT
-    td007_pb = generate_pb_table(td007_p)
-    td007_ph = generate_ph_table(td007_p)
-    td007_murs = generate_murs_table(td007_p)
+    cols = [el for el in td010.columns if
+            el not in td010_raw_cols]
+    cols.append('td010_pont_thermique_id')
+    cols = unique_ordered(cols)
+    td010_p = td010[cols]
 
     # TABLES AGGREGEES PAR TYPE COMPOSANT
     td007_murs_agg = agg_td007_murs_to_td001(td007_murs)
     td007_ph_agg = agg_td007_ph_to_td001(td007_ph)
     td007_pb_agg = agg_td007_pb_to_td001(td007_pb)
+    td008_agg = agg_td008_to_td001(td008)
+    td010_agg = agg_td010_td001(td010)
 
-    env_compo_dict =dict(td007_ph=td007_ph,
-                               td007_pb=td007_pb,
-                               td007_murs=td007_murs)
-    return td001_enveloppe_agg, td008_p, td007_p
+    env_compo_dict = dict(td007_paroi_opaque=td007_p,
+                          td007_ph=td007_ph,
+                          td007_pb=td007_pb,
+                          td007_murs=td007_murs,
+                          td008_baie=td008_p,
+                          td010_pont_thermique=td010_p)
+
+    env_compo_agg_dict = dict(td007_murs_agg=td007_murs_agg,
+                              td007_ph_agg=td007_ph_agg,
+                              td007_pb_agg=td007_pb_agg, td008_agg=td008_agg, td010_agg=td010_agg)
+
+    return td001_enveloppe_agg, td008_p, td007_p, env_compo_dict, env_compo_agg_dict
 
 
 def run_system_processing(td001, td006, td011, td012, td013, td014):
@@ -141,7 +163,9 @@ if __name__ == '__main__':
     annexe_dir = Path(annexe_dir)
     annexe_dir.mkdir(exist_ok=True, parents=True)
     build_doc(annexe_dir)
-    for dept_dir in Path(data_dir).iterdir():
+    list_dir = list(Path(data_dir).iterdir())
+    list_dir.reverse()
+    for dept_dir in list_dir:
         print(dept_dir)
         annexe_dept_dir = annexe_dir / dept_dir.name
         annexe_dept_dir.mkdir(exist_ok=True, parents=True)
@@ -151,14 +175,23 @@ if __name__ == '__main__':
         td001 = pd.read_csv(dept_dir / 'td001_dpe.csv', dtype=str)
         td008 = pd.read_csv(dept_dir / 'td008_baie.csv', dtype=str)
         td008 = td008.drop('td008_baie_id', axis=1)
+        td010 = pd.read_csv(dept_dir / 'td010_pont_thermique.csv', dtype=str)
 
         # ENVELOPPE PROCESSING
-        td001_enveloppe_agg, td008_p, td007_p = run_enveloppe_processing(td001, td006, td007, td008)
+        td001_enveloppe_agg, td008_p, td007_p, env_compo_dict, env_compo_agg_dict = run_enveloppe_processing(td001,
+                                                                                                             td006,
+                                                                                                             td007,
+                                                                                                             td008,
+                                                                                                             td010)
 
         round_float_cols(td001_enveloppe_agg).to_csv(annexe_dept_dir / 'td001_annexe_enveloppe_agg.csv')
         round_float_cols(td007_p).to_csv(annexe_dept_dir / 'td007_paroi_opaque_annexe.csv')
         round_float_cols(td008_p).to_csv(annexe_dept_dir / 'td008_baie_annexe.csv')
+        for k, v in env_compo_dict.items():
+            round_float_cols(v).to_csv(annexe_dept_dir / f'{k}_annexe.csv')
 
+        for k, v in env_compo_agg_dict.items():
+            round_float_cols(v).to_csv(annexe_dept_dir / f'{k}_annexe.csv')
         # SYSTEM PROCESSING
 
         td011 = pd.read_csv(dept_dir / 'td011_installation_chauffage.csv', dtype=str)

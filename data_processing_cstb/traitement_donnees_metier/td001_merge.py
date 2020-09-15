@@ -1,5 +1,4 @@
-
-def merge_td001_dpe_id_envelope(td001, td006, td007, td008,td010):
+def merge_td001_dpe_id_envelope(td001, td006, td007, td008, td010):
     """
     preparation des tables enveloppe en fournissant le td001_dpe_id pour toutes les tables
     """
@@ -7,15 +6,16 @@ def merge_td001_dpe_id_envelope(td001, td006, td007, td008,td010):
     td006 = td006.rename(columns={"id": "td006_batiment_id"})
     td007 = td007.rename(columns={"id": "td007_paroi_opaque_id"})
     td008 = td008.rename(columns={"id": "td008_baie_id"})
+    td010 = td010.rename(columns={"id": "td010_pont_thermique_id"})
     td001 = td001.rename(columns={"id": "td001_dpe_id"})
     td007 = td007.merge(td006[['td006_batiment_id', 'td001_dpe_id']], on='td006_batiment_id', how='left')
     td008 = td008.merge(td007[['td007_paroi_opaque_id', 'td001_dpe_id']], on='td007_paroi_opaque_id', how='left')
     td010 = td010.merge(td006[['td006_batiment_id', 'td001_dpe_id']], on='td006_batiment_id', how='left')
 
-    return td001,td006,td007,td008,td010
+    return td001, td006, td007, td008, td010
 
 
-def merge_td001_dpe_id_system(td001, td006, td011, td012,td013,td014):
+def merge_td001_dpe_id_system(td001, td006, td011, td012, td013, td014):
     """
     preparation des tables systèmes en fournissant le td001_dpe_id pour toutes les tables
     """
@@ -27,16 +27,17 @@ def merge_td001_dpe_id_system(td001, td006, td011, td012,td013,td014):
     td014 = td014.rename(columns={"id": "td014_generateur_ecs_id"})
 
     td011 = td011.merge(td006[['td006_batiment_id', 'td001_dpe_id']], on='td006_batiment_id', how='left')
-    td012 = td012.merge(td011[['td011_installation_chauffage_id', 'td001_dpe_id']], on='td011_installation_chauffage_id', how='left')
+    td012 = td012.merge(td011[['td011_installation_chauffage_id', 'td001_dpe_id']],
+                        on='td011_installation_chauffage_id', how='left')
 
     td013 = td013.merge(td006[['td006_batiment_id', 'td001_dpe_id']], on='td006_batiment_id', how='left')
-    td014 = td014.merge(td013[['td013_installation_ecs_id', 'td001_dpe_id']], on='td013_installation_ecs_id', how='left')
+    td014 = td014.merge(td013[['td013_installation_ecs_id', 'td001_dpe_id']], on='td013_installation_ecs_id',
+                        how='left')
+
+    return td001, td006, td011, td012, td013, td014
 
 
-    return td001,td006,td011, td012,td013,td014
-
-
-def merge_count_subtables(td001,td006,td007,td008):
+def merge_count_subtables(td001, td006, td007, td008):
     """
     obsolete
 
