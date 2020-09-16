@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
-from utils import agg_pond_top_freq, agg_pond_avg
+from .utils import agg_pond_top_freq, agg_pond_avg
+
+from .trtvtables import DPETrTvTables
 
 td008_types = {'id': 'str',
                'td007_paroi_opaque_id': 'str',
@@ -25,7 +27,6 @@ td008_types = {'id': 'str',
 
 
 def merge_td008_tr_tv(td008):
-    from trtvtables import DPETrTvTables
     meta = DPETrTvTables()
     table = td008.copy()
     table = table.rename(columns={
@@ -41,7 +42,6 @@ def merge_td008_tr_tv(td008):
 
 
 def postprocessing_td008(td008):
-    from utils import intervals_to_category
 
     td008 = td008.copy()
 

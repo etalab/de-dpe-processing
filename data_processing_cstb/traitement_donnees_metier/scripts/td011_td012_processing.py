@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-from utils import concat_string_cols, strip_accents, affect_lib_by_matching_score, clean_str
+from .utils import concat_string_cols, strip_accents, affect_lib_by_matching_score, clean_str
+from .trtvtables import DPETrTvTables
 
 td011_types = {'td011_installation_chauffage_id': 'str',
                'td006_batiment_id': 'str',
@@ -68,10 +69,10 @@ gen_ch_lib_simp_dict = {'chaudiere gaz standard': 'chaudiere gaz standard',
                         'convecteurs bi-jonction': 'generateurs a effet joule', }
 
 # GEN CH NORMALIZED DICT
-gen_ch_normalized_lib_matching_dict = {"pac air/air": [('pac', 'PAC'), 'air/air', ('electricite', 'electrique')],
-                                       "pac air/eau": [('pac', 'PAC'), 'air/eau', ('electricite', 'electrique')],
-                                       "pac eau/eau": [('pac', 'PAC'), 'eau/eau', ('electricite', 'electrique')],
-                                       "pac geothermique": [('pac', 'PAC'), (
+gen_ch_normalized_lib_matching_dict = {"pac air/air": ['pac', 'air/air', ('electricite', 'electrique')],
+                                       "pac air/eau": ['pac', 'air/eau', ('electricite', 'electrique')],
+                                       "pac eau/eau": ['pac', 'eau/eau', ('electricite', 'electrique')],
+                                       "pac geothermique": ['pac', (
                                            'geothermique', 'géothermique', 'géothermie', 'geothermie'),
                                                             ('electricite', 'electrique')],
                                        'panneaux rayonnants electriques nfc': ['panneau', ('electricite', 'electrique'),
@@ -118,7 +119,6 @@ poele_dict = {0.78: 'poele ou insert bois',
 
 
 def merge_td011_tr_tv(td011):
-    from trtvtables import DPETrTvTables
     meta = DPETrTvTables()
     table = td011.copy()
     table = meta.merge_all_tr_tables(table)
@@ -130,7 +130,6 @@ def merge_td011_tr_tv(td011):
 
 
 def merge_td012_tr_tv(td012):
-    from trtvtables import DPETrTvTables
     meta = DPETrTvTables()
     table = td012.copy()
     table = meta.merge_all_tr_tables(table)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from td011_td012_processing import gen_ch_normalized_lib_matching_dict, gen_ch_lib_simp_dict
-from td013_td014_processing import gen_ecs_normalized_lib_matching_dict, gen_ecs_lib_simp_dict
-from utils import unique_ordered
+from .td011_td012_processing import gen_ch_normalized_lib_matching_dict, gen_ch_lib_simp_dict
+from .td013_td014_processing import gen_ecs_normalized_lib_matching_dict, gen_ecs_lib_simp_dict
+from .utils import unique_ordered
 td001_annexe_generale_desc = {
     'nom_methode_dpe_norm': 'nom méthode dpe normalisé et simplifié (voir enum : nom_methode_dpe_norm)'}
 

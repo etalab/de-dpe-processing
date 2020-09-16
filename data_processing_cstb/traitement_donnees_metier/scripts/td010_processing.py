@@ -1,12 +1,12 @@
 import pandas as pd
 import numpy as np
-from utils import agg_pond_top_freq, agg_pond_avg
+from .utils import agg_pond_top_freq, agg_pond_avg
+from .trtvtables import DPETrTvTables
 
 td010_types = {'longueur': 'float'}
 
 
 def merge_td010_tr_tv(td010):
-    from trtvtables import DPETrTvTables
     meta = DPETrTvTables()
     table = td010.copy()
     table = meta.merge_all_tr_tables(table)

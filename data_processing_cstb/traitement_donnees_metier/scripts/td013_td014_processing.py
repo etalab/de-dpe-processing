@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-from utils import concat_string_cols, strip_accents, affect_lib_by_matching_score, clean_str
+from .utils import concat_string_cols, strip_accents, affect_lib_by_matching_score, clean_str
+from .trtvtables import DPETrTvTables
 
 td013_types = {
     'td006_batiment_id': 'str',
@@ -108,7 +109,6 @@ sys_principal_score_lib['non affecte'] = -1
 
 
 def merge_td013_tr_tv(td013):
-    from trtvtables import DPETrTvTables
     meta = DPETrTvTables()
     table = td013.copy()
     table = meta.merge_all_tr_tables(table)
@@ -120,7 +120,6 @@ def merge_td013_tr_tv(td013):
 
 
 def merge_td014_tr_tv(td014):
-    from trtvtables import DPETrTvTables
     meta = DPETrTvTables()
     table = td014.copy()
     table = meta.merge_all_tr_tables(table)

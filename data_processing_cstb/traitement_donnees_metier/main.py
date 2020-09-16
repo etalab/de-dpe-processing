@@ -1,20 +1,30 @@
 import pandas as pd
 from pathlib import Path
 import json
-from td001_processing import postprocessing_td001
-from utils import round_float_cols, unique_ordered
+from scripts import td001_processing
+from scripts.td001_processing import postprocessing_td001
+from scripts.utils import round_float_cols, unique_ordered
 from config import paths
+from multiprocessing import Pool
+from scripts.td007_processing import merge_td007_tr_tv, postprocessing_td007, generate_pb_table, \
+    generate_ph_table, generate_murs_table, agg_td007_murs_to_td001, agg_td007_ph_to_td001, agg_td007_pb_to_td001
+
+from scripts.td008_processing import merge_td008_tr_tv, postprocessing_td008
+from scripts.td001_merge import merge_td001_dpe_id_envelope
+from scripts.td007_processing import agg_td007_to_td001_essential, agg_surface_envelope
+from scripts.td008_processing import agg_td008_to_td001_essential, agg_td008_to_td001
+from scripts.td010_processing import merge_td010_tr_tv, postprocessing_td010, agg_td010_td001
+from scripts.td011_td012_processing import merge_td012_tr_tv, postprocessing_td012, merge_td011_tr_tv, \
+    agg_systeme_chauffage_essential
+from scripts.td013_td014_processing import merge_td013_tr_tv, postprocessing_td014, merge_td014_tr_tv, \
+    agg_systeme_ecs_essential
+from scripts.td001_merge import merge_td001_dpe_id_system
+from scripts.doc_annexe import td001_annexe_enveloppe_agg_desc, td001_sys_ch_agg_desc, td001_sys_ecs_agg_desc, \
+    td007_annexe_desc, td008_annexe_desc, td012_annexe_desc, td014_annexe_desc, enums_cstb, \
+    td001_annexe_generale_desc
 
 
 def run_enveloppe_processing(td001, td006, td007, td008, td010):
-    from td007_processing import merge_td007_tr_tv, postprocessing_td007, generate_pb_table, \
-        generate_ph_table, generate_murs_table, agg_td007_murs_to_td001, agg_td007_ph_to_td001, agg_td007_pb_to_td001
-
-    from td008_processing import merge_td008_tr_tv, postprocessing_td008
-    from td001_merge import merge_td001_dpe_id_envelope
-    from td007_processing import agg_td007_to_td001_essential, agg_surface_envelope
-    from td008_processing import agg_td008_to_td001_essential, agg_td008_to_td001
-    from td010_processing import merge_td010_tr_tv, postprocessing_td010, agg_td010_td001
     td008_raw_cols = td008.columns.tolist()
     td007_raw_cols = td007.columns.tolist()
     td010_raw_cols = td010.columns.tolist()
@@ -85,12 +95,6 @@ def run_enveloppe_processing(td001, td006, td007, td008, td010):
 
 
 def run_system_processing(td001, td006, td011, td012, td013, td014):
-    from td011_td012_processing import merge_td012_tr_tv, postprocessing_td012, merge_td011_tr_tv, \
-        agg_systeme_chauffage_essential
-    from td013_td014_processing import merge_td013_tr_tv, postprocessing_td014, merge_td014_tr_tv, \
-        agg_systeme_ecs_essential
-    from td001_merge import merge_td001_dpe_id_system
-
     td011_raw_cols = td011.columns.tolist()
     td012_raw_cols = td012.columns.tolist()
     td013_raw_cols = td013.columns.tolist()
@@ -135,10 +139,6 @@ def run_system_processing(td001, td006, td011, td012, td013, td014):
 
 
 def build_doc(annexe_dir):
-    from doc_annexe import td001_annexe_enveloppe_agg_desc, td001_sys_ch_agg_desc, td001_sys_ecs_agg_desc, \
-        td007_annexe_desc, td008_annexe_desc, td012_annexe_desc, td014_annexe_desc, enums_cstb, \
-        td001_annexe_generale_desc
-
     doc_annexe = dict()
     doc_annexe['td001_annexe_generale'] = td001_annexe_generale_desc
     doc_annexe['td001_annexe_enveloppe_agg'] = td001_annexe_enveloppe_agg_desc
@@ -156,59 +156,77 @@ def build_doc(annexe_dir):
         json.dump(enums_cstb, f, indent=4)
 
 
-if __name__ == '__main__':
+data_dir = paths['DPE_DEPT_PATH']
+annexe_dir = paths['DPE_DEPT_ANNEXE_PATH']
+annexe_dir = Path(annexe_dir)
+annexe_dir.mkdir(exist_ok=True, parents=True)
 
-    data_dir = paths['DPE_DEPT_PATH']
-    annexe_dir = paths['DPE_DEPT_ANNEXE_PATH']
-    annexe_dir = Path(annexe_dir)
-    annexe_dir.mkdir(exist_ok=True, parents=True)
+
+def run_postprocessing_by_depts(dept_dir):
+    print(dept_dir)
+    annexe_dept_dir = annexe_dir / dept_dir.name
+    annexe_dept_dir.mkdir(exist_ok=True, parents=True)
+    # LOAD TABLES
+    td007 = pd.read_csv(dept_dir / 'td007_paroi_opaque.csv', dtype=str)
+    td006 = pd.read_csv(dept_dir / 'td006_batiment.csv', dtype=str)
+    td001 = pd.read_csv(dept_dir / 'td001_dpe.csv', dtype=str)
+    td008 = pd.read_csv(dept_dir / 'td008_baie.csv', dtype=str)
+    td008 = td008.drop('td008_baie_id', axis=1)
+    td010 = pd.read_csv(dept_dir / 'td010_pont_thermique.csv', dtype=str)
+
+    # ENVELOPPE PROCESSING
+    td001_enveloppe_agg, td008_p, td007_p, env_compo_dict, env_compo_agg_dict = run_enveloppe_processing(td001,
+                                                                                                         td006,
+                                                                                                         td007,
+                                                                                                         td008,
+                                                                                                         td010)
+
+    round_float_cols(td001_enveloppe_agg).to_csv(annexe_dept_dir / 'td001_enveloppe_agg_annexe.csv')
+    round_float_cols(td007_p).to_csv(annexe_dept_dir / 'td007_paroi_opaque_annexe.csv')
+    round_float_cols(td008_p).to_csv(annexe_dept_dir / 'td008_baie_annexe.csv')
+    for k, v in env_compo_dict.items():
+        round_float_cols(v).to_csv(annexe_dept_dir / f'{k}_annexe.csv')
+
+    for k, v in env_compo_agg_dict.items():
+        round_float_cols(v).to_csv(annexe_dept_dir / f'td001_{k}_annexe.csv')
+
+    # EMPTY MEMORY
+    del td001_enveloppe_agg, td008_p, td007_p, env_compo_dict, env_compo_agg_dict
+    del v
+    del td007,td008,td010
+
+    # SYSTEM PROCESSING
+
+    td011 = pd.read_csv(dept_dir / 'td011_installation_chauffage.csv', dtype=str)
+    td012 = pd.read_csv(dept_dir / 'td012_generateur_chauffage.csv', dtype=str)
+    td013 = pd.read_csv(dept_dir / 'td013_installation_ecs.csv', dtype=str)
+    td014 = pd.read_csv(dept_dir / 'td014_generateur_ecs.csv', dtype=str)
+
+    td011_p, td012_p, td001_sys_ch_agg, td013_p, td014_p, td001_sys_ecs_agg = run_system_processing(td001, td006,
+                                                                                                    td011, td012,
+                                                                                                    td013, td014)
+    round_float_cols(td001_sys_ch_agg).to_csv(annexe_dept_dir / 'td001_sys_ch_agg_annexe.csv')
+    round_float_cols(td001_sys_ecs_agg).to_csv(annexe_dept_dir / 'td001_sys_ecs_agg_annexe.csv')
+    round_float_cols(td011_p).to_csv(annexe_dept_dir / 'td011_installation_chauffage_annexe.csv')
+    round_float_cols(td012_p).to_csv(annexe_dept_dir / 'td012_generateur_chauffage_annexe.csv')
+    round_float_cols(td013_p).to_csv(annexe_dept_dir / 'td013_installation_ecs_annexe.csv')
+    round_float_cols(td014_p).to_csv(annexe_dept_dir / 'td014_generateur_ecs_annexe.csv')
+    # EMPTY MEMORY
+    del td011_p, td012_p, td001_sys_ch_agg, td013_p, td014_p, td001_sys_ecs_agg
+    del td011, td012, td013, td014
+
+    # add td001 processing
+    postprocessing_td001(td001)[['nom_methode_dpe_norm', 'id']].rename(columns={'id': 'td001_dpe_id'}).to_csv(
+        annexe_dept_dir / 'td001_annexe_generale.csv')
+
+
+if __name__ == '__main__':
     build_doc(annexe_dir)
     list_dir = list(Path(data_dir).iterdir())
-    list_dir.reverse()
-    for dept_dir in list_dir:
-        print(dept_dir)
-        annexe_dept_dir = annexe_dir / dept_dir.name
-        annexe_dept_dir.mkdir(exist_ok=True, parents=True)
-        # LOAD TABLES
-        td007 = pd.read_csv(dept_dir / 'td007_paroi_opaque.csv', dtype=str)
-        td006 = pd.read_csv(dept_dir / 'td006_batiment.csv', dtype=str)
-        td001 = pd.read_csv(dept_dir / 'td001_dpe.csv', dtype=str)
-        td008 = pd.read_csv(dept_dir / 'td008_baie.csv', dtype=str)
-        td008 = td008.drop('td008_baie_id', axis=1)
-        td010 = pd.read_csv(dept_dir / 'td010_pont_thermique.csv', dtype=str)
+    # list_dir.reverse()
 
-        # ENVELOPPE PROCESSING
-        td001_enveloppe_agg, td008_p, td007_p, env_compo_dict, env_compo_agg_dict = run_enveloppe_processing(td001,
-                                                                                                             td006,
-                                                                                                             td007,
-                                                                                                             td008,
-                                                                                                             td010)
+    # for dept_dir in list_dir:
+    #     run_postprocessing_by_depts(dept_dir)
 
-        round_float_cols(td001_enveloppe_agg).to_csv(annexe_dept_dir / 'td001_annexe_enveloppe_agg.csv')
-        round_float_cols(td007_p).to_csv(annexe_dept_dir / 'td007_paroi_opaque_annexe.csv')
-        round_float_cols(td008_p).to_csv(annexe_dept_dir / 'td008_baie_annexe.csv')
-        for k, v in env_compo_dict.items():
-            round_float_cols(v).to_csv(annexe_dept_dir / f'{k}_annexe.csv')
-
-        for k, v in env_compo_agg_dict.items():
-            round_float_cols(v).to_csv(annexe_dept_dir / f'{k}_annexe.csv')
-        # SYSTEM PROCESSING
-
-        td011 = pd.read_csv(dept_dir / 'td011_installation_chauffage.csv', dtype=str)
-        td012 = pd.read_csv(dept_dir / 'td012_generateur_chauffage.csv', dtype=str)
-        td013 = pd.read_csv(dept_dir / 'td013_installation_ecs.csv', dtype=str)
-        td014 = pd.read_csv(dept_dir / 'td014_generateur_ecs.csv', dtype=str)
-
-        td011_p, td012_p, td001_sys_ch_agg, td013_p, td014_p, td001_sys_ecs_agg = run_system_processing(td001, td006,
-                                                                                                        td011, td012,
-                                                                                                        td013, td014)
-        round_float_cols(td001_sys_ch_agg).to_csv(annexe_dept_dir / 'td001_annexe_sys_ch_agg.csv')
-        round_float_cols(td001_sys_ecs_agg).to_csv(annexe_dept_dir / 'td001_annexe_sys_ecs_agg.csv')
-        round_float_cols(td011_p).to_csv(annexe_dept_dir / 'td011_annexe_installation_chauffage.csv')
-        round_float_cols(td012_p).to_csv(annexe_dept_dir / 'td012_annexe_generateur_chauffage.csv')
-        round_float_cols(td013_p).to_csv(annexe_dept_dir / 'td013_annexe_installation_ecs.csv')
-        round_float_cols(td014_p).to_csv(annexe_dept_dir / 'td014_annexe_generateur_ecs.csv')
-
-        # add td001 processing
-        postprocessing_td001(td001)[['nom_methode_dpe_norm', 'id']].rename(columns={'id': 'td001_dpe_id'}).to_csv(
-            annexe_dept_dir / 'td001_annexe_generale.csv')
+    with Pool(processes=4) as pool:
+        pool.starmap(run_postprocessing_by_depts, [(dept_dir,) for dept_dir in list_dir])

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-from utils import agg_pond_avg, agg_pond_top_freq
+from .utils import agg_pond_avg, agg_pond_top_freq
+from .trtvtables import DPETrTvTables
 
 td007_types = {'id': 'str',
                'td006_batiment_id': 'str',
@@ -23,7 +24,6 @@ td007_types = {'id': 'str',
 
 
 def merge_td007_tr_tv(td007):
-    from trtvtables import DPETrTvTables
     meta = DPETrTvTables()
     table = td007.copy()
     table = meta.merge_all_tr_tables(table)  # merge all tr tables inside the table

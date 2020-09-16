@@ -1,4 +1,4 @@
-from utils import strip_accents,affect_lib_by_matching_score
+from .utils import strip_accents,affect_lib_by_matching_score
 mixte = ('mixte', 'combine', 'chauffage + ecs','chauffage et ecs','lie ','combine ')
 gen_ecs_normalized_lib_matching_dict_ft = {
     "ballon thermodynamique electrique": [('thermodynamique', 'air extrait', 'air exterieur'),
