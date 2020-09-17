@@ -193,7 +193,7 @@ def run_postprocessing_by_depts(dept_dir):
     # EMPTY MEMORY
     del td001_enveloppe_agg, td008_p, td007_p, env_compo_dict, env_compo_agg_dict
     del v
-    del td007,td008,td010
+    del td007, td008, td010
 
     # SYSTEM PROCESSING
 
@@ -223,6 +223,11 @@ def run_postprocessing_by_depts(dept_dir):
 if __name__ == '__main__':
     build_doc(annexe_dir)
     list_dir = list(Path(data_dir).iterdir())
+    firsts = [a_dir for a_dir in list_dir if not (annexe_dir / a_dir.name / 'td001_annexe_generale.csv').is_file()]
+    lasts = [a_dir for a_dir in list_dir if (annexe_dir / a_dir.name / 'td001_annexe_generale.csv').is_file()]
+    print(len(firsts), len(lasts))
+    list_dir = firsts + lasts
+
     # list_dir.reverse()
 
     # for dept_dir in list_dir:
