@@ -698,7 +698,6 @@ def agg_td007_pb_to_td001(td007_pb):
         var_agg = agg_pond_top_freq(td007_pb, var, 'surface_paroi_opaque_infer',
                                     'td001_dpe_id').to_frame(f'{var}_plancher_top')
         concat.append(var_agg)
-    print(td007_pb.columns.tolist())
     for type_adjacence_simple in ['EXTERIEUR', 'TP_VS', 'LNC', 'BAT_ADJ']:
         sel = td007_pb.loc[td007_pb.type_adjacence_simple == type_adjacence_simple]
         for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
