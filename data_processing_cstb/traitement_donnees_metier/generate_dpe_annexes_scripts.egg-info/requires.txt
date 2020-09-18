@@ -1,0 +1,7 @@
+pandas
+numpy
+rdflib
+seaborn
+h5py
+paramiko
+psutil
