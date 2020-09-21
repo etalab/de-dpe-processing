@@ -2,6 +2,7 @@
 from .td011_td012_processing import gen_ch_normalized_lib_matching_dict, gen_ch_lib_simp_dict
 from .td013_td014_processing import gen_ecs_normalized_lib_matching_dict, gen_ecs_lib_simp_dict
 from .utils import unique_ordered
+
 td001_annexe_generale_desc = {
     'nom_methode_dpe_norm': 'nom méthode dpe normalisé et simplifié (voir enum : nom_methode_dpe_norm)'}
 
@@ -100,6 +101,58 @@ td001_sys_ecs_agg_desc = {
     "sys_ecs_tertiaire_type_installation_ecs_concat": "type d'installation d'ecs pour le système d'ecs tertiaire concaténé (collectif ou individuel)",
 }
 
+td001_td007_murs_agg_annexe_desc = {
+    'type_adjacence_top': "type d'adajcence la plus fréquente des murs.",
+    'type_adjacence_array': "liste des types d'adjacences des murs",
+    'type_LNC_murs_array': "liste des type de locaux non chauffés en contact avec les murs.",
+    'type_LNC_murs_top': "type  de locaux non chauffés en contact avec les murs le plus fréquent.",
+    "surface_murs_{type_adjacence}": "surface totale de murs correspondant au type d'adjacence.",
+    "meth_calc_U_murs_top": "methode de calcul du coefficient de déperdition du mur (U) principale.",
+    "U_murs_top": "coefficient de deperdition des murs le plus fréquent.",
+    'epaisseur_isolation_murs_top': "epaisseur d'isolation la plus fréquente (quand elle est déclarée)",
+    'resistance_thermique_isolation_murs_top': "resistance d'isolation la plus fréquente (quand elle est déclarée)",
+    'isolation_murs_top': "méthode de determination de l'isolation la plus fréquente (isolation par défaut,isolation saisie ,non isolé etc...",
+    'annee_isole_uniforme_min_murs_top': "annee d'isolation minimum la plus fréquente (quand l'isolation est determinée par défaut par rapport à l'année de construction",
+    'annee_isole_uniforme_max_murs_top': "annee d'isolation maximum la plus fréquente (quand l'isolation est determinée par défaut par rapport à l'année de construction",
+    'materiaux_structure_murs_top': "materiaux de structure des murs le plus fréquent",
+    'epaisseur_structure_murs_top': "epaisseur du matériau de structure le plus fréquent.",
+}
+
+td001_td007_murs_agg_annexe_desc = {
+    'type_adjacence_top': "type d'adajcence la plus fréquente des murs.",
+    'type_adjacence_array': "liste des types d'adjacences des murs",
+    'type_LNC_murs_array': "liste des type de locaux non chauffés en contact avec les murs.",
+    'type_LNC_murs_top': "type  de locaux non chauffés en contact avec les murs le plus fréquent.",
+    "surface_murs_{type_adjacence}": "surface totale de murs correspondant au type d'adjacence.",
+    "meth_calc_U_murs_top": "methode de calcul du coefficient de déperdition du mur (U) principale.",
+    "U_murs_top": "coefficient de deperdition des murs le plus fréquent.",
+    'epaisseur_isolation_murs_top': "epaisseur d'isolation la plus fréquente (quand elle est déclarée)",
+    'resistance_thermique_isolation_murs_top': "resistance d'isolation la plus fréquente (quand elle est déclarée)",
+    'isolation_murs_top': "méthode de determination de l'isolation la plus fréquente (isolation par défaut,isolation saisie ,non isolé etc...",
+    'annee_isole_uniforme_min_murs_top': "annee d'isolation minimum la plus fréquente (quand l'isolation est determinée par défaut par rapport à l'année de construction",
+    'annee_isole_uniforme_max_murs_top': "annee d'isolation maximum la plus fréquente (quand l'isolation est determinée par défaut par rapport à l'année de construction",
+    'materiaux_structure_murs_top': "materiaux de structure des murs le plus fréquent",
+    'epaisseur_structure_murs_top': "epaisseur du matériau de structure le plus fréquent.",
+}
+
+td001_td007_plafonds_agg_annexe_desc = {
+    'type_adjacence_top': "type d'adajcence la plus fréquente des plafonds.",
+    'type_adjacence_array': "liste des types d'adjacences des plafonds",
+    'type_LNC_plafonds_array': "liste des type de locaux non chauffés en contact avec les plafonds.",
+    'type_LNC_plafonds_top': "type  de locaux non chauffés en contact avec les plafonds le plus fréquent.",
+    "surface_plafonds_{type_adjacence}": "surface totale de plafonds correspondant au type d'adjacence.",
+    "meth_calc_U_plafonds_top": "methode de calcul du coefficient de déperdition du mur (U) principale.",
+    "U_plafonds_top": "coefficient de deperdition des plafonds le plus fréquent.",
+    'epaisseur_isolation_plafonds_top': "epaisseur d'isolation la plus fréquente (quand elle est déclarée)",
+    'resistance_thermique_isolation_plafonds_top': "resistance d'isolation la plus fréquente (quand elle est déclarée)",
+    'isolation_plafonds_top': "méthode de determination de l'isolation la plus fréquente (isolation par défaut,isolation saisie ,non isolé etc...",
+    'annee_isole_uniforme_min_plafonds_top': "annee d'isolation minimum la plus fréquente (quand l'isolation est determinée par défaut par rapport à l'année de construction",
+    'annee_isole_uniforme_max_plafonds_top': "annee d'isolation maximum la plus fréquente (quand l'isolation est determinée par défaut par rapport à l'année de construction",
+    'materiaux_structure_plafonds_top': "materiaux de structure des plafonds le plus fréquent",
+    'epaisseur_structure_plafonds_top': "epaisseur du matériau de structure le plus fréquent.",
+}
+
+
 td007_annexe_desc = {
     "td001_dpe_id": "identifiant de la table td001_dpe_id",
     'materiaux_structure': "matériau de structure du composant d'enveloppe considéré au sens des tables valeurs tv004,tv006,tv008",
@@ -139,8 +192,8 @@ td014_annexe_desc = {
     "type_energie_ecs": "type d'energie d'ecs (voir enum type_energie_ecs)"}
 
 enums_cstb = {
-    'gen_ch_lib_infer': list(gen_ch_normalized_lib_matching_dict.keys())+['non affecte'],
-    'gen_ch_lib_infer_simp': unique_ordered(list(gen_ch_lib_simp_dict.values()))+['non affecte'],
+    'gen_ch_lib_infer': list(gen_ch_normalized_lib_matching_dict.keys()) + ['non affecte'],
+    'gen_ch_lib_infer_simp': unique_ordered(list(gen_ch_lib_simp_dict.values())) + ['non affecte'],
     'type_energie_chauffage': ['Electricité non renouvelable', 'Gaz naturel', 'Bois, biomasse',
                                'Fioul domestique', 'Gaz propane ou butane', 'Réseau de chaleurs',
                                "Electricité d'origine renouvelable", 'Charbon'],
@@ -148,8 +201,8 @@ enums_cstb = {
     'configuration_sys_chauffage': ['type de générateur unique/installation unique',
                                     'types de générateur multiples/installations multiples',
                                     'types de générateur multiples/installation unique'],
-    'gen_ecs_lib_infer': list(gen_ecs_normalized_lib_matching_dict.keys())+['non affecte'],
-    'gen_ecs_lib_infer_simp': unique_ordered(list(gen_ecs_lib_simp_dict.values()))+['non affecte'],
+    'gen_ecs_lib_infer': list(gen_ecs_normalized_lib_matching_dict.keys()) + ['non affecte'],
+    'gen_ecs_lib_infer_simp': unique_ordered(list(gen_ecs_lib_simp_dict.values())) + ['non affecte'],
     'type_energie_ecs': ['Electricité non renouvelable', 'Gaz naturel', 'Bois, biomasse',
                          'Fioul domestique', 'Gaz propane ou butane', 'Réseau de chaleurs',
                          "Electricité d'origine renouvelable", 'Charbon'],
@@ -159,5 +212,25 @@ enums_cstb = {
     'orientation_infer': ['Est', 'Est ou Ouest', 'Horizontale', 'NONDEF', 'Nord', 'Ouest', 'Sud'],
     'cat_baie_simple_infer': ['baie vitrée', 'paroi en brique de verre ou polycarbonate', 'porte'],
     'nom_methode_dpe_norm': ['FACTURE', '3CL 2012', 'THBCE(RT2012)/THC(RT2005)', 'DPE vierge',
-                             '3CL 2005', 'NON DEFINI']
+                             '3CL 2005', 'NON DEFINI'],
+    "type_LNC_murs": ['Garage', 'Sous-sols', 'Véranda',
+                      "Circulation sans ouverture directe sur l'extérieur", 'Cellier',
+                      "Circulation avec ouverture directe sur l'extérieur",
+                      'Comble fortement ventilé',
+                      "Hall d'entrée avec dispositif de fermeture automatique",
+                      'Comble faiblement ventilé', 'Autres dépendances',
+                      'Garage privé collectif',
+                      "Hall d'entrée sans dispositif de fermeture automatique",
+                      'Circulation avec bouche ou gaine de désenfumage ouverte en permanence'],
+    'type_adjacence': ['EXTERIEUR', 'LNC', 'BAT_ADJ', 'NONDEF', 'PAROI_ENTERREE'],
+    "meth_calc_U_murs": ['EPAISSEUR ISOLATION SAISIE',
+                         'PAR DEFAUT PERIODE : ISOLATION INCONNUE', 'MUR NON ISOLE U=2',
+                         'PAR DEFAUT PERIODE : ISOLE', 'RESISTANCE ISOLATION SAISIE',
+                         'STRUCTURE ISOLANTE (ITR) U<1', 'U SAISI DIRECTEMENT : ISOLE',
+                         'INCONNUE'],
+
+    "isolation_murs": ['ISOLE SAISI', 'ISOLATION INCONNUE (DEFAUT)', 'NON ISOLE',
+                       'ISOLE DEFAUT POST 1988', 'ISOLE DEFAUT PRE 1988',
+                       'STRUCTURE ISOLANTE (ITR)']
+
 }
