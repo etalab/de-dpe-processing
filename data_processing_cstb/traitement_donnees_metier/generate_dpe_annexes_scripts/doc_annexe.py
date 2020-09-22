@@ -118,24 +118,7 @@ td001_td007_murs_agg_annexe_desc = {
     'epaisseur_structure_murs_top': "epaisseur du matériau de structure le plus fréquent.",
 }
 
-td001_td007_murs_agg_annexe_desc = {
-    'type_adjacence_top': "type d'adajcence la plus fréquente des murs.",
-    'type_adjacence_array': "liste des types d'adjacences des murs",
-    'type_LNC_murs_array': "liste des type de locaux non chauffés en contact avec les murs.",
-    'type_LNC_murs_top': "type  de locaux non chauffés en contact avec les murs le plus fréquent.",
-    "surface_murs_{type_adjacence}": "surface totale de murs correspondant au type d'adjacence.",
-    "meth_calc_U_murs_top": "methode de calcul du coefficient de déperdition du mur (U) principale.",
-    "U_murs_top": "coefficient de deperdition des murs le plus fréquent.",
-    'epaisseur_isolation_murs_top': "epaisseur d'isolation la plus fréquente (quand elle est déclarée)",
-    'resistance_thermique_isolation_murs_top': "resistance d'isolation la plus fréquente (quand elle est déclarée)",
-    'isolation_murs_top': "méthode de determination de l'isolation la plus fréquente (isolation par défaut,isolation saisie ,non isolé etc...",
-    'annee_isole_uniforme_min_murs_top': "annee d'isolation minimum la plus fréquente (quand l'isolation est determinée par défaut par rapport à l'année de construction",
-    'annee_isole_uniforme_max_murs_top': "annee d'isolation maximum la plus fréquente (quand l'isolation est determinée par défaut par rapport à l'année de construction",
-    'materiaux_structure_murs_top': "materiaux de structure des murs le plus fréquent",
-    'epaisseur_structure_murs_top': "epaisseur du matériau de structure le plus fréquent.",
-}
-
-td001_td007_plafonds_agg_annexe_desc = {
+td001_td007_ph_agg_annexe_desc = {
     'type_adjacence_top': "type d'adajcence la plus fréquente des plafonds.",
     'type_adjacence_array': "liste des types d'adjacences des plafonds",
     'type_LNC_plafonds_array': "liste des type de locaux non chauffés en contact avec les plafonds.",
@@ -149,7 +132,24 @@ td001_td007_plafonds_agg_annexe_desc = {
     'annee_isole_uniforme_min_plafonds_top': "annee d'isolation minimum la plus fréquente (quand l'isolation est determinée par défaut par rapport à l'année de construction",
     'annee_isole_uniforme_max_plafonds_top': "annee d'isolation maximum la plus fréquente (quand l'isolation est determinée par défaut par rapport à l'année de construction",
     'materiaux_structure_plafonds_top': "materiaux de structure des plafonds le plus fréquent",
-    'epaisseur_structure_plafonds_top': "epaisseur du matériau de structure le plus fréquent.",
+}
+
+
+td001_td007_pb_agg_annexe_desc = {
+    'type_adjacence_top': "type d'adajcence la plus fréquente des planchers.",
+    'type_adjacence_array': "liste des types d'adjacences des planchers",
+    'type_LNC_planchers_array': "liste des type de locaux non chauffés en contact avec les planchers.",
+    'type_LNC_planchers_top': "type  de locaux non chauffés en contact avec les planchers le plus fréquent.",
+    "surface_planchers_{type_adjacence}": "surface totale de planchers correspondant au type d'adjacence.",
+    "meth_calc_U_planchers_top": "methode de calcul du coefficient de déperdition du mur (U) principale.",
+    "U_planchers_top": "coefficient de deperdition des planchers le plus fréquent.",
+    'epaisseur_isolation_planchers_top': "epaisseur d'isolation la plus fréquente (quand elle est déclarée)",
+    'resistance_thermique_isolation_planchers_top': "resistance d'isolation la plus fréquente (quand elle est déclarée)",
+    'isolation_planchers_top': "méthode de determination de l'isolation la plus fréquente (isolation par défaut,isolation saisie ,non isolé etc...",
+    'annee_isole_uniforme_min_planchers_top': "annee d'isolation minimum la plus fréquente (quand l'isolation est determinée par défaut par rapport à l'année de construction",
+    'annee_isole_uniforme_max_planchers_top': "annee d'isolation maximum la plus fréquente (quand l'isolation est determinée par défaut par rapport à l'année de construction",
+    'materiaux_structure_planchers_top': "materiaux de structure des planchers le plus fréquent",
+    'epaisseur_structure_planchers_top': "epaisseur du matériau de structure le plus fréquent.",
 }
 
 

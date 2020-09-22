@@ -398,25 +398,25 @@ def generate_murs_table(td007):
 
     # ## label isolatoin
 
-    td007_murs['isolation'] = 'NON ISOLE'
+    td007_murs['meth_calc_isolation'] = 'NON ISOLE'
     is_isole = ~td007_murs.meth_calc_U.str.contains('NON ISOLE|INCONNUE')
-    td007_murs.loc[is_isole, 'isolation'] = 'ISOLE SAISI'
+    td007_murs.loc[is_isole, 'meth_calc_isolation'] = 'ISOLE SAISI'
     is_isole_defaut = is_isole & (td007_murs.meth_calc_U.str.contains('DEFAUT'))
-    td007_murs.loc[is_isole_defaut, 'isolation'] = 'ISOLE DEFAUT PRE 1988'
+    td007_murs.loc[is_isole_defaut, 'meth_calc_isolation'] = 'ISOLE DEFAUT PRE 1988'
 
     inconnu = td007_murs.meth_calc_U.str.contains('INCONNUE')
     post_88 = td007_murs['annee_isole_uniforme_min'] >= "1988"
 
-    td007_murs.loc[inconnu, 'isolation'] = 'ISOLATION INCONNUE (DEFAUT)'
+    td007_murs.loc[inconnu, 'meth_calc_isolation'] = 'ISOLATION INCONNUE (DEFAUT)'
 
-    td007_murs.loc[(inconnu | is_isole_defaut) & post_88, 'isolation'] = 'ISOLE DEFAUT POST 1988'
+    td007_murs.loc[(inconnu | is_isole_defaut) & post_88, 'meth_calc_isolation'] = 'ISOLE DEFAUT POST 1988'
 
     is_isole_struc = is_isole & (td007_murs.meth_calc_U.str.contains('STRUCTURE'))
-    td007_murs.loc[is_isole_struc, 'isolation'] = 'STRUCTURE ISOLANTE (ITR)'
+    td007_murs.loc[is_isole_struc, 'meth_calc_isolation'] = 'STRUCTURE ISOLANTE (ITR)'
 
     is_err = td007_murs.meth_calc_U.str.contains('ERREUR')
 
-    td007_murs.loc[is_err, 'isolation'] = 'NONDEF'
+    td007_murs.loc[is_err, 'meth_calc_isolation'] = 'NONDEF'
 
     # ## label adjacence
 
@@ -480,7 +480,7 @@ def agg_td007_murs_to_td001(td007_murs):
     pivot.columns = [f'surface_murs_{col.lower()}' for col in pivot]
     concat.extend([type_local_non_chauffe_arr_agg, type_local_non_chauffe_agg_top, pivot])
 
-    for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
+    for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
                 'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'materiaux_structure', 'epaisseur_structure',
                 ]:
         var_agg = agg_pond_top_freq(td007_murs, var, 'surface_paroi_opaque_infer',
@@ -489,7 +489,7 @@ def agg_td007_murs_to_td001(td007_murs):
 
     for type_adjacence in ['EXTERIEUR', 'LNC', 'BAT_ADJ']:
         sel = td007_murs.loc[td007_murs.type_adjacence == type_adjacence]
-        for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
+        for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
                     'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'materiaux_structure',
                     'epaisseur_structure',
                     ]:
@@ -598,30 +598,30 @@ def generate_pb_table(td007):
 
     # ## label isolatoin
 
-    td007_pb['isolation'] = 'NON ISOLE'
+    td007_pb['meth_calc_isolation'] = 'NON ISOLE'
     is_isole = ~td007_pb.meth_calc_U.str.contains('NON ISOLE|INCONNUE|TERRE')
-    td007_pb.loc[is_isole, 'isolation'] = 'ISOLE SAISI'
+    td007_pb.loc[is_isole, 'meth_calc_isolation'] = 'ISOLE SAISI'
     is_isole_defaut = is_isole & (td007_pb.meth_calc_U.str.contains('DEFAUT'))
-    td007_pb.loc[is_isole_defaut, 'isolation'] = 'ISOLE DEFAUT PRE 1982'
+    td007_pb.loc[is_isole_defaut, 'meth_calc_isolation'] = 'ISOLE DEFAUT PRE 1982'
 
     inconnu = td007_pb.meth_calc_U.str.contains('INCONNUE')
     post_82 = td007_pb['annee_isole_uniforme_min'] >= "1982"
     post_2001 = td007_pb['annee_isole_uniforme_min'] >= "2001"
 
-    td007_pb.loc[inconnu, 'isolation'] = 'ISOLATION INCONNUE (DEFAUT)'
+    td007_pb.loc[inconnu, 'meth_calc_isolation'] = 'ISOLATION INCONNUE (DEFAUT)'
 
-    td007_pb.loc[(inconnu | is_isole_defaut) & post_82, 'isolation'] = 'ISOLE DEFAUT POST 1982'
+    td007_pb.loc[(inconnu | is_isole_defaut) & post_82, 'meth_calc_isolation'] = 'ISOLE DEFAUT POST 1982'
 
-    td007_pb.loc[tp, 'isolation'] = 'TERRE PLEIN DEFAUT PRE 2001'
-    td007_pb.loc[tp & post_2001, 'isolation'] = 'TERRE PLEIN DEFAUT POST 2001'
+    td007_pb.loc[tp, 'meth_calc_isolation'] = 'TERRE PLEIN DEFAUT PRE 2001'
+    td007_pb.loc[tp & post_2001, 'meth_calc_isolation'] = 'TERRE PLEIN DEFAUT POST 2001'
 
     is_isole_struc = is_isole & (td007_pb.meth_calc_U.str.contains('STRUCTURE'))
 
-    td007_pb.loc[is_isole_struc, 'isolation'] = 'STRUCTURE ISOLANTE'
+    td007_pb.loc[is_isole_struc, 'meth_calc_isolation'] = 'STRUCTURE ISOLANTE'
 
     is_err = td007_pb.meth_calc_U.str.contains('ERREUR')
 
-    td007_pb.loc[is_err, 'isolation'] = 'NONDEF'
+    td007_pb.loc[is_err, 'meth_calc_isolation'] = 'NONDEF'
 
     # ## label adjacence
 
@@ -692,7 +692,7 @@ def agg_td007_pb_to_td001(td007_pb):
 
     concat.extend([type_local_non_chauffe_arr_agg, type_local_non_chauffe_agg_top, pivot])
 
-    for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
+    for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
                 'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'materiaux_structure',
                 ]:
         var_agg = agg_pond_top_freq(td007_pb, var, 'surface_paroi_opaque_infer',
@@ -700,7 +700,7 @@ def agg_td007_pb_to_td001(td007_pb):
         concat.append(var_agg)
     for type_adjacence_simple in ['EXTERIEUR', 'TP_VS', 'LNC', 'BAT_ADJ']:
         sel = td007_pb.loc[td007_pb.type_adjacence_simple == type_adjacence_simple]
-        for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
+        for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
                     'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'materiaux_structure',
                     ]:
             var_agg = agg_pond_top_freq(sel, var, 'surface_paroi_opaque_infer',
@@ -803,27 +803,26 @@ def generate_ph_table(td007):
 
     # ## label isolatoin
 
-    td007_ph['isolation'] = 'NON ISOLE'
+    td007_ph['meth_calc_isolation'] = 'NON ISOLE'
     is_isole = ~td007_ph.meth_calc_U.str.contains('NON ISOLE|INCONNUE|TERRE')
-    td007_ph.loc[is_isole, 'isolation'] = 'ISOLE SAISI'
+    td007_ph.loc[is_isole, 'meth_calc_isolation'] = 'ISOLE SAISI'
     is_isole_defaut = is_isole & (td007_ph.meth_calc_U.str.contains('DEFAUT'))
-    td007_ph.loc[is_isole_defaut, 'isolation'] = 'ISOLE DEFAUT PRE 1974'
+    td007_ph.loc[is_isole_defaut, 'meth_calc_isolation'] = 'ISOLE DEFAUT PRE 1974'
 
     inconnu = td007_ph.meth_calc_U.str.contains('INCONNUE')
     post_74 = td007_ph['annee_isole_uniforme_min'] >= "1974"
-    post_2001 = td007_ph['annee_isole_uniforme_min'] >= "2001"
 
-    td007_ph.loc[inconnu, 'isolation'] = 'ISOLATION INCONNUE (DEFAUT)'
+    td007_ph.loc[inconnu, 'meth_calc_isolation'] = 'ISOLATION INCONNUE (DEFAUT)'
 
-    td007_ph.loc[(inconnu | is_isole_defaut) & post_74, 'isolation'] = 'ISOLE DEFAUT POST 1974'
+    td007_ph.loc[(inconnu | is_isole_defaut) & post_74, 'meth_calc_isolation'] = 'ISOLE DEFAUT POST 1974'
 
     is_isole_struc = is_isole & (td007_ph.meth_calc_U.str.contains('STRUCTURE'))
 
-    td007_ph.loc[is_isole_struc, 'isolation'] = 'STRUCTURE ISOLANTE'
+    td007_ph.loc[is_isole_struc, 'meth_calc_isolation'] = 'STRUCTURE ISOLANTE'
 
     is_err = td007_ph.meth_calc_U.str.contains('ERREUR')
 
-    td007_ph.loc[is_err, 'isolation'] = 'NONDEF'
+    td007_ph.loc[is_err, 'meth_calc_isolation'] = 'NONDEF'
 
     # ## label adjacence
 
@@ -883,7 +882,7 @@ def agg_td007_ph_to_td001(td007_ph):
     pivot.columns = [f'surface_plafonds_{col.lower()}' for col in pivot]
     concat.extend([type_local_non_chauffe_arr_agg, type_local_non_chauffe_agg_top, pivot])
 
-    for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
+    for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
                 'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'materiaux_structure',
                 ]:
         var_agg = agg_pond_top_freq(td007_ph, var, 'surface_paroi_opaque_infer',
@@ -892,7 +891,7 @@ def agg_td007_ph_to_td001(td007_ph):
 
     for type_adjacence in ['EXTERIEUR', 'LNC', 'BAT_ADJ']:
         sel = td007_ph.loc[td007_ph.type_adjacence == type_adjacence]
-        for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'isolation',
+        for var in ['meth_calc_U', 'U', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
                     'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'materiaux_structure',
                     ]:
             var_agg = agg_pond_top_freq(sel, var, 'surface_paroi_opaque_infer',
