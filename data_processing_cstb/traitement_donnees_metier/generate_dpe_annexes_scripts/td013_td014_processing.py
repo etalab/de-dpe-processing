@@ -85,6 +85,24 @@ gen_ecs_lib_simp_dict = {'ecs electrique indeterminee': 'ecs electrique indeterm
                          'chauffe-eau gaz independant': 'chauffe-eau gaz independant',
                          'chauffe-eau fioul independant': 'chauffe-eau fioul independant',
                          }
+
+gen_to_installation_infer_dict = {"ecs à effet joule electrique":"Individuelle",
+"ECS thermodynamique electrique(PAC ou ballon)":"non affecte",
+'ecs solaire thermique + ballon a accumulation electrique':"Individuelle",
+'chaudiere fioul':"Individuelle",
+'chaudiere gaz':"non affecte",
+'ecs solaire thermique + chaudiere mixte gaz':"non affecte",
+"non affecte":"non affecte",
+"ecs solaire thermique + chaudiere mixte fioul":"Individuelle",
+"ecs solaire thermique + ECS thermodynamique electrique(PAC ou ballon)":"Individuelle",
+"chaudiere mixte bois":"Individuelle",
+"ecs collective reseau chaleur":"Collective",
+"ecs solaire thermique + ecs electrique indeterminee":"Individuelle",
+"ecs solaire thermique + chaudiere gaz":"non affecte",
+"chauffe-eau gaz independant":"Individuelle",
+"ecs solaire thermique + chaudiere fioul":"Individuelle",
+"ecs solaire thermique + chaudiere mixte bois":"Individuelle"}
+
 solaire_dict = dict()
 for k, v in gen_ecs_lib_simp_dict.items():
     k_solaire = 'ecs thermique solaire + ' + k
@@ -130,10 +148,10 @@ def merge_td014_tr_tv(td014):
     return table
 
 
-def postprocessing_td014(td013, td014):
+def postprocessing_td014(td013, td014,td001,td001_sys_ch_agg):
     table = td014.copy()
 
-    table = table.merge(td013[['tr005_description', 'td013_installation_ecs_id', 'surface_habitable_echantillon']],
+    table = table.merge(td013[['tr005_code','tr005_description', 'td013_installation_ecs_id', 'surface_habitable_echantillon']],
                         on='td013_installation_ecs_id')
 
     is_chaudiere = table.rpn > 0
@@ -181,6 +199,39 @@ def postprocessing_td014(td013, td014):
 
     table['score_gen_ecs_lib_infer'] = table['gen_ecs_lib_infer'].replace(sys_principal_score_lib).astype(float)
 
+    # Type installation ECS (collective ou individuelle)
+    table['type_installation_ecs'] = table.tv027_type_installation.astype('string')
+    null = table.type_installation_ecs.isnull()
+    table.loc[null, 'type_installation_ecs'] = table.tv040_type_installation.loc[null].astype('string')
+    null = table.type_installation_ecs.isnull()
+    from_gen = table.gen_ecs_lib_infer_simp.replace(gen_to_installation_infer_dict)
+    null = table.type_installation_ecs.isnull()
+
+    table.loc[null, 'type_installation_ecs'] = from_gen.loc[null]
+
+    table = table.merge(td001.rename(columns={'id': 'td001_dpe_id'})[['tr002_type_batiment_id', 'td001_dpe_id']])
+
+    is_house = table.tr002_type_batiment_id == '1'
+    table.loc[null, 'type_installation_ecs'] = is_house.loc[null].replace(
+        {True: 'Individuelle', False: 'non affecte'})
+
+    del table['tr002_type_batiment_id']
+
+    table = table.merge(td001_sys_ch_agg[['type_installation_chauffage_concat', 'td001_dpe_id']], on='td001_dpe_id')
+
+    null = table.type_installation_ecs == 'non affecte'
+
+    ch_ind = table.type_installation_chauffage_concat == 'Chauffage Individuel'
+
+    table.loc[null, 'type_installation_ecs'] = ch_ind.loc[null].replace({True: 'Individuelle', False: 'non affecte'})
+
+    del table['type_installation_chauffage_concat']
+
+    # présence d'ECS solaire
+    table['is_ecs_solaire']=table.tr005_code=='TR005_002'
+
+
+
     return table
 
 
@@ -190,7 +241,7 @@ def agg_systeme_ecs_essential(td001, td013, td014):
         'gen_ecs_lib_infer': 'sys_ecs_principal_gen_ecs_lib_infer',
         'gen_ecs_lib_infer_simp': 'sys_ecs_principal_gen_ecs_lib_infer_simp',
         'type_energie_ecs': 'sys_ecs_principal_type_energie_ecs',
-        "tr005_description": 'sys_ecs_principal_type_installation_ecs',
+        "type_installation_ecs": 'sys_ecs_principal_type_installation_ecs',
         'nombre_generateurs': 'sys_ecs_principal_nb_generateur'
     }
 
@@ -199,7 +250,7 @@ def agg_systeme_ecs_essential(td001, td013, td014):
         'gen_ecs_lib_infer': 'sys_ecs_secondaire_gen_ecs_lib_infer',
         'gen_ecs_lib_infer_simp': 'sys_ecs_secondaire_gen_ecs_lib_infer_simp',
         'type_energie_ecs': 'sys_ecs_secondaire_type_energie_ecs',
-        "tr005_description": 'sys_ecs_secondaire_type_installation_ecs',
+        "type_installation_ecs": 'sys_ecs_secondaire_type_installation_ecs',
         'nombre_generateurs': 'sys_ecs_secondaire_nb_generateur'
     }
 
@@ -208,7 +259,7 @@ def agg_systeme_ecs_essential(td001, td013, td014):
         'gen_ecs_lib_infer': 'sys_ecs_tertiaire_gen_ecs_lib_infer_concat',
         'gen_ecs_lib_infer_simp': 'sys_ecs_tertiaire_gen_ecs_lib_infer_simp_concat',
         'type_energie_ecs': 'sys_ecs_tertiaire_type_energie_ecs_concat',
-        "tr005_description": 'sys_ecs_tertiaire_type_installation_ecs_concat',
+        "type_installation_ecs": 'sys_ecs_tertiaire_type_installation_ecs_concat',
         'nombre_generateurs': 'sys_ecs_tertiaire_nb_generateurs'
     }
 
@@ -219,11 +270,11 @@ def agg_systeme_ecs_essential(td001, td013, td014):
 
     cols = ['td001_dpe_id', 'gen_ecs_lib_infer_simp', 'gen_ecs_lib_infer', 'type_energie_ecs',
             'score_gen_ecs_lib_infer']
-    cols += ['tr005_description', 'surface_habitable_echantillon', 'nombre_generateurs', 'id_unique']
+    cols += ['type_installation_ecs', 'surface_habitable_echantillon', 'nombre_generateurs', 'id_unique']
 
-    agg_cols = ['td001_dpe_id', 'gen_ecs_lib_infer', 'tr005_description']
+    agg_cols = ['td001_dpe_id', 'gen_ecs_lib_infer', 'type_installation_ecs']
 
-    table['id_unique'] = table.td001_dpe_id + table.gen_ecs_lib_infer.astype('string') + table.tr005_description.astype(
+    table['id_unique'] = table.td001_dpe_id + table.gen_ecs_lib_infer.astype('string') + table.type_installation_ecs.astype(
         'string')
 
     is_unique = table.groupby('td001_dpe_id').td001_dpe_id.count() == 1
@@ -244,7 +295,7 @@ def agg_systeme_ecs_essential(td001, td013, td014):
 
     }).reset_index()
 
-    agg['id_unique'] = agg.td001_dpe_id + agg.gen_ecs_lib_infer + agg.tr005_description
+    agg['id_unique'] = agg.td001_dpe_id + agg.gen_ecs_lib_infer + agg.type_installation_ecs
 
     sys_principal = agg.sort_values(['surface_habitable_echantillon', 'score_gen_ecs_lib_infer'],
                                     ascending=False).drop_duplicates(subset='td001_dpe_id')
@@ -268,7 +319,7 @@ def agg_systeme_ecs_essential(td001, td013, td014):
         'type_energie_ecs': lambda x: ' + '.join(list(set(x))),
         'surface_habitable_echantillon': 'sum',
         "nombre_generateurs": 'sum',
-        'tr005_description': lambda x: ' + '.join(list(set(x))),
+        'type_installation_ecs': lambda x: ' + '.join(list(set(x))),
 
     }).reset_index()
 

@@ -42,7 +42,6 @@ def merge_td008_tr_tv(td008):
 
 
 def postprocessing_td008(td008):
-
     td008 = td008.copy()
 
     # orientation processing avec tv020 et reference.
@@ -238,10 +237,17 @@ def postprocessing_td008(td008):
     td008.loc[not_baie, 'meth_calc_U'] = 'Uw saisi'
     td008.loc[~not_baie, 'meth_calc_U'] = 'Uw defaut'
 
+    # METHODE SAISIE FS
     not_fs = td008.tv021_code.isnull()
 
     td008.loc[not_fs, 'meth_calc_Fs'] = 'Fs saisi'
     td008.loc[~not_fs, 'meth_calc_Fs'] = 'Fs defaut'
+
+    # Facteur solaire corrigé
+
+    null = td008.facteur_solaire.astype(float) == 0 | td008.facteur_solaire.isnull()
+    td008['facteur_solaire_corr'] = td008.facteur_solaire
+    td008.loc[null, 'facteur_solaire_corr'] = td008.loc[null, 'tv021_fts'].astype(float)
 
     # MASQUES ET BALCONS
     td008['avancee_masque'] = td008.tv022_avance
@@ -332,7 +338,7 @@ def agg_td008_to_td001(td008):
     # AGG parois vitrees
     td008_vit = td008.loc[td008.cat_baie_simple_infer != 'porte']
 
-    for col in ['Ubaie', 'Uw', 'Ug', 'type_occultation', 'materiaux', 'type_vitrage', 'meth_calc_U', 'meth_calc_Fs']:
+    for col in ['Ubaie', 'Uw', 'Ug', 'type_occultation', 'materiaux', 'type_vitrage','facteur_solaire_corr', 'meth_calc_U', 'meth_calc_Fs']:
         var_agg = agg_pond_top_freq(td008_vit, col, 'surfacexnb_baie_calc',
                                     'td001_dpe_id').to_frame(col + '_baie_vitree_top')
         concat.append(var_agg)
@@ -345,6 +351,7 @@ def agg_td008_to_td001(td008):
         var_agg = agg_pond_top_freq(td008_opaque, col, 'surfacexnb_baie_calc',
                                     'td001_dpe_id').to_frame(col + '_porte_top')
         concat.append(var_agg)
+
     # AGG fenetre/porte fenetre distinct
 
     for type_baie in ['fenetre', 'porte_fenetre']:

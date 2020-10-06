@@ -22,6 +22,7 @@ from generate_dpe_annexes_scripts.td001_merge import merge_td001_dpe_id_system
 from generate_dpe_annexes_scripts.doc_annexe import td001_annexe_enveloppe_agg_desc, td001_sys_ch_agg_desc, td001_sys_ecs_agg_desc, \
     td007_annexe_desc, td008_annexe_desc, td012_annexe_desc, td014_annexe_desc, enums_cstb, \
     td001_annexe_generale_desc
+from generate_dpe_annexes_scripts.td006_processing import agg_td006_td001,merge_td006_tr_tv
 
 
 def run_enveloppe_processing(td001, td006, td007, td008, td010):
@@ -32,6 +33,8 @@ def run_enveloppe_processing(td001, td006, td007, td008, td010):
     td001, td006, td007, td008, td010 = merge_td001_dpe_id_envelope(td001=td001, td006=td006, td007=td007, td008=td008,
                                                                     td010=td010)
     # POSTPRO DES TABLES
+    td006 = merge_td006_tr_tv(td006)
+
     td008 = merge_td008_tr_tv(td008)
     td008 = postprocessing_td008(td008)
 
@@ -79,6 +82,8 @@ def run_enveloppe_processing(td001, td006, td007, td008, td010):
     td007_pb_agg = agg_td007_pb_to_td001(td007_pb)
     td008_agg = agg_td008_to_td001(td008)
     td010_agg = agg_td010_td001(td010)
+    td006_agg = agg_td006_td001(td006)
+
 
     env_compo_dict = dict(td007_paroi_opaque=td007_p,
                           td007_ph=td007_ph,
@@ -89,7 +94,7 @@ def run_enveloppe_processing(td001, td006, td007, td008, td010):
 
     env_compo_agg_dict = dict(td007_murs_agg=td007_murs_agg,
                               td007_ph_agg=td007_ph_agg,
-                              td007_pb_agg=td007_pb_agg, td008_agg=td008_agg, td010_agg=td010_agg)
+                              td007_pb_agg=td007_pb_agg, td008_agg=td008_agg, td010_agg=td010_agg,td006_agg=td006_agg)
 
     return td001_enveloppe_agg, td008_p, td007_p, env_compo_dict, env_compo_agg_dict
 
@@ -120,7 +125,7 @@ def run_system_processing(td001, td006, td011, td012, td013, td014):
 
     td001_sys_ch_agg = agg_systeme_chauffage_essential(td001, td011, td012)
 
-    td014 = postprocessing_td014(td013, td014)
+    td014 = postprocessing_td014(td013, td014,td001,td001_sys_ch_agg)
 
     cols = [el for el in td013.columns if el not in td013_raw_cols]
     cols.append('td013_installation_ecs_id')
@@ -233,5 +238,5 @@ if __name__ == '__main__':
     # for dept_dir in list_dir:
     #     run_postprocessing_by_depts(dept_dir)
 
-    with Pool(processes=4) as pool:
+    with Pool(processes=5) as pool:
         pool.starmap(run_postprocessing_by_depts, [(dept_dir,) for dept_dir in list_dir])
