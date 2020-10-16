@@ -70,3 +70,38 @@ class DPETrTvTables(metaclass=Singleton):
         table[cols] = table[cols].astype('category')
 
         return table
+    def write(self):
+
+        tvs = {k: v for k, v in self.trtv_table_dict.items() if k.startswith('tv')}
+        tv_clean = dict()
+
+        for k, v in tvs.items():
+            v.index.name = k
+            tv_num = k.split('_')[0]
+            L_old = tv_clean.get(tv_num, pd.DataFrame()).shape[0]
+            if L_old < v.shape[0]:
+                tv_clean[tv_num] = v
+
+        writer = pd.ExcelWriter('tv_tables.xlsx')
+
+        for k, v in tv_clean.items():
+            v.index.name = k
+            v.to_excel(writer, sheet_name=k.split('_')[0])
+        writer.save()
+
+        trs = {k: v for k, v in self.trtv_table_dict.items() if k.startswith('tr')}
+        tr_clean = dict()
+
+        for k, v in trs.items():
+            v.index.name = k
+            tr_num = k.split('_')[0]
+            L_old = tr_clean.get(tr_num, pd.DataFrame()).shape[0]
+            if L_old < v.shape[0]:
+                tr_clean[tr_num] = v
+
+        writer = pd.ExcelWriter('tr_tables.xlsx')
+
+        for k, v in tr_clean.items():
+            v.index.name = k
+            v.to_excel(writer, sheet_name=k.split('_')[0])
+        writer.save()

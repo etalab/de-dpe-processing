@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from .utils import concat_string_cols, strip_accents, affect_lib_by_matching_score, clean_str
+from .utils import concat_string_cols, strip_accents, affect_lib_by_matching_score, clean_str, agg_pond_top_freq
 from .trtvtables import DPETrTvTables
 
 td011_types = {'td011_installation_chauffage_id': 'str',
@@ -198,7 +198,7 @@ def postprocessing_td012(td012):
     reseau_infer = non_aff & (table.rendement_generation == 0.97) & (table.tr004_description == 'Autres énergies')
 
     table.loc[reseau_infer, 'gen_ch_lib_infer'] = 'reseau de chaleur'
-    table.loc[reseau_infer,'type_energie_chauffage'] = 'Réseau de chaleurs'
+    table.loc[reseau_infer, 'type_energie_chauffage'] = 'Réseau de chaleurs'
 
     table['gen_ch_lib_infer_simp'] = table.gen_ch_lib_infer.replace(gen_ch_lib_simp_dict)
 
@@ -208,7 +208,6 @@ def postprocessing_td012(td012):
     bool_ce = table.rendement_generation == 0.77
 
     table.loc[(bool_ej) & (bool_ce), 'gen_ch_lib_infer'] = 'chaudiere electrique'
-
 
     rendement_gen_u = table[['rendement_generation', 'coefficient_performance']].max(axis=1)
 
@@ -387,15 +386,17 @@ def agg_systeme_chauffage_essential(td001, td011, td012):
     td001_sys_ch['gen_ch_lib_infer_simp_concat'] = concat_string_cols(td001_sys_ch, cols=cols, join_string=' + ',
                                                                       is_unique=True, is_sorted=True)
 
-    isnull = td001_sys_ch.sys_ch_principal_nb_generateur.isnull()
-    is_multiple_install = td001_sys_ch.nombre_installations_ch_total > 1
-    td001_sys_ch.loc[isnull, 'configuration_sys_chauffage'] = pd.NA
-    td001_sys_ch.loc[~isnull, 'configuration_sys_chauffage'] = 'type de générateur unique/installation unique'
-    isnull = td001_sys_ch.sys_ch_secondaire_nb_generateur.isnull()
-    td001_sys_ch.loc[~isnull, 'configuration_sys_chauffage'] = 'types de générateur multiples/installation unique'
-    td001_sys_ch.loc[(~isnull) & (
-        is_multiple_install), 'configuration_sys_chauffage'] = 'types de générateur multiples/installations multiples'
-
+    configuration_installation_chauffage = td011.groupby('td001_dpe_id').tr003_description.apply(
+        lambda x: ' + '.join(sorted(list(set(x)))))
+    # isnull = td001_sys_ch.sys_ch_principal_nb_generateur.isnull()
+    # is_multiple_install = td001_sys_ch.nombre_installations_ch_total > 1
+    # td001_sys_ch.loc[isnull, 'configuration_sys_chauffage'] = pd.NA
+    # td001_sys_ch.loc[~isnull, 'configuration_sys_chauffage'] = 'type de générateur unique/installation unique'
+    # isnull = td001_sys_ch.sys_ch_secondaire_nb_generateur.isnull()
+    # td001_sys_ch.loc[~isnull, 'configuration_sys_chauffage'] = 'types de générateur multiples/installation unique'
+    # td001_sys_ch.loc[(~isnull) & (
+    #     is_multiple_install), 'configuration_sys_chauffage'] = 'types de générateur multiples/installations multiples'
+    td001_sys_ch['configuration_installation_chauffage'] = configuration_installation_chauffage
     cols_first = [el for el in td001_sys_ch.columns.tolist() if el not in cols_end]
 
     cols = cols_first + cols_end
