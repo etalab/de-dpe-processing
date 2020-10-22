@@ -74,23 +74,39 @@ class DPETrTvTables(metaclass=Singleton):
 
         tvs = {k: v for k, v in self.trtv_table_dict.items() if k.startswith('tv')}
         tv_clean = dict()
-
+        tv_clean_full_names = dict()
         for k, v in tvs.items():
             v.index.name = k
             tv_num = k.split('_')[0]
             L_old = tv_clean.get(tv_num, pd.DataFrame()).shape[0]
             if L_old < v.shape[0]:
                 tv_clean[tv_num] = v
-
+                tv_clean_full_names[tv_num] = k
         writer = pd.ExcelWriter('tv_tables.xlsx')
 
-        for k, v in tv_clean.items():
-            v.index.name = k
-            v.to_excel(writer, sheet_name=k.split('_')[0])
+        for k, df in tv_clean.items():
+            df.index.name = tv_clean_full_names[k]
+            sheet_name = k.split('_')[0]
+            df.to_excel(writer, sheet_name=sheet_name)
+            worksheet = writer.sheets[sheet_name]  # pull worksheet object
+            for idx, col in enumerate(df):  # loop through all columns
+                series = df[col]
+                max_len = max((
+                    series.astype(str).map(len).max(),  # len of largest item
+                    len(str(series.name))  # len of column name/header
+                )) + 1  # adding a little extra space
+                worksheet.set_column(idx + 1, idx + 1, max_len)  # set column width
+            series = df.index
+            max_len = max((
+                series.astype(str).map(len).max(),  # len of largest item
+                len(str(series.name))  # len of column name/header
+            )) + 1  # adding a little extra space
+            worksheet.set_column(0, 0, max_len)  # set column width
         writer.save()
 
         trs = {k: v for k, v in self.trtv_table_dict.items() if k.startswith('tr')}
         tr_clean = dict()
+        tr_clean_full_names = dict()
 
         for k, v in trs.items():
             v.index.name = k
@@ -98,10 +114,26 @@ class DPETrTvTables(metaclass=Singleton):
             L_old = tr_clean.get(tr_num, pd.DataFrame()).shape[0]
             if L_old < v.shape[0]:
                 tr_clean[tr_num] = v
+                tr_clean_full_names[tr_num] = k
 
         writer = pd.ExcelWriter('tr_tables.xlsx')
 
-        for k, v in tr_clean.items():
-            v.index.name = k
-            v.to_excel(writer, sheet_name=k.split('_')[0])
+        for k, df in tr_clean.items():
+            df.index.name = tr_clean_full_names[k]
+            sheet_name = k.split('_')[0]
+            df.to_excel(writer, sheet_name=sheet_name)
+            worksheet = writer.sheets[sheet_name]  # pull worksheet object
+            for idx, col in enumerate(df):  # loop through all columns
+                series = df[col]
+                max_len = max((
+                    series.astype(str).map(len).max(),  # len of largest item
+                    len(str(series.name))  # len of column name/header
+                )) + 1  # adding a little extra space
+                worksheet.set_column(idx + 1, idx + 1, max_len)  # set column width
+            series = df.index
+            max_len = max((
+                series.astype(str).map(len).max(),  # len of largest item
+                len(str(series.name))  # len of column name/header
+            )) + 1  # adding a little extra space
+            worksheet.set_column(0, 0, max_len)  # set column width
         writer.save()
