@@ -234,8 +234,8 @@ def postprocessing_td008(td008):
     not_vitrage = td008.tv009_code.isnull()
     not_baie = td008.tv010_code.isnull()
 
-    td008.loc[not_baie, 'meth_calc_U'] = 'Uw saisi'
-    td008.loc[~not_baie, 'meth_calc_U'] = 'Uw defaut'
+    td008.loc[not_baie, 'meth_calc_u'] = 'Uw saisi'
+    td008.loc[~not_baie, 'meth_calc_u'] = 'Uw defaut'
 
     # METHODE SAISIE FS
     not_fs = td008.tv021_code.isnull()
@@ -286,11 +286,11 @@ def agg_td008_to_td001_essential(td008):
     # AGG Ujn avg
 
     td008_sel = td008_vitree.loc[td008_vitree.coefficient_transmission_thermique_baie > 0]
-    Ubaie_avg = agg_pond_avg(td008_sel, 'coefficient_transmission_thermique_baie', 'max_surface',
-                             'td001_dpe_id').to_frame('Ubaie_avg')
+    u_baie_avg = agg_pond_avg(td008_sel, 'coefficient_transmission_thermique_baie', 'max_surface',
+                             'td001_dpe_id').to_frame('u_baie_avg')
 
-    agg = pd.concat([Ubaie_avg, type_vitrage_agg, orientation_agg], axis=1)
-    agg.columns = ['Ubaie_avg', 'type_vitrage_simple_top', 'orientation_concat']
+    agg = pd.concat([u_baie_avg, type_vitrage_agg, orientation_agg], axis=1)
+    agg.columns = ['u_baie_avg', 'type_vitrage_simple_top', 'orientation_concat']
 
     return agg
 
@@ -316,10 +316,10 @@ def agg_td008_to_td001(td008):
     # AGG SURFS
     surfs = td008.pivot_table(index='td001_dpe_id', columns='cat_baie_infer', values='surfacexnb_baie_calc',
                               aggfunc='sum')
-    surfs.columns = [f'surface_{col}' for col in surfs]
+    surfs.columns = [f'surf_{col}' for col in surfs]
     concat.append(surfs)
 
-    td008 = td008.rename(columns={'coefficient_transmission_thermique_baie': 'Ubaie',
+    td008 = td008.rename(columns={'coefficient_transmission_thermique_baie': 'u_baie',
                                   'type_vitrage_simple_infer': 'type_vitrage',
                                   'tv010_uw': 'Uw',
                                   'tv010_ug': 'Ug'})
@@ -338,7 +338,7 @@ def agg_td008_to_td001(td008):
     # AGG parois vitrees
     td008_vit = td008.loc[td008.cat_baie_simple_infer != 'porte']
 
-    for col in ['Ubaie', 'Uw', 'Ug', 'type_occultation', 'materiaux', 'type_vitrage','facteur_solaire_corr', 'meth_calc_U', 'meth_calc_Fs']:
+    for col in ['u_baie', 'Uw', 'Ug', 'type_occultation', 'materiaux', 'type_vitrage','facteur_solaire_corr', 'meth_calc_u', 'meth_calc_Fs']:
         var_agg = agg_pond_top_freq(td008_vit, col, 'surfacexnb_baie_calc',
                                     'td001_dpe_id').to_frame(col + '_baie_vitree_top')
         concat.append(var_agg)
@@ -347,7 +347,7 @@ def agg_td008_to_td001(td008):
 
     td008_opaque = td008.loc[td008.cat_baie_simple_infer == 'porte']
 
-    for col in ['Ubaie', 'materiaux', 'meth_calc_U', 'meth_calc_Fs']:
+    for col in ['u_baie', 'materiaux', 'meth_calc_u', 'meth_calc_Fs']:
         var_agg = agg_pond_top_freq(td008_opaque, col, 'surfacexnb_baie_calc',
                                     'td001_dpe_id').to_frame(col + '_porte_top')
         concat.append(var_agg)
@@ -357,7 +357,7 @@ def agg_td008_to_td001(td008):
     for type_baie in ['fenetre', 'porte_fenetre']:
 
         sel = td008_vit.loc[td008_vit.cat_baie_infer == type_baie]
-        for col in ['Ubaie', 'Uw', 'Ug', 'type_occultation', 'materiaux', 'type_vitrage', 'meth_calc_U',
+        for col in ['u_baie', 'Uw', 'Ug', 'type_occultation', 'materiaux', 'type_vitrage', 'meth_calc_u',
                     'meth_calc_Fs']:
             var_agg = agg_pond_top_freq(sel, col, 'surfacexnb_baie_calc',
                                         'td001_dpe_id').to_frame(col + f'_{type_baie}_top')

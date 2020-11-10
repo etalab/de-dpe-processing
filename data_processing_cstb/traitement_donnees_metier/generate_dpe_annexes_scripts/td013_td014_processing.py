@@ -110,20 +110,20 @@ for k, v in gen_ecs_lib_simp_dict.items():
     solaire_dict[k_solaire] = v_solaire
 gen_ecs_lib_simp_dict.update(solaire_dict)
 
-sys_principal_scores = {'thermodynamique': 5,
+sys_princ_scores = {'thermodynamique': 5,
                         'solaire': 4,
                         'chaudiere': 3,
                         'ballon a accumulation': 2,
                         'electrique indeterminee': 1,
                         'indépendant': 0, }
 
-sys_principal_score_lib = dict()
+sys_princ_score_lib = dict()
 for k in list(gen_ecs_normalized_lib_matching_dict.keys()):
-    sys_principal_score_lib[k] = 0
-    for term, score in sys_principal_scores.items():
+    sys_princ_score_lib[k] = 0
+    for term, score in sys_princ_scores.items():
         if term in k:
-            sys_principal_score_lib[k] += score
-sys_principal_score_lib['non affecte'] = -1
+            sys_princ_score_lib[k] += score
+sys_princ_score_lib['non affecte'] = -1
 
 
 def merge_td013_tr_tv(td013):
@@ -197,7 +197,7 @@ def postprocessing_td014(td013, td014,td001,td001_sys_ch_agg):
 
     table['type_energie_ecs'] = table['tv045_energie'].replace(replace_elec_tv045_ener)
 
-    table['score_gen_ecs_lib_infer'] = table['gen_ecs_lib_infer'].replace(sys_principal_score_lib).astype(float)
+    table['score_gen_ecs_lib_infer'] = table['gen_ecs_lib_infer'].replace(sys_princ_score_lib).astype(float)
 
     # Type installation ECS (collective ou individuelle)
     table['type_installation_ecs'] = table.tv027_type_installation.astype('string')
@@ -236,41 +236,41 @@ def postprocessing_td014(td013, td014,td001,td001_sys_ch_agg):
 
 
 def agg_systeme_ecs_essential(td001, td013, td014):
-    sys_ecs_principal_rename = {
+    sys_ecs_princ_rename = {
         'td001_dpe_id': 'td001_dpe_id',
-        'gen_ecs_lib_infer': 'sys_ecs_principal_gen_ecs_lib_infer',
-        'gen_ecs_lib_infer_simp': 'sys_ecs_principal_gen_ecs_lib_infer_simp',
-        'type_energie_ecs': 'sys_ecs_principal_type_energie_ecs',
-        "type_installation_ecs": 'sys_ecs_principal_type_installation_ecs',
-        'nombre_generateurs': 'sys_ecs_principal_nb_generateur'
+        'gen_ecs_lib_infer': 'sys_ecs_princ_gen_ecs_lib_infer',
+        'gen_ecs_lib_infer_simp': 'sys_ecs_princ_gen_ecs_lib_infer_simp',
+        'type_energie_ecs': 'sys_ecs_princ_type_energie_ecs',
+        "type_installation_ecs": 'sys_ecs_princ_type_installation_ecs',
+        'nb_generateurs': 'sys_ecs_princ_nb_generateur'
     }
 
-    sys_ecs_secondaire_rename = {
+    sys_ecs_sec_rename = {
         'td001_dpe_id': 'td001_dpe_id',
-        'gen_ecs_lib_infer': 'sys_ecs_secondaire_gen_ecs_lib_infer',
-        'gen_ecs_lib_infer_simp': 'sys_ecs_secondaire_gen_ecs_lib_infer_simp',
-        'type_energie_ecs': 'sys_ecs_secondaire_type_energie_ecs',
-        "type_installation_ecs": 'sys_ecs_secondaire_type_installation_ecs',
-        'nombre_generateurs': 'sys_ecs_secondaire_nb_generateur'
+        'gen_ecs_lib_infer': 'sys_ecs_sec_gen_ecs_lib_infer',
+        'gen_ecs_lib_infer_simp': 'sys_ecs_sec_gen_ecs_lib_infer_simp',
+        'type_energie_ecs': 'sys_ecs_sec_type_energie_ecs',
+        "type_installation_ecs": 'sys_ecs_sec_type_installation_ecs',
+        'nb_generateurs': 'sys_ecs_sec_nb_generateur'
     }
 
-    sys_ecs_tertiaire_concat_rename = {
+    sys_ecs_tert_concat_rename = {
         'td001_dpe_id': 'td001_dpe_id',
-        'gen_ecs_lib_infer': 'sys_ecs_tertiaire_gen_ecs_lib_infer_concat',
-        'gen_ecs_lib_infer_simp': 'sys_ecs_tertiaire_gen_ecs_lib_infer_simp_concat',
-        'type_energie_ecs': 'sys_ecs_tertiaire_type_energie_ecs_concat',
-        "type_installation_ecs": 'sys_ecs_tertiaire_type_installation_ecs_concat',
-        'nombre_generateurs': 'sys_ecs_tertiaire_nb_generateurs'
+        'gen_ecs_lib_infer': 'sys_ecs_tert_gen_ecs_lib_infer_concat',
+        'gen_ecs_lib_infer_simp': 'sys_ecs_tert_gen_ecs_lib_infer_simp_concat',
+        'type_energie_ecs': 'sys_ecs_tert_type_energie_ecs_concat',
+        "type_installation_ecs": 'sys_ecs_tert_type_installation_ecs_concat',
+        'nb_generateurs': 'sys_ecs_tert_nb_generateurs'
     }
 
     table = td014.copy()
     is_solaire = table.gen_ecs_lib_infer.str.contains('ecs solaire thermique')
-    table['nombre_generateurs'] = 1
-    table.loc[is_solaire, 'nombre_generateurs'] = 2
+    table['nb_generateurs'] = 1
+    table.loc[is_solaire, 'nb_generateurs'] = 2
 
     cols = ['td001_dpe_id', 'gen_ecs_lib_infer_simp', 'gen_ecs_lib_infer', 'type_energie_ecs',
             'score_gen_ecs_lib_infer']
-    cols += ['type_installation_ecs', 'surface_habitable_echantillon', 'nombre_generateurs', 'id_unique']
+    cols += ['type_installation_ecs', 'surface_habitable_echantillon', 'nb_generateurs', 'id_unique']
 
     agg_cols = ['td001_dpe_id', 'gen_ecs_lib_infer', 'type_installation_ecs']
 
@@ -290,100 +290,100 @@ def agg_systeme_ecs_essential(td001, td013, td014):
         'gen_ecs_lib_infer_simp': 'first',
         'type_energie_ecs': 'first',
         'surface_habitable_echantillon': 'sum',
-        "nombre_generateurs": 'sum',
+        "nb_generateurs": 'sum',
         'score_gen_ecs_lib_infer': 'mean'
 
     }).reset_index()
 
     agg['id_unique'] = agg.td001_dpe_id + agg.gen_ecs_lib_infer + agg.type_installation_ecs
 
-    sys_principal = agg.sort_values(['surface_habitable_echantillon', 'score_gen_ecs_lib_infer'],
+    sys_princ = agg.sort_values(['surface_habitable_echantillon', 'score_gen_ecs_lib_infer'],
                                     ascending=False).drop_duplicates(subset='td001_dpe_id')
 
-    id_sys_principal = sys_principal.id_unique.unique().tolist()
+    id_sys_princ = sys_princ.id_unique.unique().tolist()
 
-    sys_secondaires = agg.loc[~agg.id_unique.isin(id_sys_principal)]
+    sys_secs = agg.loc[~agg.id_unique.isin(id_sys_princ)]
 
-    sys_secondaire = sys_secondaires.sort_values(['surface_habitable_echantillon', 'score_gen_ecs_lib_infer'],
+    sys_sec = sys_secs.sort_values(['surface_habitable_echantillon', 'score_gen_ecs_lib_infer'],
                                                  ascending=False).drop_duplicates(
         'td001_dpe_id')
 
-    id_sys_secondaire = sys_secondaire.id_unique.unique().tolist()
+    id_sys_sec = sys_sec.id_unique.unique().tolist()
 
-    sys_tertiaires = agg.loc[~agg.id_unique.isin(id_sys_principal + id_sys_secondaire)]
+    sys_terts = agg.loc[~agg.id_unique.isin(id_sys_princ + id_sys_sec)]
 
-    sys_tertiaire_concat = sys_tertiaires.groupby('td001_dpe_id').agg({
+    sys_tert_concat = sys_terts.groupby('td001_dpe_id').agg({
         'gen_ecs_lib_infer': lambda x: ' + '.join(list(set(x))),
 
         'gen_ecs_lib_infer_simp': lambda x: ' + '.join(list(set(x))),
         'type_energie_ecs': lambda x: ' + '.join(list(set(x))),
         'surface_habitable_echantillon': 'sum',
-        "nombre_generateurs": 'sum',
+        "nb_generateurs": 'sum',
         'type_installation_ecs': lambda x: ' + '.join(list(set(x))),
 
     }).reset_index()
 
-    sys_principal = sys_principal.append(table_gen_unique[sys_principal.columns])
+    sys_princ = sys_princ.append(table_gen_unique[sys_princ.columns])
 
-    sys_principal = sys_principal.rename(columns=sys_ecs_principal_rename)[sys_ecs_principal_rename.values()]
+    sys_princ = sys_princ.rename(columns=sys_ecs_princ_rename)[sys_ecs_princ_rename.values()]
 
-    sys_secondaire = sys_secondaire.rename(columns=sys_ecs_secondaire_rename)[sys_ecs_secondaire_rename.values()]
+    sys_sec = sys_sec.rename(columns=sys_ecs_sec_rename)[sys_ecs_sec_rename.values()]
 
-    sys_tertiaire_concat = sys_tertiaire_concat.rename(columns=sys_ecs_tertiaire_concat_rename)[
-        sys_ecs_tertiaire_concat_rename.values()]
+    sys_tert_concat = sys_tert_concat.rename(columns=sys_ecs_tert_concat_rename)[
+        sys_ecs_tert_concat_rename.values()]
 
-    td001_sys_ecs = td001[['td001_dpe_id']].merge(sys_principal, on='td001_dpe_id', how='left')
-    td001_sys_ecs = td001_sys_ecs.merge(sys_secondaire, on='td001_dpe_id', how='left')
-    td001_sys_ecs = td001_sys_ecs.merge(sys_tertiaire_concat, on='td001_dpe_id', how='left')
+    td001_sys_ecs = td001[['td001_dpe_id']].merge(sys_princ, on='td001_dpe_id', how='left')
+    td001_sys_ecs = td001_sys_ecs.merge(sys_sec, on='td001_dpe_id', how='left')
+    td001_sys_ecs = td001_sys_ecs.merge(sys_tert_concat, on='td001_dpe_id', how='left')
     nb_installation = td013.groupby('td001_dpe_id').td013_installation_ecs_id.count().to_frame(
-        'nombre_installations_ecs_total')
+        'nb_installations_ecs_total')
     td001_sys_ecs = td001_sys_ecs.merge(nb_installation, on='td001_dpe_id', how='left')
 
-    cols_end = sys_principal.columns.tolist() + sys_secondaire.columns.tolist() + sys_tertiaire_concat.columns.tolist()
+    cols_end = sys_princ.columns.tolist() + sys_sec.columns.tolist() + sys_tert_concat.columns.tolist()
     cols_end = np.unique(cols_end).tolist()
     cols_end.remove('td001_dpe_id')
-    td001_sys_ecs['nombre_generateurs_ecs_total'] = td001_sys_ecs.sys_ecs_principal_nb_generateur
-    td001_sys_ecs['nombre_generateurs_ecs_total'] += td001_sys_ecs.sys_ecs_secondaire_nb_generateur.fillna(0)
-    td001_sys_ecs['nombre_generateurs_ecs_total'] += td001_sys_ecs.sys_ecs_tertiaire_nb_generateurs.fillna(0)
+    td001_sys_ecs['nb_gen_ecs_total'] = td001_sys_ecs.sys_ecs_princ_nb_generateur
+    td001_sys_ecs['nb_gen_ecs_total'] += td001_sys_ecs.sys_ecs_sec_nb_generateur.fillna(0)
+    td001_sys_ecs['nb_gen_ecs_total'] += td001_sys_ecs.sys_ecs_tert_nb_generateurs.fillna(0)
 
-    cols = ['sys_ecs_principal_type_energie_ecs',
-            'sys_ecs_secondaire_type_energie_ecs',
-            'sys_ecs_tertiaire_type_energie_ecs_concat']
+    cols = ['sys_ecs_princ_type_energie_ecs',
+            'sys_ecs_sec_type_energie_ecs',
+            'sys_ecs_tert_type_energie_ecs_concat']
 
     td001_sys_ecs['mix_energetique_ecs'] = concat_string_cols(td001_sys_ecs, cols=cols, join_string=' + ',
                                                               is_unique=True, is_sorted=True)
 
-    cols = ['sys_ecs_principal_type_installation_ecs',
-            'sys_ecs_secondaire_type_installation_ecs',
-            'sys_ecs_tertiaire_type_installation_ecs_concat']
+    cols = ['sys_ecs_princ_type_installation_ecs',
+            'sys_ecs_sec_type_installation_ecs',
+            'sys_ecs_tert_type_installation_ecs_concat']
 
     td001_sys_ecs['type_installation_ecs_concat'] = concat_string_cols(td001_sys_ecs, cols=cols, join_string=' + ',
                                                                        is_unique=True, is_sorted=True)
 
-    cols = ['sys_ecs_principal_gen_ecs_lib_infer',
-            'sys_ecs_secondaire_gen_ecs_lib_infer',
-            'sys_ecs_tertiaire_gen_ecs_lib_infer_concat']
+    cols = ['sys_ecs_princ_gen_ecs_lib_infer',
+            'sys_ecs_sec_gen_ecs_lib_infer',
+            'sys_ecs_tert_gen_ecs_lib_infer_concat']
 
     td001_sys_ecs['gen_ecs_lib_infer_concat'] = concat_string_cols(td001_sys_ecs, cols=cols, join_string=' + ',
                                                                    is_unique=True, is_sorted=True)
 
-    cols = ['sys_ecs_principal_gen_ecs_lib_infer_simp',
-            'sys_ecs_secondaire_gen_ecs_lib_infer_simp',
-            'sys_ecs_tertiaire_gen_ecs_lib_infer_simp_concat']
+    cols = ['sys_ecs_princ_gen_ecs_lib_infer_simp',
+            'sys_ecs_sec_gen_ecs_lib_infer_simp',
+            'sys_ecs_tert_gen_ecs_lib_infer_simp_concat']
 
     td001_sys_ecs['gen_ecs_lib_infer_simp_concat'] = concat_string_cols(td001_sys_ecs, cols=cols, join_string=' + ',
                                                                         is_unique=True, is_sorted=True)
 
-    isnull = td001_sys_ecs.sys_ecs_principal_nb_generateur.isnull()
-    is_multiple_install = td001_sys_ecs.nombre_installations_ecs_total > 1
-    td001_sys_ecs.loc[isnull, 'configuration_sys_ecs'] = pd.NA
-    td001_sys_ecs.loc[~isnull, 'configuration_sys_ecs'] = 'type de générateur unique/installation unique'
-    is_solaire = td001_sys_ecs.sys_ecs_principal_gen_ecs_lib_infer.str.contains('ecs solaire thermique')
-    isnull = td001_sys_ecs.sys_ecs_secondaire_nb_generateur.isnull()
+    isnull = td001_sys_ecs.sys_ecs_princ_nb_generateur.isnull()
+    is_multiple_install = td001_sys_ecs.nb_installations_ecs_total > 1
+    td001_sys_ecs.loc[isnull, 'cfg_sys_ecs'] = pd.NA
+    td001_sys_ecs.loc[~isnull, 'cfg_sys_ecs'] = 'type de générateur unique/installation unique'
+    is_solaire = td001_sys_ecs.sys_ecs_princ_gen_ecs_lib_infer.str.contains('ecs solaire thermique')
+    isnull = td001_sys_ecs.sys_ecs_sec_nb_generateur.isnull()
     td001_sys_ecs.loc[
-        ~isnull | is_solaire, 'configuration_sys_ecs'] = 'types de générateur multiples/installation unique'
+        ~isnull | is_solaire, 'cfg_sys_ecs'] = 'types de générateur multiples/installation unique'
     td001_sys_ecs.loc[(~isnull | is_solaire) & (
-        is_multiple_install), 'configuration_sys_ecs'] = 'types de générateur multiples/installations multiples'
+        is_multiple_install), 'cfg_sys_ecs'] = 'types de générateur multiples/installations multiples'
 
     cols_first = [el for el in td001_sys_ecs.columns.tolist() if el not in cols_end]
 

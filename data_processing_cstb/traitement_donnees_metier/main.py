@@ -7,11 +7,11 @@ from generate_dpe_annexes_scripts.utils import round_float_cols, unique_ordered
 from config import paths
 from multiprocessing import Pool
 from generate_dpe_annexes_scripts.td007_processing import merge_td007_tr_tv, postprocessing_td007, generate_pb_table, \
-    generate_ph_table, generate_murs_table, agg_td007_murs_to_td001, agg_td007_ph_to_td001, agg_td007_pb_to_td001
+    generate_ph_table, generate_mur_table, agg_td007_mur_to_td001, agg_td007_ph_to_td001, agg_td007_pb_to_td001
 
 from generate_dpe_annexes_scripts.td008_processing import merge_td008_tr_tv, postprocessing_td008
 from generate_dpe_annexes_scripts.td001_merge import merge_td001_dpe_id_envelope
-from generate_dpe_annexes_scripts.td007_processing import agg_td007_to_td001_essential, agg_surface_envelope
+from generate_dpe_annexes_scripts.td007_processing import agg_td007_to_td001_essential, agg_surf_envelope
 from generate_dpe_annexes_scripts.td008_processing import agg_td008_to_td001_essential, agg_td008_to_td001
 from generate_dpe_annexes_scripts.td010_processing import merge_td010_tr_tv, postprocessing_td010, agg_td010_td001
 from generate_dpe_annexes_scripts.td011_td012_processing import merge_td012_tr_tv, postprocessing_td012, merge_td011_tr_tv, \
@@ -47,13 +47,13 @@ def run_enveloppe_processing(td001, td006, td007, td008, td010):
     # TABLES PAR TYPE COMPOSANT
     td007_pb = generate_pb_table(td007)
     td007_ph = generate_ph_table(td007)
-    td007_murs = generate_murs_table(td007)
+    td007_murs = generate_mur_table(td007)
 
     # TABLES SYNTHETIQUES TOUTES THEMATIQUES
 
     td007_agg_essential = agg_td007_to_td001_essential(td007)
     td008_agg_essential = agg_td008_to_td001_essential(td008)
-    surfaces_agg_essential = agg_surface_envelope(td007, td008)
+    surfaces_agg_essential = agg_surf_envelope(td007, td008)
 
     td001_enveloppe_agg = pd.concat([td007_agg_essential, td008_agg_essential, surfaces_agg_essential], axis=1)
 
@@ -64,8 +64,8 @@ def run_enveloppe_processing(td001, td006, td007, td008, td010):
     cols = unique_ordered(cols)
     td008_p = td008[cols]
     cols = [el for el in td007.columns if
-            el not in td007_raw_cols + ["qualif_surf", 'surface_paroi_opaque_calc', 'surface_paroi_totale_calc_v1',
-                                        'surface_paroi_totale_calc_v2']]
+            el not in td007_raw_cols + ["qualif_surf", 'surf_paroi_opaque_calc', 'surf_paroi_totale_calc_v1',
+                                        'surf_paroi_totale_calc_v2']]
     cols.append('td007_paroi_opaque_id')
     cols = unique_ordered(cols)
     td007_p = td007[cols]
@@ -77,7 +77,7 @@ def run_enveloppe_processing(td001, td006, td007, td008, td010):
     td010_p = td010[cols]
 
     # TABLES AGGREGEES PAR TYPE COMPOSANT
-    td007_murs_agg = agg_td007_murs_to_td001(td007_murs)
+    td007_murs_agg = agg_td007_mur_to_td001(td007_murs)
     td007_ph_agg = agg_td007_ph_to_td001(td007_ph)
     td007_pb_agg = agg_td007_pb_to_td001(td007_pb)
     td008_agg = agg_td008_to_td001(td008)

@@ -12,7 +12,7 @@ td011_types = {'td011_installation_chauffage_id': 'str',
                'tv025_intermittence_id': 'category',
                }
 
-td012_types = {'id': 'str',
+td012_types = {'td012_generateur_chauffage_id': 'str',
                'systeme_chauffage_cogeneration_id': 'string',
                'td011_installation_chauffage_id': 'str',
                'tr004_type_energie_id': 'category',
@@ -135,7 +135,7 @@ def merge_td012_tr_tv(td012):
     table = meta.merge_all_tr_tables(table)
     table = meta.merge_all_tv_tables(table)
     table = table.astype({k: v for k, v in td012_types.items() if k in table})
-    table = table.rename(columns={'id': 'td012_generateur_chauffage_id'})
+    table = table.rename(columns={'id': 'td012_gen_chauffage_id'})
 
     return table
 
@@ -229,34 +229,34 @@ def postprocessing_td012(td012):
 
 
 def agg_systeme_chauffage_essential(td001, td011, td012):
-    sys_ch_principal_rename = {
+    sys_ch_princ_rename = {
         'td001_dpe_id': 'td001_dpe_id',
-        'gen_ch_lib_infer': 'sys_ch_principal_gen_ch_lib_infer',
-        'gen_ch_lib_infer_simp': 'sys_ch_principal_gen_ch_lib_infer_simp',
-        'type_energie_chauffage': 'sys_ch_principal_type_energie_chauffage',
-        'consommation_chauffage': 'sys_ch_principal_consommation_chauffage',
-        "tv025_type_installation": 'sys_ch_principal_type_installation_chauffage',
-        'nombre_generateurs': 'sys_ch_principal_nb_generateur'
+        'gen_ch_lib_infer': 'sys_ch_princ_gen_ch_lib_infer',
+        'gen_ch_lib_infer_simp': 'sys_ch_princ_gen_ch_lib_infer_simp',
+        'type_energie_chauffage': 'sys_ch_princ_type_energie_chauffage',
+        'consommation_chauffage': 'sys_ch_princ_conso_chauffage',
+        "tv025_type_installation": 'sys_ch_princ_type_installation_chauffage',
+        'nb_generateurs': 'sys_ch_princ_nb_generateur'
     }
 
-    sys_ch_secondaire_rename = {
+    sys_ch_sec_rename = {
         'td001_dpe_id': 'td001_dpe_id',
-        'gen_ch_lib_infer': 'sys_ch_secondaire_gen_ch_lib_infer',
-        'gen_ch_lib_infer_simp': 'sys_ch_secondaire_gen_ch_lib_infer_simp',
-        'type_energie_chauffage': 'sys_ch_secondaire_type_energie_chauffage',
-        'consommation_chauffage': 'sys_ch_secondaire_consommation_chauffage',
-        "tv025_type_installation": 'sys_ch_secondaire_type_installation_chauffage',
-        'nombre_generateurs': 'sys_ch_secondaire_nb_generateur'
+        'gen_ch_lib_infer': 'sys_ch_sec_gen_ch_lib_infer',
+        'gen_ch_lib_infer_simp': 'sys_ch_sec_gen_ch_lib_infer_simp',
+        'type_energie_chauffage': 'sys_ch_sec_type_energie_chauffage',
+        'consommation_chauffage': 'sys_ch_sec_conso_chauffage',
+        "tv025_type_installation": 'sys_ch_sec_type_installation_chauffage',
+        'nb_generateurs': 'sys_ch_sec_nb_generateur'
     }
 
-    sys_ch_tertiaire_concat_rename = {
+    sys_ch_tert_concat_rename = {
         'td001_dpe_id': 'td001_dpe_id',
-        'gen_ch_lib_infer': 'sys_ch_tertiaire_gen_ch_lib_infer_concat',
-        'gen_ch_lib_infer_simp': 'sys_ch_tertiaire_gen_ch_lib_infer_simp_concat',
-        'type_energie_chauffage': 'sys_ch_tertiaire_type_energie_chauffage_concat',
-        'consommation_chauffage': 'sys_ch_tertiaire_consommation_chauffage',
-        "tv025_type_installation": 'sys_ch_tertiaire_type_installation_chauffage_concat',
-        'nombre_generateurs': 'sys_ch_tertiaire_nb_generateurs'
+        'gen_ch_lib_infer': 'sys_ch_tert_gen_ch_lib_infer_concat',
+        'gen_ch_lib_infer_simp': 'sys_ch_tert_gen_ch_lib_infer_simp_concat',
+        'type_energie_chauffage': 'sys_ch_tert_type_energie_chauffage_concat',
+        'consommation_chauffage': 'sys_ch_tert_conso_chauffage',
+        "tv025_type_installation": 'sys_ch_tert_type_installation_chauffage_concat',
+        'nb_generateurs': 'sys_ch_tert_nb_generateurs'
     }
 
     td012 = td012.merge(
@@ -279,11 +279,11 @@ def agg_systeme_chauffage_essential(td001, td011, td012):
     s_rendement = s_rendement * rendement_gen_u
     table['besoin_chauffage_infer'] = table['consommation_chauffage'] * s_rendement
 
-    table['nombre_generateurs'] = 1
+    table['nb_generateurs'] = 1
 
     cols = ['td001_dpe_id', 'gen_ch_lib_infer_simp', 'gen_ch_lib_infer', 'type_energie_chauffage',
             'consommation_chauffage', 'besoin_chauffage_infer']
-    cols += ['tv025_intermittence_id', "tv025_type_installation", 'nombre_generateurs', 'id_unique']
+    cols += ['tv025_intermittence_id', "tv025_type_installation", 'nb_generateurs', 'id_unique']
 
     agg_cols = ['td001_dpe_id', 'gen_ch_lib_infer', 'tv025_intermittence_id']
 
@@ -304,26 +304,26 @@ def agg_systeme_chauffage_essential(td001, td011, td012):
         'consommation_chauffage': 'sum',
         'besoin_chauffage_infer': 'sum',
         "tv025_type_installation": 'first',
-        "nombre_generateurs": 'sum'
+        "nb_generateurs": 'sum'
 
     }).reset_index()
 
     agg['id_unique'] = agg.td001_dpe_id + agg.gen_ch_lib_infer + agg.tv025_intermittence_id
 
-    sys_principal = agg.sort_values('consommation_chauffage', ascending=False).drop_duplicates(subset='td001_dpe_id')
+    sys_princ = agg.sort_values('consommation_chauffage', ascending=False).drop_duplicates(subset='td001_dpe_id')
 
-    id_sys_principal = sys_principal.id_unique.unique().tolist()
+    id_sys_princ = sys_princ.id_unique.unique().tolist()
 
-    sys_secondaires = agg.loc[~agg.id_unique.isin(id_sys_principal)]
+    sys_secs = agg.loc[~agg.id_unique.isin(id_sys_princ)]
 
-    sys_secondaire = sys_secondaires.sort_values('consommation_chauffage', ascending=False).drop_duplicates(
+    sys_sec = sys_secs.sort_values('consommation_chauffage', ascending=False).drop_duplicates(
         'td001_dpe_id')
 
-    id_sys_secondaire = sys_secondaire.id_unique.unique().tolist()
+    id_sys_sec = sys_sec.id_unique.unique().tolist()
 
-    sys_tertiaires = agg.loc[~agg.id_unique.isin(id_sys_principal + id_sys_secondaire)]
+    sys_terts = agg.loc[~agg.id_unique.isin(id_sys_princ + id_sys_sec)]
 
-    sys_tertiaire_concat = sys_tertiaires.groupby('td001_dpe_id').agg({
+    sys_tert_concat = sys_terts.groupby('td001_dpe_id').agg({
         'gen_ch_lib_infer': lambda x: ' + '.join(list(set(x))),
 
         'gen_ch_lib_infer_simp': lambda x: ' + '.join(list(set(x))),
@@ -331,72 +331,72 @@ def agg_systeme_chauffage_essential(td001, td011, td012):
         'consommation_chauffage': 'sum',
         'besoin_chauffage_infer': 'sum',
         "tv025_type_installation": lambda x: ' + '.join(list(set(x))),
-        'nombre_generateurs': 'sum'
+        'nb_generateurs': 'sum'
     }).reset_index()
 
-    sys_principal = sys_principal.append(table_gen_unique[sys_principal.columns])
+    sys_princ = sys_princ.append(table_gen_unique[sys_princ.columns])
 
-    sys_principal = sys_principal.rename(columns=sys_ch_principal_rename)[sys_ch_principal_rename.values()]
+    sys_princ = sys_princ.rename(columns=sys_ch_princ_rename)[sys_ch_princ_rename.values()]
 
-    sys_secondaire = sys_secondaire.rename(columns=sys_ch_secondaire_rename)[sys_ch_secondaire_rename.values()]
+    sys_sec = sys_sec.rename(columns=sys_ch_sec_rename)[sys_ch_sec_rename.values()]
 
-    sys_tertiaire_concat = sys_tertiaire_concat.rename(columns=sys_ch_tertiaire_concat_rename)[
-        sys_ch_tertiaire_concat_rename.values()]
+    sys_tert_concat = sys_tert_concat.rename(columns=sys_ch_tert_concat_rename)[
+        sys_ch_tert_concat_rename.values()]
 
-    td001_sys_ch = td001[['td001_dpe_id']].merge(sys_principal, on='td001_dpe_id', how='left')
-    td001_sys_ch = td001_sys_ch.merge(sys_secondaire, on='td001_dpe_id', how='left')
-    td001_sys_ch = td001_sys_ch.merge(sys_tertiaire_concat, on='td001_dpe_id', how='left')
+    td001_sys_ch = td001[['td001_dpe_id']].merge(sys_princ, on='td001_dpe_id', how='left')
+    td001_sys_ch = td001_sys_ch.merge(sys_sec, on='td001_dpe_id', how='left')
+    td001_sys_ch = td001_sys_ch.merge(sys_tert_concat, on='td001_dpe_id', how='left')
     nb_installation = td011.groupby('td001_dpe_id').td011_installation_chauffage_id.count().to_frame(
-        'nombre_installations_ch_total')
+        'nb_installations_ch_total')
     td001_sys_ch = td001_sys_ch.merge(nb_installation, on='td001_dpe_id', how='left')
 
-    cols_end = sys_principal.columns.tolist() + sys_secondaire.columns.tolist() + sys_tertiaire_concat.columns.tolist()
+    cols_end = sys_princ.columns.tolist() + sys_sec.columns.tolist() + sys_tert_concat.columns.tolist()
     cols_end = np.unique(cols_end).tolist()
     cols_end.remove('td001_dpe_id')
 
-    td001_sys_ch['nombre_generateurs_ch_total'] = td001_sys_ch.sys_ch_principal_nb_generateur
-    td001_sys_ch['nombre_generateurs_ch_total'] += td001_sys_ch.sys_ch_secondaire_nb_generateur.fillna(0)
-    td001_sys_ch['nombre_generateurs_ch_total'] += td001_sys_ch.sys_ch_tertiaire_nb_generateurs.fillna(0)
+    td001_sys_ch['nb_gen_ch_total'] = td001_sys_ch.sys_ch_princ_nb_generateur
+    td001_sys_ch['nb_gen_ch_total'] += td001_sys_ch.sys_ch_sec_nb_generateur.fillna(0)
+    td001_sys_ch['nb_gen_ch_total'] += td001_sys_ch.sys_ch_tert_nb_generateurs.fillna(0)
 
-    cols = ['sys_ch_principal_type_energie_chauffage',
-            'sys_ch_secondaire_type_energie_chauffage',
-            'sys_ch_tertiaire_type_energie_chauffage_concat']
+    cols = ['sys_ch_princ_type_energie_chauffage',
+            'sys_ch_sec_type_energie_chauffage',
+            'sys_ch_tert_type_energie_chauffage_concat']
 
     td001_sys_ch['mix_energetique_chauffage'] = concat_string_cols(td001_sys_ch, cols=cols, join_string=' + ',
                                                                    is_unique=True, is_sorted=True)
 
-    cols = ['sys_ch_principal_type_installation_chauffage',
-            'sys_ch_secondaire_type_installation_chauffage',
-            'sys_ch_tertiaire_type_installation_chauffage_concat']
+    cols = ['sys_ch_princ_type_installation_chauffage',
+            'sys_ch_sec_type_installation_chauffage',
+            'sys_ch_tert_type_installation_chauffage_concat']
 
     td001_sys_ch['type_installation_chauffage_concat'] = concat_string_cols(td001_sys_ch, cols=cols, join_string=' + ',
                                                                             is_unique=True, is_sorted=True)
 
-    cols = ['sys_ch_principal_gen_ch_lib_infer',
-            'sys_ch_secondaire_gen_ch_lib_infer',
-            'sys_ch_tertiaire_gen_ch_lib_infer_concat']
+    cols = ['sys_ch_princ_gen_ch_lib_infer',
+            'sys_ch_sec_gen_ch_lib_infer',
+            'sys_ch_tert_gen_ch_lib_infer_concat']
 
     td001_sys_ch['gen_ch_lib_infer_concat'] = concat_string_cols(td001_sys_ch, cols=cols, join_string=' + ',
                                                                  is_unique=True, is_sorted=True)
 
-    cols = ['sys_ch_principal_gen_ch_lib_infer_simp',
-            'sys_ch_secondaire_gen_ch_lib_infer_simp',
-            'sys_ch_tertiaire_gen_ch_lib_infer_simp_concat']
+    cols = ['sys_ch_princ_gen_ch_lib_infer_simp',
+            'sys_ch_sec_gen_ch_lib_infer_simp',
+            'sys_ch_tert_gen_ch_lib_infer_simp_concat']
 
     td001_sys_ch['gen_ch_lib_infer_simp_concat'] = concat_string_cols(td001_sys_ch, cols=cols, join_string=' + ',
                                                                       is_unique=True, is_sorted=True)
 
-    configuration_installation_chauffage = td011.groupby('td001_dpe_id').tr003_description.apply(
-        lambda x: ' + '.join(sorted(list(set(x)))))
-    # isnull = td001_sys_ch.sys_ch_principal_nb_generateur.isnull()
-    # is_multiple_install = td001_sys_ch.nombre_installations_ch_total > 1
-    # td001_sys_ch.loc[isnull, 'configuration_sys_chauffage'] = pd.NA
-    # td001_sys_ch.loc[~isnull, 'configuration_sys_chauffage'] = 'type de générateur unique/installation unique'
-    # isnull = td001_sys_ch.sys_ch_secondaire_nb_generateur.isnull()
-    # td001_sys_ch.loc[~isnull, 'configuration_sys_chauffage'] = 'types de générateur multiples/installation unique'
+    cfg_installation_chauffage = td011.groupby('td001_dpe_id').tr003_description.apply(
+        lambda x: ' + '.join(sorted(list(set(x))))).to_frame('cfg_installation_chauffage')
+    # isnull = td001_sys_ch.sys_ch_princ_nb_generateur.isnull()
+    # is_multiple_install = td001_sys_ch.nb_installations_ch_total > 1
+    # td001_sys_ch.loc[isnull, 'cfg_sys_chauffage'] = pd.NA
+    # td001_sys_ch.loc[~isnull, 'cfg_sys_chauffage'] = 'type de générateur unique/installation unique'
+    # isnull = td001_sys_ch.sys_ch_sec_nb_generateur.isnull()
+    # td001_sys_ch.loc[~isnull, 'cfg_sys_chauffage'] = 'types de générateur multiples/installation unique'
     # td001_sys_ch.loc[(~isnull) & (
-    #     is_multiple_install), 'configuration_sys_chauffage'] = 'types de générateur multiples/installations multiples'
-    td001_sys_ch['configuration_installation_chauffage'] = configuration_installation_chauffage
+    #     is_multiple_install), 'cfg_sys_chauffage'] = 'types de générateur multiples/installations multiples'
+    td001_sys_ch = td001_sys_ch.merge(cfg_installation_chauffage.reset_index(), on='td001_dpe_id')
     cols_first = [el for el in td001_sys_ch.columns.tolist() if el not in cols_end]
 
     cols = cols_first + cols_end

@@ -37,14 +37,14 @@ def agg_td010_td001(td010):
     long.columns = [f'longueur_{col}' for col in long]
 
     type_isol_mur = agg_pond_top_freq(td010, 'tv013_isolation_mur', 'longueur',
-                                      'td001_dpe_id').to_frame('position_isolation_mur')
+                                      'td001_dpe_id').to_frame('pos_isol_mur')
     td010_pb = td010.loc[td010.type_liaison == 'pb_mur']
     type_isol_plancher = agg_pond_top_freq(td010_pb, 'tv013_plancher_bas', 'longueur',
-                                           'td001_dpe_id').to_frame('position_isolation_plancher')
+                                           'td001_dpe_id').to_frame('pos_isol_plancher')
 
     td010_ph = td010.loc[td010.type_liaison == 'ph_mur']
     type_isol_plafond = agg_pond_top_freq(td010_ph, 'tv013_plancher_bas', 'longueur',
-                                          'td001_dpe_id').to_frame('position_isolation_plafond')
+                                          'td001_dpe_id').to_frame('pos_isol_plafond')
 
     td010_pt_agg = pd.concat([type_isol_mur, type_isol_plancher, type_isol_plafond, long], axis=1)
     td010_pt_agg.index.name = 'td001_dpe_id'
