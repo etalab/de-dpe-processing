@@ -45,19 +45,19 @@ def postprocessing_td008(td008):
     td008 = td008.copy()
 
     # orientation processing avec tv020 et reference.
-    td008['orientation_infer'] = td008['tv020_orientation_paroi'].astype('string').fillna('NONDEF')
-    nondef = td008.orientation_infer == 'NONDEF'
+    td008['orientation_infer'] = td008['tv020_orientation_paroi'].astype('string').fillna('indetermine')
+    indetermine = td008.orientation_infer == 'indetermine'
     horiz = td008['tv020_coefficient_orientation_id'] == "13"
     td008.loc[horiz, 'orientation_infer'] = 'Horizontale'
     ouest = td008.reference.str.lower().str.contains('ouest')
     nord = td008.reference.str.lower().str.contains('nord')
     sud = td008.reference.str.lower().str.contains('sud')
     est = td008.reference.str.lower().str.contains('est')
-    td008.loc[nord & nondef, 'orientation_infer'] = "Nord"
-    td008.loc[sud & nondef, 'orientation_infer'] = "Sud"
-    td008.loc[ouest & nondef, 'orientation_infer'] = "Ouest"
-    td008.loc[est & nondef, 'orientation_infer'] = "Est"
-    td008.loc[(ouest & est & nondef), 'orientation_infer'] = "Est ou Ouest"
+    td008.loc[nord & indetermine, 'orientation_infer'] = "Nord"
+    td008.loc[sud & indetermine, 'orientation_infer'] = "Sud"
+    td008.loc[ouest & indetermine, 'orientation_infer'] = "Ouest"
+    td008.loc[est & indetermine, 'orientation_infer'] = "Est"
+    td008.loc[(ouest & est & indetermine), 'orientation_infer'] = "Est ou Ouest"
     td008.orientation_infer = td008.orientation_infer.astype('category')
 
     # type vitrage processing avec tv009, tv010, tv021 et reference
@@ -68,12 +68,12 @@ def postprocessing_td008(td008):
         lambda x: x + ' mm ' if x != '' else x) + td008['tv010_type_materiaux'].astype('string').fillna('') + ' ' + \
                                    td008[
                                        'tv009_traitement_vitrage'].astype('string').fillna('')
-    td008['fen_lib_from_tv009'] = td008['fen_lib_from_tv009'].fillna('NONDEF')
+    td008['fen_lib_from_tv009'] = td008['fen_lib_from_tv009'].fillna('indetermine')
 
     td008['fen_lib_from_tv021'] = td008['tv021_type_baie'].astype('string') + ' ' + td008[
         'tv021_type_vitrage'].astype('string').fillna('') + ' '
     td008['fen_lib_from_tv021'] += td008['tv021_materiaux'].astype('string').fillna('')
-    td008['fen_lib_from_tv021'] = td008['fen_lib_from_tv021'].fillna('NONDEF')
+    td008['fen_lib_from_tv021'] = td008['fen_lib_from_tv021'].fillna('indetermine')
 
     double_vitrage = td008.fen_lib_from_tv009.str.lower().str.contains(
         'double') | td008.fen_lib_from_tv021.str.lower().str.contains('double')
@@ -91,7 +91,7 @@ def postprocessing_td008(td008):
     porte = porte | td008['reference'].fillna('').str.lower().str.contains('portes ')
     porte = porte & (~td008['reference'].fillna('').str.lower().str.contains('fen'))
 
-    td008['type_vitrage_simple_infer'] = 'NONDEF'
+    td008['type_vitrage_simple_infer'] = 'indetermine'
 
     td008.loc[double_vitrage, 'type_vitrage_simple_infer'] = 'double vitrage'
     td008.loc[triple_vitrage, 'type_vitrage_simple_infer'] = 'triple vitrage'
@@ -125,10 +125,10 @@ def postprocessing_td008(td008):
     #                       'INCOHERENT':[0,0.99]}
 
     # inc=table.type_vitrage_simple_infer=='INCOHERENT'
-    # nondef=table.type_vitrage_simple_infer=='NONDEF'
-    # inc_or_nondef=inc|nondef
+    # indetermine=table.type_vitrage_simple_infer=='indetermine'
+    # inc_or_indetermine=inc|indetermine
 
-    # table.loc[inc_or_nondef,'type_vitrage_simple_infer'] = s_type_from_value[inc_or_nondef]
+    # table.loc[inc_or_indetermine,'type_vitrage_simple_infer'] = s_type_from_value[inc_or_indetermine]
 
     # quantitatifs (EXPERIMENTAL)
     td008['nb_baie_calc'] = (
@@ -140,7 +140,7 @@ def postprocessing_td008(td008):
 
     td008['surfacexnb_baie_calc'] = td008.surface * td008.nb_baie_calc
     # MATERIAU
-    td008['materiaux'] = td008.tv021_materiaux.astype('string').fillna('NONDEF')
+    td008['materiaux'] = td008.tv021_materiaux.astype('string').fillna('indetermine')
 
     mat_tv010 = td008.tv010_type_materiaux
 
@@ -160,12 +160,12 @@ def postprocessing_td008(td008):
     baie_mat_tv010.loc[polycarb] = 'Polycarbonate'
     baie_mat_tv010.loc[autres] = 'Autres'
 
-    baie_mat_tv010 = baie_mat_tv010.fillna('NONDEF')
+    baie_mat_tv010 = baie_mat_tv010.fillna('indetermine')
 
     mat = td008.materiaux
-    nondef = mat == 'NONDEF'
+    indetermine = mat == 'indetermine'
 
-    td008.loc[nondef, 'materiaux'] = baie_mat_tv010.loc[nondef]
+    td008.loc[indetermine, 'materiaux'] = baie_mat_tv010.loc[indetermine]
 
     # TYPE MENUISERIE
     ## type menuiserie en fonction des caractéristiques déjà inférée
@@ -173,23 +173,23 @@ def postprocessing_td008(td008):
     porte = td008.type_vitrage_simple_infer.str.contains('porte')
     brique = td008.type_vitrage_simple_infer.str.contains('brique')
 
-    td008['cat_baie_simple_infer'] = 'NONDEF'
+    td008['cat_baie_simple_infer'] = 'indetermine'
     td008.loc[baie, 'cat_baie_simple_infer'] = 'baie vitrée'
     td008.loc[porte, 'cat_baie_simple_infer'] = 'porte'
     td008.loc[brique, 'cat_baie_simple_infer'] = 'paroi en brique de verre ou polycarbonate'
 
-    nondef = td008.cat_baie_simple_infer == "NONDEF"
+    indetermine = td008.cat_baie_simple_infer == "indetermine"
     ## pour les non def on va chercher dans le string de description
     # type menuiserie en fonction des caractéristiques déjà inférée
     baie = td008.type_vitrage_simple_infer.str.contains('vitrage')
     porte = td008.type_vitrage_simple_infer.str.contains('porte')
     brique = td008.type_vitrage_simple_infer.str.contains('brique')
 
-    td008['cat_baie_simple_infer'] = 'NONDEF'
+    td008['cat_baie_simple_infer'] = 'indetermine'
     td008.loc[baie, 'cat_baie_simple_infer'] = 'baie_vitree'
     td008.loc[porte, 'cat_baie_simple_infer'] = 'porte'
 
-    nondef = td008.cat_baie_simple_infer == "NONDEF"
+    indetermine = td008.cat_baie_simple_infer == "indetermine"
     # pour les non def on va chercher dans le string de description
     baie = td008.reference.str.lower().str.contains('fen')
     ref = td008.reference.str.lower()
@@ -204,8 +204,8 @@ def postprocessing_td008(td008):
     baie = baie | td008['tv010_type_baie'].str.lower().str.contains('fen')
     baie = baie | td008.reference.str.lower().str.contains('vitr')
     porte = td008.reference.str.lower().str.contains('porte') & (~baie)
-    td008.loc[nondef & baie, 'cat_baie_simple_infer'] = 'baie_vitree'
-    td008.loc[nondef & porte, 'cat_baie_simple_infer'] = 'porte'
+    td008.loc[indetermine & baie, 'cat_baie_simple_infer'] = 'baie_vitree'
+    td008.loc[indetermine & porte, 'cat_baie_simple_infer'] = 'porte'
     td008.loc[brique, 'cat_baie_simple_infer'] = 'brique_ou_poly'
     td008.cat_baie_simple_infer = td008.cat_baie_simple_infer.astype('category')
 
@@ -324,8 +324,8 @@ def agg_td008_to_td001(td008):
                                   'tv010_uw': 'Uw',
                                   'tv010_ug': 'Ug'})
 
-    td008.Uw = td008.Uw.astype('string').fillna('NONDEF')
-    td008.Ug = td008.Ug.astype('string').fillna('NONDEF')
+    td008.Uw = td008.Uw.astype('string').fillna('indetermine')
+    td008.Ug = td008.Ug.astype('string').fillna('indetermine')
 
     #
 

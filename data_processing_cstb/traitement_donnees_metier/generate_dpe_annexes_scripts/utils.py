@@ -76,7 +76,7 @@ def _prep_agg_pond(table, pond, bool_filter_col, pond_col, bool_filter_not):
         else:
             table = table.loc[table[bool_filter_col].astype(bool), :]
     if isinstance(pond, str):
-        table[pond_col] = table[pond]
+        table.loc[:, pond_col] = table.loc[:, pond]
     elif isinstance(pond, (list, tuple)):
         table[pond_col] = 1
         for col in pond:
@@ -113,7 +113,7 @@ def agg_pond_avg(table, value_col, pond, by, bool_filter_col=None, bool_filter_n
     pond_col = str(uuid.uuid4())
     table = _prep_agg_pond(table, pond, bool_filter_col, pond_col, bool_filter_not)
     pond_value_col_temp = str(uuid.uuid4())
-    table[pond_value_col_temp] = table[pond_col] * table[value_col]
+    table.loc[:, pond_value_col_temp] = table.loc[:, pond_col] * table.loc[:, value_col]
     null = table[pond_value_col_temp].isnull()
     null = null | table[pond_col].isnull()
     table.loc[null, [pond_col, pond_value_col_temp]] = np.nan
@@ -223,7 +223,7 @@ def affect_lib_by_matching_score(txt, lib_dict):
         affectation = comp.sort_index().index[0]  # sorting index in case of conflicts
         return affectation
     else:
-        return 'non affecte'
+        return 'indetermine'
 
 
 def concat_string_cols(table, cols, join_string=None, is_unique=False, is_sorted=False):

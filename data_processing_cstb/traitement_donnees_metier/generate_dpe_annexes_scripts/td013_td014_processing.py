@@ -45,64 +45,42 @@ gen_ecs_normalized_lib_matching_dict = {
         ('pompe a chaleur', 'pac', 'thermodynamique', 'air extrait', 'air exterieur', 'air ambiant'),
         ('electricite', 'electrique')],
     "ballon a accumulation electrique": [('ballon', 'classique', 'accumulation'), ('electricite', 'electrique')],
-    "ecs electrique indeterminee": [('electricite', 'electrique')],
+    "ecs electrique indetermine": [('electricite', 'electrique')],
     "ecs instantanee electrique": ['instantanee', ('electricite', 'electrique')],
-
-    'chaudiere mixte gaz': ["chaudiere", 'mixte', "gaz"],
-    'chaudiere mixte fioul': ["chaudiere", "mixte", "fioul"],
-    'chaudiere mixte bois': [("bois", "biomasse")],
 
     'chauffe-eau gaz independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"), "gaz"],
     'chauffe-eau gpl independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"), "gpl"],
-
+    "chaudiere bois": [('bois', 'biomasse')],
     'chauffe-eau fioul independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"),
                                       "fioul"],
     "ecs collective reseau chaleur": ["reseau", "chaleur"],
 
-    'chaudiere gaz': ["chaudiere", "gaz"],
-    'chaudiere gpl': ["chaudiere", "gpl"],
-
-    'chaudiere fioul': ["chaudiere", "fioul"],
 
 }
+for type_chaudiere, type_chaudiere_keys in zip(['standard', 'basse temperature', 'condensation', 'indetermine'],
+                                               [('standard', 'classique'), 'basse temperature',
+                                                ('condensation', 'condenseurs'), None]):
+    for energie in ['fioul', 'gaz','autre(gpl/butane/propane)']:
+        energie_keywords = energie
+        if energie == 'autre(gpl/butane/propane)':
+            energie_keywords = ('gpl', 'butane', 'propane')
+        if type_chaudiere_keys is not None:
+            gen_ecs_normalized_lib_matching_dict[f'chaudiere {energie} {type_chaudiere}'] = ['chaudiere', energie_keywords,
+                                                                                            type_chaudiere_keys]
+        else:
+            gen_ecs_normalized_lib_matching_dict[f'chaudiere {energie} {type_chaudiere}'] = ['chaudiere', energie_keywords
+                                                                                            ]
+
 
 solaire_dict = dict()
 for k, v in gen_ecs_normalized_lib_matching_dict.items():
     k_solaire = 'ecs solaire thermique + ' + k
     solaire_dict[k_solaire] = v + ['avec solaire']
 gen_ecs_normalized_lib_matching_dict.update(solaire_dict)
-gen_ecs_lib_simp_dict = {'ecs electrique indeterminee': 'ecs electrique indeterminee',
-                         'chaudiere gaz': 'chaudiere gaz',
+gen_ecs_lib_simp_dict = {'ecs electrique indetermine': 'ecs à effet joule electrique',
                          'ballon a accumulation electrique': 'ecs à effet joule electrique',
-                         'chaudiere mixte gaz': 'chaudiere gaz',
-                         'ECS thermodynamique electrique(PAC ou ballon)': 'ECS thermodynamique electrique(PAC ou ballon)',
-                         'non affecte': 'non affecte',
-                         'chaudiere fioul': 'chaudiere fioul',
-                         'chaudiere mixte fioul': 'chaudiere fioul',
-                         'chaudiere mixte bois': 'chaudiere mixte bois',
-                         'ecs collective reseau chaleur': 'ecs collective reseau chaleur',
                          'ecs instantanee electrique': 'ecs à effet joule electrique',
-                         'chauffe-eau gaz independant': 'chauffe-eau gaz independant',
-                         'chauffe-eau fioul independant': 'chauffe-eau fioul independant',
                          }
-
-gen_to_installation_infer_dict = {"ecs à effet joule electrique":"Individuelle",
-"ECS thermodynamique electrique(PAC ou ballon)":"non affecte",
-'ecs solaire thermique + ballon a accumulation electrique':"Individuelle",
-'chaudiere fioul':"Individuelle",
-'chaudiere gaz':"non affecte",
-'ecs solaire thermique + chaudiere mixte gaz':"non affecte",
-"non affecte":"non affecte",
-"ecs solaire thermique + chaudiere mixte fioul":"Individuelle",
-"ecs solaire thermique + ECS thermodynamique electrique(PAC ou ballon)":"Individuelle",
-"chaudiere mixte bois":"Individuelle",
-"ecs collective reseau chaleur":"Collective",
-"ecs solaire thermique + ecs electrique indeterminee":"Individuelle",
-"ecs solaire thermique + chaudiere gaz":"non affecte",
-"chauffe-eau gaz independant":"Individuelle",
-"ecs solaire thermique + chaudiere fioul":"Individuelle",
-"ecs solaire thermique + chaudiere mixte bois":"Individuelle"}
-
 solaire_dict = dict()
 for k, v in gen_ecs_lib_simp_dict.items():
     k_solaire = 'ecs thermique solaire + ' + k
@@ -110,11 +88,33 @@ for k, v in gen_ecs_lib_simp_dict.items():
     solaire_dict[k_solaire] = v_solaire
 gen_ecs_lib_simp_dict.update(solaire_dict)
 
+gen_to_installation_infer_dict = {"ecs à effet joule electrique":"Individuelle",
+"ECS thermodynamique electrique(PAC ou ballon)":"indetermine",
+'ecs solaire thermique + ecs à effet joule electrique':"Individuelle",
+"indetermine":"indetermine",
+"chaudiere bois":"Individuelle",
+"ecs collective reseau chaleur":"Collective",
+"chauffe-eau gaz independant":"Individuelle",
+    'chauffe-eau gpl independant': "Individuelle",
+    'chauffe-eau fioul independant': "Individuelle",
+                                  }
+for el in ['standard', 'basse temperature', 'condensation', 'indetermine']:
+    gen_to_installation_infer_dict[f'chaudiere fioul {type_chaudiere}']='Individuelle'
+    gen_to_installation_infer_dict[f'chaudiere gaz {type_chaudiere}']='indetermine'
+    gen_to_installation_infer_dict[f'chaudiere autre(gpl/butane/propane) {type_chaudiere}']='Individuelle'
+
+solaire_dict = dict()
+for k, v in gen_to_installation_infer_dict.items():
+    k_solaire = 'ecs thermique solaire + ' + k
+    v_solaire = v
+    solaire_dict[k_solaire] = v_solaire
+gen_ecs_lib_simp_dict.update(solaire_dict)
+
 sys_princ_scores = {'thermodynamique': 5,
                         'solaire': 4,
                         'chaudiere': 3,
                         'ballon a accumulation': 2,
-                        'electrique indeterminee': 1,
+                        'electrique indetermine': 1,
                         'indépendant': 0, }
 
 sys_princ_score_lib = dict()
@@ -123,7 +123,7 @@ for k in list(gen_ecs_normalized_lib_matching_dict.keys()):
     for term, score in sys_princ_scores.items():
         if term in k:
             sys_princ_score_lib[k] += score
-sys_princ_score_lib['non affecte'] = -1
+sys_princ_score_lib['indetermine'] = -1
 
 
 def merge_td013_tr_tv(td013):
@@ -184,16 +184,16 @@ def postprocessing_td014(td013, td014,td001,td001_sys_ch_agg):
     table['gen_ecs_lib_infer'] = table.gen_ecs_concat_txt_desc.replace(gen_ecs_lib_infer_dict)
     is_pac = table.coefficient_performance > 2
     table.loc[is_pac, 'gen_ecs_lib_infer'] = "ECS thermodynamique electrique(PAC ou ballon)"
-    ecs_ind = table.gen_ecs_lib_infer == 'ecs electrique indeterminee'
+    ecs_ind = table.gen_ecs_lib_infer == 'ecs electrique indetermine'
     stockage = table.volume_stockage > 20
     table.loc[ecs_ind & stockage, 'gen_ecs_lib_infer'] = 'ballon a accumulation electrique'
     table.loc[ecs_ind & (~stockage), 'gen_ecs_lib_infer'] = 'ballon a accumulation electrique'
     table['gen_ecs_lib_infer_simp'] = table.gen_ecs_lib_infer.replace(gen_ecs_lib_simp_dict)
 
     # recupération fioul
-    non_aff = table['gen_ecs_lib_infer'] == 'non affecte'
+    non_aff = table['gen_ecs_lib_infer'] == 'indetermine'
     fioul = table['tv045_energie'] == 'Fioul domestique'
-    table.loc[fioul & non_aff, 'gen_ecs_lib_infer'] = 'chaudiere fioul'
+    table.loc[fioul & non_aff, 'gen_ecs_lib_infer'] = 'chaudiere fioul standard'
 
     table['type_energie_ecs'] = table['tv045_energie'].replace(replace_elec_tv045_ener)
 
@@ -213,17 +213,17 @@ def postprocessing_td014(td013, td014,td001,td001_sys_ch_agg):
 
     is_house = table.tr002_type_batiment_id == '1'
     table.loc[null, 'type_installation_ecs'] = is_house.loc[null].replace(
-        {True: 'Individuelle', False: 'non affecte'})
+        {True: 'Individuelle', False: 'indetermine'})
 
     del table['tr002_type_batiment_id']
 
     table = table.merge(td001_sys_ch_agg[['type_installation_chauffage_concat', 'td001_dpe_id']], on='td001_dpe_id')
 
-    null = table.type_installation_ecs == 'non affecte'
+    null = table.type_installation_ecs == 'indetermine'
 
     ch_ind = table.type_installation_chauffage_concat == 'Chauffage Individuel'
 
-    table.loc[null, 'type_installation_ecs'] = ch_ind.loc[null].replace({True: 'Individuelle', False: 'non affecte'})
+    table.loc[null, 'type_installation_ecs'] = ch_ind.loc[null].replace({True: 'Individuelle', False: 'indetermine'})
 
     del table['type_installation_chauffage_concat']
 

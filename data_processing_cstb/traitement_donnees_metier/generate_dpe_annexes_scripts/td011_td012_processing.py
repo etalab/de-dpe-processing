@@ -46,24 +46,13 @@ replace_elec_tv045_ener = {"Electricité (hors électricité d'origine renouvela
 # ===================== DICTIONARIES OF NORMALIZATION AND SIMPLIFICATION OF FIELDS ====================================
 
 # dictionaries used to normalized chauffage names with simple labels.
-gen_ch_lib_simp_dict = {'chaudiere gaz standard': 'chaudiere gaz standard',
-                        'poele ou insert bois': 'poele ou insert bois',
+gen_ch_lib_simp_dict = {
                         'convecteurs electriques nfc': 'generateurs a effet joule',
-                        'chaudiere fioul standard': 'chaudiere fioul standard',
                         'panneaux rayonnants electriques nfc': 'generateurs a effet joule',
-                        'chaudiere gaz condensation': 'chaudiere gaz performante(condensation ou basse temperature)',
-                        'chaudiere gpl condensation': 'chaudiere gpl performante(condensation ou basse temperature)',
-                        'chaudiere gpl standard': 'chaudiere gpl standard',
                         'radiateurs electriques': 'generateurs a effet joule',
                         'reseau de chaleur': 'reseau de chaleur',
-                        'chaudiere gaz basse temperature': 'chaudiere gaz performante(condensation ou basse temperature)',
-                        'chaudiere gpl basse temperature': 'chaudiere gaz performante(condensation ou basse temperature)',
                         'autres emetteurs a effet joule': 'generateurs a effet joule',
-                        'pac air/air': 'pac air/air',
                         'plafonds/planchers rayonnants electriques nfc': 'generateurs a effet joule',
-                        'chaudiere bois': 'chaudiere bois',
-                        'chaudiere fioul basse temperature': 'chaudiere fioul performante(condensation ou basse temperature)',
-                        'chaudiere fioul condensation': 'chaudiere fioul performante(condensation ou basse temperature)',
                         'chaudiere electrique': 'chaudiere electrique',
                         'poele ou insert fioul/gpl': 'poele ou insert fioul/gpl',
                         'convecteurs bi-jonction': 'generateurs a effet joule', }
@@ -84,25 +73,25 @@ gen_ch_normalized_lib_matching_dict = {"pac air/air": ['pac', 'air/air', ('elect
                                                                        'nfc'],
                                        "poele ou insert bois": [('poele', 'insert'), ('bois', 'biomasse')],
                                        "poele ou insert fioul/gpl": [('poele', 'insert'), ('fioul', 'gpl')],
-
+                                       "chaudiere bois": ['chaudiere',('bois','biomasse')],
                                        "autres emetteurs a effet joule": [('electricite', 'electrique')],
                                        "reseau de chaleur": ['reseau', 'chaleur'],
                                        "convecteurs bi-jonction": ['bi', 'jonction', ('electricite', 'electrique')],
                                        }
 
-for type_chaudiere, type_chaudiere_keys in zip(['standard', 'basse temperature', 'condensation', 'non déterminee'],
+for type_chaudiere, type_chaudiere_keys in zip(['standard', 'basse temperature', 'condensation', 'indetermine'],
                                                [('standard', 'classique'), 'basse temperature',
                                                 ('condensation', 'condenseurs'), None]):
-    for energie in ['fioul', 'gaz']:
+    for energie in ['fioul', 'gaz','autre(gpl/butane/propane)']:
+        energie_keywords = energie
+        if energie == 'autre(gpl/butane/propane)':
+            energie_keywords = ('gpl', 'butane', 'propane')
         if type_chaudiere_keys is not None:
-            gen_ch_normalized_lib_matching_dict[f'chaudiere {energie} {type_chaudiere}'] = ['chaudiere', energie,
+            gen_ch_normalized_lib_matching_dict[f'chaudiere {energie} {type_chaudiere}'] = ['chaudiere', energie_keywords,
                                                                                             type_chaudiere_keys]
         else:
-            gen_ch_normalized_lib_matching_dict[f'chaudiere {energie} {type_chaudiere}'] = ['chaudiere', energie
+            gen_ch_normalized_lib_matching_dict[f'chaudiere {energie} {type_chaudiere}'] = ['chaudiere', energie_keywords
                                                                                             ]
-    energie_gaz = gen_ch_normalized_lib_matching_dict[f'chaudiere gaz {type_chaudiere}'][1]
-    energie_gaz = (energie_gaz, 'gpl', 'butane', 'propane')
-    gen_ch_normalized_lib_matching_dict[f'chaudiere gaz {type_chaudiere}'][1] = energie_gaz
 
 gen_ch_normalized_lib_matching_dict['chaudiere bois/biomasse'] = ['chaudiere',
                                                                   ('bois', 'biomasse')]
@@ -182,7 +171,7 @@ def postprocessing_td012(td012):
     is_ind = is_pac & (~table.loc[is_pac, 'gen_ch_lib_infer'].isin(pac_dict.values()))
     table.loc[is_pac, 'gen_ch_lib_infer'] = table.loc[is_pac, 'rendement_generation'].replace(pac_dict)
     is_ind = is_pac & (~table.loc[is_pac, 'gen_ch_lib_infer'].isin(pac_dict.values()))
-    table.loc[is_ind, 'gen_ch_lib_infer'] = 'pac indeterminee'
+    table.loc[is_ind, 'gen_ch_lib_infer'] = 'pac indetermine'
 
     # recup/fix poele bois
     is_bois = table.gen_ch_concat_txt_desc == 'bois, biomasse bois, biomasse'

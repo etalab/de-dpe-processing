@@ -23,7 +23,7 @@ from generate_dpe_annexes_scripts.doc_annexe import td001_annexe_enveloppe_agg_d
     td007_annexe_desc, td008_annexe_desc, td012_annexe_desc, td014_annexe_desc, enums_cstb, \
     td001_annexe_generale_desc
 from generate_dpe_annexes_scripts.td006_processing import agg_td006_td001,merge_td006_tr_tv
-
+from generate_dpe_annexes_scripts.gorenove_scripts import concat_td001_gorenove
 
 def run_enveloppe_processing(td001, td006, td007, td008, td010):
     td008_raw_cols = td008.columns.tolist()
@@ -221,15 +221,21 @@ def run_postprocessing_by_depts(dept_dir):
     del td011, td012, td013, td014
 
     # add td001 processing
-    postprocessing_td001(td001)[['nom_methode_dpe_norm', 'id']].rename(columns={'id': 'td001_dpe_id'}).to_csv(
+    # add td001 processing
+    td001_p=postprocessing_td001(td001)[['nom_methode_dpe_norm', 'id']].rename(columns={'id': 'td001_dpe_id'})
+    td001_p.to_csv(
         annexe_dept_dir / 'td001_annexe_generale.csv')
 
+    td001_list = [td001_sys_ch_agg,td001_sys_ecs_agg,td001_enveloppe_agg]+list(env_compo_agg_dict.values())
+    td001_grnve = concat_td001_gorenove(td001, td001_list)
+    td001_grnve.to_csv(
+        annexe_dept_dir / 'td001_gorenove.csv')
 
 if __name__ == '__main__':
     build_doc(annexe_dir)
     list_dir = list(Path(data_dir).iterdir())
-    firsts = [a_dir for a_dir in list_dir if not (annexe_dir / a_dir.name / 'td001_annexe_generale.csv').is_file()]
-    lasts = [a_dir for a_dir in list_dir if (annexe_dir / a_dir.name / 'td001_annexe_generale.csv').is_file()]
+    firsts = [a_dir for a_dir in list_dir if not (annexe_dir / a_dir.name / 'td001_gorenove.csv').is_file()]
+    lasts = [a_dir for a_dir in list_dir if (annexe_dir / a_dir.name / 'td001_gorenove.csv').is_file()]
     print(len(firsts), len(lasts))
     list_dir = firsts + lasts
 

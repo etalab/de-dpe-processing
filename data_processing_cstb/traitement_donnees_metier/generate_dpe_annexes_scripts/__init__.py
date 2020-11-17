@@ -8,5 +8,6 @@ from . import td011_td012_processing
 from . import td013_td014_processing
 from . import trtvtables
 from . import utils
+from . import gorenove_scripts
 
 __version__ = '0.2.0'

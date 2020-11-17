@@ -141,7 +141,7 @@ def calc_surf_paroi_opaque(td007, td008):
     is_surf_paroi_opaque_deg = calc_surf_approx_equality(td007_m.surface_paroi, td007_m.surf_paroi_opaque_calc,
                                                             rtol=0.1)
 
-    td007_m['qualif_surf'] = 'NONDEF'
+    td007_m['qualif_surf'] = 'indetermine'
     td007_m.loc[is_surf_paroi_opaque_deg, 'qualif_surf'] = 'surf_paroi=surf_paroi_opaque'
     td007_m.loc[
         is_surf_totale_v1, 'qualif_surf'] = 'surf_paroi=surf_paroi_opaque+somme(surface baiesxnb_baies) v1'
@@ -416,11 +416,11 @@ def generate_mur_table(td007):
 
     is_err = td007_mur.meth_calc_u.str.contains('ERREUR')
 
-    td007_mur.loc[is_err, 'meth_calc_isolation'] = 'NONDEF'
+    td007_mur.loc[is_err, 'meth_calc_isolation'] = 'indetermine'
 
     # ## label adjacence
 
-    td007_mur['type_adjacence'] = 'NONDEF'
+    td007_mur['type_adjacence'] = 'indetermine'
 
     ext = td007_mur.tv001_code == 'TV001_001'
 
@@ -621,11 +621,11 @@ def generate_pb_table(td007):
 
     is_err = td007_pb.meth_calc_u.str.contains('ERREUR')
 
-    td007_pb.loc[is_err, 'meth_calc_isolation'] = 'NONDEF'
+    td007_pb.loc[is_err, 'meth_calc_isolation'] = 'indetermine'
 
     # ## label adjacence
 
-    td007_pb['type_adjacence'] = 'NONDEF'
+    td007_pb['type_adjacence'] = 'indetermine'
 
     ext = td007_pb.tv001_code == 'TV001_001'
 
@@ -822,11 +822,11 @@ def generate_ph_table(td007):
 
     is_err = td007_ph.meth_calc_u.str.contains('ERREUR')
 
-    td007_ph.loc[is_err, 'meth_calc_isolation'] = 'NONDEF'
+    td007_ph.loc[is_err, 'meth_calc_isolation'] = 'indetermine'
 
     # ## label adjacence
 
-    td007_ph['type_adjacence'] = 'NONDEF'
+    td007_ph['type_adjacence'] = 'indetermine'
 
     ext = td007_ph.tv001_code == 'TV001_001'
 
