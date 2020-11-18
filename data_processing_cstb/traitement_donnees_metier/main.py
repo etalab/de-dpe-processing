@@ -196,7 +196,7 @@ def run_postprocessing_by_depts(dept_dir):
         round_float_cols(v).to_csv(annexe_dept_dir / f'td001_{k}_annexe.csv')
 
     # EMPTY MEMORY
-    del td001_enveloppe_agg, td008_p, td007_p, env_compo_dict, env_compo_agg_dict
+    del td008_p, td007_p, env_compo_dict
     del v
     del td007, td008, td010
 
@@ -217,7 +217,7 @@ def run_postprocessing_by_depts(dept_dir):
     round_float_cols(td013_p).to_csv(annexe_dept_dir / 'td013_installation_ecs_annexe.csv')
     round_float_cols(td014_p).to_csv(annexe_dept_dir / 'td014_generateur_ecs_annexe.csv')
     # EMPTY MEMORY
-    del td011_p, td012_p, td001_sys_ch_agg, td013_p, td014_p, td001_sys_ecs_agg
+    del td011_p, td012_p, td013_p, td014_p
     del td011, td012, td013, td014
 
     # add td001 processing
@@ -229,20 +229,21 @@ def run_postprocessing_by_depts(dept_dir):
     td001_list = [td001_sys_ch_agg,td001_sys_ecs_agg,td001_enveloppe_agg]+list(env_compo_agg_dict.values())
     td001_grnve = concat_td001_gorenove(td001, td001_list)
     td001_grnve.to_csv(
-        annexe_dept_dir / 'td001_gorenove.csv')
+        annexe_dept_dir / 'td001_agg_synthese_gorenove.csv')
 
 if __name__ == '__main__':
     build_doc(annexe_dir)
     list_dir = list(Path(data_dir).iterdir())
-    firsts = [a_dir for a_dir in list_dir if not (annexe_dir / a_dir.name / 'td001_gorenove.csv').is_file()]
-    lasts = [a_dir for a_dir in list_dir if (annexe_dir / a_dir.name / 'td001_gorenove.csv').is_file()]
+    firsts = [a_dir for a_dir in list_dir if not (annexe_dir / a_dir.name / 'td001_agg_synthese_gorenove.csv').is_file()]
+    lasts = [a_dir for a_dir in list_dir if (annexe_dir / a_dir.name / 'td001_agg_synthese_gorenove.csv').is_file()]
     print(len(firsts), len(lasts))
     list_dir = firsts + lasts
 
     # list_dir.reverse()
 
     # for dept_dir in list_dir:
+    #     print(dept_dir)
     #     run_postprocessing_by_depts(dept_dir)
-
+    #
     with Pool(processes=5) as pool:
         pool.starmap(run_postprocessing_by_depts, [(dept_dir,) for dept_dir in list_dir])
