@@ -206,8 +206,8 @@ td014_annexe_desc = {
     "type_energie_ecs": "type d'energie d'ecs (voir enum type_energie_ecs)"}
 
 enums_cstb = {
-    'gen_ch_lib_infer': list(gen_ch_normalized_lib_matching_dict.keys()) + ['non affecte'],
-    'gen_ch_lib_infer_simp': unique_ordered(list(gen_ch_lib_simp_dict.values())) + ['non affecte'],
+    'gen_ch_lib_infer': list(gen_ch_normalized_lib_matching_dict.keys()) + ['indetermine'],
+    'gen_ch_lib_infer_simp': unique_ordered(list(gen_ch_lib_simp_dict.values())) + ['indetermine'],
     'type_energie_chauffage': ['Electricité non renouvelable', 'Gaz naturel', 'Bois, biomasse',
                                'Fioul domestique', 'Gaz propane ou butane', 'Réseau de chaleurs',
                                "Electricité d'origine renouvelable", 'Charbon'],
@@ -215,8 +215,8 @@ enums_cstb = {
     'cfg_sys_chauffage': ['type de générateur unique/installation unique',
                                     'types de générateur multiples/installations multiples',
                                     'types de générateur multiples/installation unique'],
-    'gen_ecs_lib_infer': list(gen_ecs_normalized_lib_matching_dict.keys()) + ['non affecte'],
-    'gen_ecs_lib_infer_simp': unique_ordered(list(gen_ecs_lib_simp_dict.values())) + ['non affecte'],
+    'gen_ecs_lib_infer': list(gen_ecs_normalized_lib_matching_dict.keys()) + ['indetermine'],
+    'gen_ecs_lib_infer_simp': unique_ordered(list(gen_ecs_lib_simp_dict.values())) + ['indetermine'],
     'type_energie_ecs': ['Electricité non renouvelable', 'Gaz naturel', 'Bois, biomasse',
                          'Fioul domestique', 'Gaz propane ou butane', 'Réseau de chaleurs',
                          "Electricité d'origine renouvelable", 'Charbon'],

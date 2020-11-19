@@ -3,6 +3,8 @@ from io import BytesIO, StringIO
 from pathlib import Path
 from generate_dpe_annexes_scripts.gorenove_scripts import gorenove_types
 import json
+import numpy as np
+import pandas as pd
 if __name__ == '__main__':
     cat_variables = [k for k, v in gorenove_types.items() if v == 'category']
 
@@ -35,3 +37,4 @@ if __name__ == '__main__':
                 f.write(mf.getvalue())
     with open(td001_zipped_dir/'meta_data.json','w') as f:
         json.dump(json_meta_gorenove,f,indent=4)
+

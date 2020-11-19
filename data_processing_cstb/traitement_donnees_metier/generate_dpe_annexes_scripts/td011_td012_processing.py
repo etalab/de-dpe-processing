@@ -62,7 +62,7 @@ gen_ch_normalized_lib_matching_dict = {"pac air/air": ['pac', 'air/air', ('elect
                                        "pac air/eau": ['pac', 'air/eau', ('electricite', 'electrique')],
                                        "pac eau/eau": ['pac', 'eau/eau', ('electricite', 'electrique')],
                                        "pac geothermique": ['pac', (
-                                           'geothermique', 'géothermique', 'géothermie', 'geothermie'),
+                                           'geothermique', 'geothermie'),
                                                             ('electricite', 'electrique')],
                                        'panneaux rayonnants electriques nfc': ['panneau', ('electricite', 'electrique'),
                                                                                'nfc'],
@@ -100,7 +100,7 @@ gen_ch_normalized_lib_matching_dict['chaudiere electrique'] = ['chaudiere',
 pac_dict = {2.2: 'pac air/air',
             2.6: 'pac air/eau',
             3.2: "pac eau/eau",
-            4.0: "pac géothermique"}
+            4.0: "pac geothermique"}
 
 poele_dict = {0.78: 'poele ou insert bois',
               0.66: 'poele ou insert bois',
@@ -169,7 +169,7 @@ def postprocessing_td012(td012):
     is_pac = (table.coefficient_performance > 2) | (table.rendement_generation > 2)
     table.loc[is_pac, 'gen_ch_lib_infer'] = table.loc[is_pac, 'coefficient_performance'].replace(pac_dict)
     is_ind = is_pac & (~table.loc[is_pac, 'gen_ch_lib_infer'].isin(pac_dict.values()))
-    table.loc[is_pac, 'gen_ch_lib_infer'] = table.loc[is_pac, 'rendement_generation'].replace(pac_dict)
+    table.loc[is_ind, 'gen_ch_lib_infer'] = table.loc[is_ind, 'rendement_generation'].replace(pac_dict)
     is_ind = is_pac & (~table.loc[is_pac, 'gen_ch_lib_infer'].isin(pac_dict.values()))
     table.loc[is_ind, 'gen_ch_lib_infer'] = 'pac indetermine'
 
@@ -179,10 +179,10 @@ def postprocessing_td012(td012):
     table.loc[is_bois, 'gen_ch_lib_infer'] = table.loc[is_bois, 'rendement_generation'].replace(poele_dict)
 
     is_ind = is_bois & (~table.loc[is_bois, 'gen_ch_lib_infer'].isin(poele_dict.values()))
-    table.loc[is_ind, 'gen_ch_lib_infer'] = 'non affecte'
+    table.loc[is_ind, 'gen_ch_lib_infer'] = 'indetermine'
 
     # recup reseau chaleur
-    non_aff = table.gen_ch_lib_infer == 'non affecte'
+    non_aff = table.gen_ch_lib_infer == 'indetermine'
 
     reseau_infer = non_aff & (table.rendement_generation == 0.97) & (table.tr004_description == 'Autres énergies')
 
