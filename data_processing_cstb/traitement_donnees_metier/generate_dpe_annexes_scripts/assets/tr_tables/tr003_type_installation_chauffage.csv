@@ -1,4 +1,4 @@
-"id","code","description","est_efface","simu_ordre","simulateur","solaire","nb_systeme_chauffage","simulateur_appartement"
+"id","code","description","est_efface","simu_ordre","simulateur","solaire","nb_systeme_ch","simulateur_appartement"
 "1","TR003_001","Installation de chauffage simple","0","NULL","1","0","1","1"
 "2","TR003_002","Installation de chauffage avec chauffage solaire","0","NULL","1","1","1","0"
 "3","TR003_003","Installation de chauffage avec insert ou poêle bois en appoint","0","NULL","1","0","2","1"

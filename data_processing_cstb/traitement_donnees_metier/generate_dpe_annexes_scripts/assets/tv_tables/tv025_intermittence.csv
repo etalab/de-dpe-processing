@@ -1,4 +1,4 @@
-"id","code","tv025_type_batiment_id","tv025_intermittence_type_installation_id","tv025_intermittence_type_chauffage_id","tv025_intermittence_type_regulation_id","tv025_type_emetteur_id","tv025_intermittence_inertie_id","tv025_equipement_intermittence_id","tv025_intermittence_comptage_individuel_id","I0","est_efface"
+"id","code","tv025_type_batiment_id","tv025_intermittence_type_installation_id","tv025_intermittence_type_ch_id","tv025_intermittence_type_regulation_id","tv025_type_emetteur_id","tv025_intermittence_inertie_id","tv025_equipement_intermittence_id","tv025_intermittence_comptage_individuel_id","I0","est_efface"
 "1","TV025_001","1","1","2","2","2","1","3","NULL","0.90","0"
 "2","TV025_002","1","1","2","2","2","1","1","NULL","0.89","0"
 "3","TV025_003","1","1","2","2","2","1","2","NULL","0.88","0"

@@ -41,7 +41,7 @@ replace_elec_tv045_ener = {"Electricité (hors électricité d'origine renouvela
                            "Electricité d'origine renouvelable utilisée dans l": "Electricité d'origine renouvelable", }
 
 gen_ecs_normalized_lib_matching_dict = {
-    "ECS thermodynamique electrique(PAC ou ballon)": [
+    "ecs thermodynamique electrique(PAC ou ballon)": [
         ('pompe a chaleur', 'pac', 'thermodynamique', 'air extrait', 'air exterieur', 'air ambiant'),
         ('electricite', 'electrique')],
     "ballon a accumulation electrique": [('ballon', 'classique', 'accumulation'), ('electricite', 'electrique')],
@@ -77,20 +77,20 @@ for k, v in gen_ecs_normalized_lib_matching_dict.items():
     k_solaire = 'ecs solaire thermique + ' + k
     solaire_dict[k_solaire] = v + ['avec solaire']
 gen_ecs_normalized_lib_matching_dict.update(solaire_dict)
-gen_ecs_lib_simp_dict = {'ecs electrique indetermine': 'ecs à effet joule electrique',
-                         'ballon a accumulation electrique': 'ecs à effet joule electrique',
-                         'ecs instantanee electrique': 'ecs à effet joule electrique',
+gen_ecs_lib_simp_dict = {'ecs electrique indetermine': 'ecs a effet joule electrique',
+                         'ballon a accumulation electrique': 'ecs a effet joule electrique',
+                         'ecs instantanee electrique': 'ecs a effet joule electrique',
                          }
 solaire_dict = dict()
 for k, v in gen_ecs_lib_simp_dict.items():
-    k_solaire = 'ecs thermique solaire + ' + k
-    v_solaire = 'ecs thermique solaire + ' + v
+    k_solaire = 'ecs solaire thermique + ' + k
+    v_solaire = 'ecs solaire thermique + ' + v
     solaire_dict[k_solaire] = v_solaire
 gen_ecs_lib_simp_dict.update(solaire_dict)
 
-gen_to_installation_infer_dict = {"ecs à effet joule electrique":"Individuelle",
+gen_to_installation_infer_dict = {"ecs a effet joule electrique":"Individuelle",
 "ECS thermodynamique electrique(PAC ou ballon)":"indetermine",
-'ecs solaire thermique + ecs à effet joule electrique':"Individuelle",
+'ecs solaire thermique + ecs a effet joule electrique':"Individuelle",
 "indetermine":"indetermine",
 "chaudiere bois":"Individuelle",
 "ecs collective reseau chaleur":"Collective",
@@ -217,15 +217,15 @@ def postprocessing_td014(td013, td014,td001,td001_sys_ch_agg):
 
     del table['tr002_type_batiment_id']
 
-    table = table.merge(td001_sys_ch_agg[['type_installation_chauffage_concat', 'td001_dpe_id']], on='td001_dpe_id')
+    table = table.merge(td001_sys_ch_agg[['type_installation_ch_concat', 'td001_dpe_id']], on='td001_dpe_id')
 
     null = table.type_installation_ecs == 'indetermine'
 
-    ch_ind = table.type_installation_chauffage_concat == 'Chauffage Individuel'
+    ch_ind = table.type_installation_ch_concat == 'Chauffage Individuel'
 
     table.loc[null, 'type_installation_ecs'] = ch_ind.loc[null].replace({True: 'Individuelle', False: 'indetermine'})
 
-    del table['type_installation_chauffage_concat']
+    del table['type_installation_ch_concat']
 
     # présence d'ECS solaire
     table['is_ecs_solaire']=table.tr005_code=='TR005_002'
@@ -313,13 +313,13 @@ def agg_systeme_ecs_essential(td001, td013, td014):
     sys_terts = agg.loc[~agg.id_unique.isin(id_sys_princ + id_sys_sec)]
 
     sys_tert_concat = sys_terts.groupby('td001_dpe_id').agg({
-        'gen_ecs_lib_infer': lambda x: ' + '.join(list(set(x))),
+        'gen_ecs_lib_infer': lambda x: ' + '.join(sorted(list(set(x)))),
 
-        'gen_ecs_lib_infer_simp': lambda x: ' + '.join(list(set(x))),
-        'type_energie_ecs': lambda x: ' + '.join(list(set(x))),
+        'gen_ecs_lib_infer_simp': lambda x: ' + '.join(sorted(list(set(x)))),
+        'type_energie_ecs': lambda x: ' + '.join(sorted(list(set(x)))),
         'surface_habitable_echantillon': 'sum',
         "nb_generateurs": 'sum',
-        'type_installation_ecs': lambda x: ' + '.join(list(set(x))),
+        'type_installation_ecs': lambda x: ' + '.join(sorted(list(set(x)))),
 
     }).reset_index()
 
