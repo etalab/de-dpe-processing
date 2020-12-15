@@ -53,7 +53,7 @@ gen_ecs_normalized_lib_matching_dict = {
     "chaudiere bois": [('bois', 'biomasse')],
     'chauffe-eau fioul independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"),
                                       "fioul"],
-    "ecs collective reseau chaleur": ["reseau", "chaleur"],
+    "reseau de chaleur": ["reseau", "chaleur"],
 
 
 }
@@ -93,7 +93,7 @@ gen_to_installation_infer_dict = {"ecs a effet joule electrique":"Individuelle",
 'ecs solaire thermique + ecs a effet joule electrique':"Individuelle",
 "indetermine":"indetermine",
 "chaudiere bois":"Individuelle",
-"ecs collective reseau chaleur":"Collective",
+"reseau de chaleur":"Collective",
 "chauffe-eau gaz independant":"Individuelle",
     'chauffe-eau gpl independant': "Individuelle",
     'chauffe-eau fioul independant': "Individuelle",

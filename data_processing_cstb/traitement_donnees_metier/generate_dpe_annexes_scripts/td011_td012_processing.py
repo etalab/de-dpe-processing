@@ -390,4 +390,11 @@ def agg_systeme_ch_essential(td001, td011, td012):
 
     cols = cols_first + cols_end
 
+    # RENAME
+
+    td001_sys_ch.type_installation_ch_concat = td001_sys_ch.type_installation_ch_concat.str.replace(
+        'Chauffage Individuel',
+        'individuel').str.replace('Chauffage Collectif',
+                                  'collectif')
+
     return td001_sys_ch[cols]
