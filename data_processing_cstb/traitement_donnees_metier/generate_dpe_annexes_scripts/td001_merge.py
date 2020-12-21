@@ -22,7 +22,7 @@ def merge_td001_dpe_id_system(td001, td006, td011, td012, td013, td014):
     td001 = td001.rename(columns={"id": "td001_dpe_id"})
     td006 = td006.rename(columns={"id": "td006_batiment_id"})
     td011 = td011.rename(columns={"id": "td011_installation_chauffage_id"})
-    td012 = td012.rename(columns={"id": "_td012_generateur_chauffage_id"})
+    td012 = td012.rename(columns={"id": "td012_generateur_chauffage_id"})
     td013 = td013.rename(columns={"id": "td013_installation_ecs_id"})
     td014 = td014.rename(columns={"id": "td014_generateur_ecs_id"})
 

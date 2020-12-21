@@ -3,6 +3,7 @@ import numpy as np
 from .utils import concat_string_cols, strip_accents, affect_lib_by_matching_score, clean_str
 from .trtvtables import DPETrTvTables
 from .text_matching_dict import td014_gen_ecs_search_dict
+from .conversion_normalisation import ener_conv_dict
 
 td013_types = {
     'td006_batiment_id': 'str',
@@ -41,46 +42,44 @@ td014_types = {'td014_generateur_ecs_id': 'str',
 replace_elec_tv045_ener = {"Electricité (hors électricité d'origine renouvelab": 'Electricité non renouvelable',
                            "Electricité d'origine renouvelable utilisée dans l": "Electricité d'origine renouvelable", }
 
-
 gen_ecs_lib_simp_dict = {'ecs electrique indetermine': 'ecs a effet joule electrique',
                          'ballon a accumulation electrique': 'ecs a effet joule electrique',
                          'ecs instantanee electrique': 'ecs a effet joule electrique',
                          }
-solaire_dict = dict()
-for k, v in gen_ecs_lib_simp_dict.items():
-    k_solaire = 'ecs solaire thermique + ' + k
-    v_solaire = 'ecs solaire thermique + ' + v
-    solaire_dict[k_solaire] = v_solaire
+# solaire_dict = dict()
+# for k, v in gen_ecs_lib_simp_dict.items():
+#     k_solaire = 'ecs solaire thermique + ' + k
+#     v_solaire = 'ecs solaire thermique + ' + v
+#     solaire_dict[k_solaire] = v_solaire
 gen_ecs_lib_simp_dict.update(solaire_dict)
 
-gen_to_installation_infer_dict = {"ecs a effet joule electrique":"Individuelle",
-"ECS thermodynamique electrique(PAC ou ballon)":"indetermine",
-'ecs solaire thermique + ecs a effet joule electrique':"Individuelle",
-"indetermine":"indetermine",
-"chaudiere bois":"Individuelle",
-"reseau de chaleur":"Collective",
-"chauffe-eau gaz independant":"Individuelle",
-    'chauffe-eau gpl independant': "Individuelle",
-    'chauffe-eau fioul independant': "Individuelle",
+gen_to_installation_infer_dict = {"ecs a effet joule electrique": "Individuelle",
+                                  "ECS thermodynamique electrique(PAC ou ballon)": "indetermine",
+                                  "indetermine": "indetermine",
+                                  "chaudiere bois": "Individuelle",
+                                  "reseau de chaleur": "Collective",
+                                  "chauffe-eau gaz independant": "Individuelle",
+                                  'chauffe-eau gpl independant': "Individuelle",
+                                  'chauffe-eau fioul independant': "Individuelle",
                                   }
 for type_chaudiere in ['standard', 'basse temperature', 'condensation', 'indetermine']:
-    gen_to_installation_infer_dict[f'chaudiere fioul {type_chaudiere}']='Individuelle'
-    gen_to_installation_infer_dict[f'chaudiere gaz {type_chaudiere}']='indetermine'
-    gen_to_installation_infer_dict[f'chaudiere autre(gpl/butane/propane) {type_chaudiere}']='Individuelle'
+    gen_to_installation_infer_dict[f'chaudiere fioul {type_chaudiere}'] = 'Individuelle'
+    gen_to_installation_infer_dict[f'chaudiere gaz {type_chaudiere}'] = 'indetermine'
+    gen_to_installation_infer_dict[f'chaudiere autre(gpl/butane/propane) {type_chaudiere}'] = 'Individuelle'
 
-solaire_dict = dict()
-for k, v in gen_to_installation_infer_dict.items():
-    k_solaire = 'ecs thermique solaire + ' + k
-    v_solaire = v
-    solaire_dict[k_solaire] = v_solaire
-gen_ecs_lib_simp_dict.update(solaire_dict)
+# solaire_dict = dict()
+# for k, v in gen_to_installation_infer_dict.items():
+#     k_solaire = 'ecs thermique solaire + ' + k
+#     v_solaire = v
+#     solaire_dict[k_solaire] = v_solaire
+# gen_ecs_lib_simp_dict.update(solaire_dict)
 
 sys_princ_scores = {'thermodynamique': 5,
-                        'solaire': 4,
-                        'chaudiere': 3,
-                        'ballon a accumulation': 2,
-                        'electrique indetermine': 1,
-                        'indépendant': 0, }
+                    'solaire': 4,
+                    'chaudiere': 3,
+                    'ballon a accumulation': 2,
+                    'electrique indetermine': 1,
+                    'indépendant': 0, }
 
 sys_princ_score_lib = dict()
 for k in list(td014_gen_ecs_search_dict.keys()):
@@ -113,11 +112,16 @@ def merge_td014_tr_tv(td014):
     return table
 
 
-def postprocessing_td014(td013, td014,td001,td001_sys_ch_agg):
+def postprocessing_td014(td013, td014, td001, td001_sys_ch_agg):
     table = td014.copy()
+    table['type_energie'] = table["tv045_energie"].astype('string').fillna('indetermine').replace(
+        ener_conv_dict['tv045_energie'])
+    table['tr004_description'] = table["tr004_description"].astype('string').fillna('indetermine').replace(
+        ener_conv_dict['tr004_description'])
 
-    table = table.merge(td013[['tr005_code','tr005_description', 'td013_installation_ecs_id', 'surface_habitable_echantillon']],
-                        on='td013_installation_ecs_id')
+    table = table.merge(
+        td013[['tr005_code', 'tr005_description', 'td013_installation_ecs_id', 'surface_habitable_echantillon']],
+        on='td013_installation_ecs_id')
 
     is_chaudiere = table.rpn > 0
 
@@ -132,7 +136,7 @@ def postprocessing_td014(td013, td014,td001,td001_sys_ch_agg):
     gen_ecs_concat_txt_desc += table['tv040_type_generateur'].astype('string').replace(np.nan, '') + ' '
     gen_ecs_concat_txt_desc += table["tv040_type_installation"].astype('string').replace(np.nan, '') + ' '
     gen_ecs_concat_txt_desc += table["tr004_description"].astype('string').replace(np.nan, '') + ' '
-    gen_ecs_concat_txt_desc += table["tv045_energie"].astype('string').replace(np.nan, '') + ' '
+    gen_ecs_concat_txt_desc += table["type_energie"].astype('string').replace(np.nan, '') + ' '
     gen_ecs_concat_txt_desc += table['tv047_type_generateur'].astype('string').replace(np.nan, '') + ' '
     gen_ecs_concat_txt_desc += table['tr005_description'].astype('string').replace(np.nan, '') + ' '
 
@@ -148,8 +152,8 @@ def postprocessing_td014(td013, td014,td001,td001_sys_ch_agg):
                               unique_gen_ecs}
     table['gen_ecs_lib_infer'] = table.gen_ecs_concat_txt_desc.replace(gen_ecs_lib_infer_dict)
     is_pac = table.coefficient_performance > 2
-    table.loc[is_pac, 'gen_ecs_lib_infer'] = "ECS thermodynamique electrique(PAC ou ballon)"
-    ecs_ind = table.gen_ecs_lib_infer == 'ecs electrique indetermine'
+    table.loc[is_pac, 'gen_ecs_lib_infer'] = "ecs thermodynamique electrique(pompe a chaleur ou ballon)"
+    ecs_ind = table.gen_ecs_lib_infer == "ecs electrique indetermine"
     stockage = table.volume_stockage > 20
     table.loc[ecs_ind & stockage, 'gen_ecs_lib_infer'] = 'ballon a accumulation electrique'
     table.loc[ecs_ind & (~stockage), 'gen_ecs_lib_infer'] = 'ballon a accumulation electrique'
@@ -193,9 +197,7 @@ def postprocessing_td014(td013, td014,td001,td001_sys_ch_agg):
     del table['type_installation_ch_concat']
 
     # présence d'ECS solaire
-    table['is_ecs_solaire']=table.tr005_code=='TR005_002'
-
-
+    table['is_ecs_solaire'] = table.tr005_code == 'TR005_002'
 
     return table
 
@@ -229,7 +231,7 @@ def agg_systeme_ecs_essential(td001, td013, td014):
     }
 
     table = td014.copy()
-    is_solaire = table.gen_ecs_lib_infer.str.contains('ecs solaire thermique')
+    is_solaire = table.is_ecs_solaire
     table['nb_generateurs'] = 1
     table.loc[is_solaire, 'nb_generateurs'] = 2
 
@@ -239,7 +241,8 @@ def agg_systeme_ecs_essential(td001, td013, td014):
 
     agg_cols = ['td001_dpe_id', 'gen_ecs_lib_infer', 'type_installation_ecs']
 
-    table['id_unique'] = table.td001_dpe_id + table.gen_ecs_lib_infer.astype('string') + table.type_installation_ecs.astype(
+    table['id_unique'] = table.td001_dpe_id + table.gen_ecs_lib_infer.astype(
+        'string') + table.type_installation_ecs.astype(
         'string')
 
     is_unique = table.groupby('td001_dpe_id').td001_dpe_id.count() == 1
@@ -263,14 +266,14 @@ def agg_systeme_ecs_essential(td001, td013, td014):
     agg['id_unique'] = agg.td001_dpe_id + agg.gen_ecs_lib_infer + agg.type_installation_ecs
 
     sys_princ = agg.sort_values(['surface_habitable_echantillon', 'score_gen_ecs_lib_infer'],
-                                    ascending=False).drop_duplicates(subset='td001_dpe_id')
+                                ascending=False).drop_duplicates(subset='td001_dpe_id')
 
     id_sys_princ = sys_princ.id_unique.unique().tolist()
 
     sys_secs = agg.loc[~agg.id_unique.isin(id_sys_princ)]
 
     sys_sec = sys_secs.sort_values(['surface_habitable_echantillon', 'score_gen_ecs_lib_infer'],
-                                                 ascending=False).drop_duplicates(
+                                   ascending=False).drop_duplicates(
         'td001_dpe_id')
 
     id_sys_sec = sys_sec.id_unique.unique().tolist()
@@ -302,7 +305,12 @@ def agg_systeme_ecs_essential(td001, td013, td014):
     td001_sys_ecs = td001_sys_ecs.merge(sys_tert_concat, on='td001_dpe_id', how='left')
     nb_installation = td013.groupby('td001_dpe_id').td013_installation_ecs_id.count().to_frame(
         'nb_installations_ecs_total')
+
     td001_sys_ecs = td001_sys_ecs.merge(nb_installation, on='td001_dpe_id', how='left')
+
+    is_ecs_solaire = (td014.groupby('td001_dpe_id').is_ecs_solaire.sum() > 0).to_frame(
+        'is_solaire')
+    td001_sys_ecs = td001_sys_ecs.merge(is_ecs_solaire, on='td001_dpe_id', how='left')
 
     cols_end = sys_princ.columns.tolist() + sys_sec.columns.tolist() + sys_tert_concat.columns.tolist()
     cols_end = np.unique(cols_end).tolist()

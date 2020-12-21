@@ -9,5 +9,6 @@ from . import td013_td014_processing
 from . import trtvtables
 from . import utils
 from . import gorenove_scripts
+from . import text_matching_dict
 
 __version__ = '0.2.0'

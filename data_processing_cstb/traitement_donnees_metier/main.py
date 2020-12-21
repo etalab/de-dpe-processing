@@ -15,7 +15,7 @@ from generate_dpe_annexes_scripts.td007_processing import agg_td007_to_td001_ess
 from generate_dpe_annexes_scripts.td008_processing import agg_td008_to_td001_essential, agg_td008_to_td001
 from generate_dpe_annexes_scripts.td010_processing import merge_td010_tr_tv, postprocessing_td010, agg_td010_td001
 from generate_dpe_annexes_scripts.td011_td012_processing import merge_td012_tr_tv, postprocessing_td012, merge_td011_tr_tv, \
-    agg_systeme_chauffage_essential
+    agg_systeme_ch_essential
 from generate_dpe_annexes_scripts.td013_td014_processing import merge_td013_tr_tv, postprocessing_td014, merge_td014_tr_tv, \
     agg_systeme_ecs_essential
 from generate_dpe_annexes_scripts.td001_merge import merge_td001_dpe_id_system
@@ -123,7 +123,7 @@ def run_system_processing(td001, td006, td011, td012, td013, td014):
     cols = unique_ordered(cols)
     td012_p = td012[cols]
 
-    td001_sys_ch_agg = agg_systeme_chauffage_essential(td001, td011, td012)
+    td001_sys_ch_agg = agg_systeme_ch_essential(td001, td011, td012)
 
     td014 = postprocessing_td014(td013, td014,td001,td001_sys_ch_agg)
 
@@ -238,7 +238,7 @@ if __name__ == '__main__':
     lasts = [a_dir for a_dir in list_dir if (annexe_dir / a_dir.name / 'td001_agg_synthese_gorenove.csv').is_file()]
     print(len(firsts), len(lasts))
     list_dir = firsts + lasts
-
+    list_dir = [el for el in list_dir if '94' in el.name]
     # list_dir.reverse()
 
     # for dept_dir in list_dir:

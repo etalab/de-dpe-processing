@@ -8,7 +8,7 @@ def load_trtv_table_dict(trtv_dir_path):
     trtv_table_dict = dict()
     for table_path in trtv_dir_path.iterdir():
         table_name = table_path.name.split('.csv')[0]
-        table = pd.read_csv(table_path,dtype=str).astype('category')
+        table = pd.read_csv(table_path, dtype=str).astype('category')
         table_ref = table_path.name.split('_')[0]
         table.columns = [table_ref + '_' + el if not el.startswith(('tr0', 'tv0')) else el for el in table.columns]
         table = table.rename(columns={f'{table_ref}_id': f'{table_name}_id'})
@@ -45,6 +45,11 @@ class DPETrTvTables(metaclass=Singleton):
         self.trtv_table_dict = load_trtv_table_dict(assets_dir / 'tv_tables')
         self.trtv_table_dict.update(load_trtv_table_dict(assets_dir / 'tr_tables'))
 
+    def merge_all_trtv_tables(self, table):
+        table = self.merge_all_tr_tables(table)
+        table = self.merge_all_tv_tables(table)
+        return table
+
     def merge_all_tr_tables(self, table):
         table = table.copy()
         tr_cols = [col for col in table.columns if col.startswith('tr')]
@@ -70,6 +75,7 @@ class DPETrTvTables(metaclass=Singleton):
         table[cols] = table[cols].astype('category')
 
         return table
+
     def write(self):
 
         tvs = {k: v for k, v in self.trtv_table_dict.items() if k.startswith('tv')}
