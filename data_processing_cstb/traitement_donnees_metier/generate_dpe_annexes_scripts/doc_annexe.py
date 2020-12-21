@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .td011_td012_processing import gen_ch_normalized_lib_matching_dict, gen_ch_lib_simp_dict
+from .td011_td012_processing import td012_gen_ch_search_dict, gen_ch_lib_simp_dict
 from .td013_td014_processing import gen_ecs_normalized_lib_matching_dict, gen_ecs_lib_simp_dict
 from .utils import unique_ordered
 
@@ -206,7 +206,7 @@ td014_annexe_desc = {
     "type_energie_ecs": "type d'energie d'ecs (voir enum type_energie_ecs)"}
 
 enums_cstb = {
-    'gen_ch_lib_infer': list(gen_ch_normalized_lib_matching_dict.keys()) + ['indetermine'],
+    'gen_ch_lib_infer': list(td012_gen_ch_search_dict.keys()) + ['indetermine'],
     'gen_ch_lib_infer_simp': unique_ordered(list(gen_ch_lib_simp_dict.values())) + ['indetermine'],
     'type_energie_ch': ['Electricité non renouvelable', 'Gaz naturel', 'Bois, biomasse',
                                'Fioul domestique', 'Gaz propane ou butane', 'Réseau de chaleurs',

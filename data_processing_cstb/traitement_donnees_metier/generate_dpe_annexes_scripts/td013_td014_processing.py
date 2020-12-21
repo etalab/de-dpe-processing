@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from .utils import concat_string_cols, strip_accents, affect_lib_by_matching_score, clean_str
 from .trtvtables import DPETrTvTables
+from .text_matching_dict import td014_gen_ecs_search_dict
 
 td013_types = {
     'td006_batiment_id': 'str',
@@ -40,43 +41,7 @@ td014_types = {'td014_generateur_ecs_id': 'str',
 replace_elec_tv045_ener = {"Electricité (hors électricité d'origine renouvelab": 'Electricité non renouvelable',
                            "Electricité d'origine renouvelable utilisée dans l": "Electricité d'origine renouvelable", }
 
-gen_ecs_normalized_lib_matching_dict = {
-    "ecs thermodynamique electrique(PAC ou ballon)": [
-        ('pompe a chaleur', 'pac', 'thermodynamique', 'air extrait', 'air exterieur', 'air ambiant'),
-        ('electricite', 'electrique')],
-    "ballon a accumulation electrique": [('ballon', 'classique', 'accumulation'), ('electricite', 'electrique')],
-    "ecs electrique indetermine": [('electricite', 'electrique')],
-    "ecs instantanee electrique": ['instantanee', ('electricite', 'electrique')],
 
-    'chauffe-eau gaz independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"), "gaz"],
-    'chauffe-eau gpl independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"), "gpl"],
-    "chaudiere bois": [('bois', 'biomasse')],
-    'chauffe-eau fioul independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"),
-                                      "fioul"],
-    "reseau de chaleur": ["reseau", "chaleur"],
-
-
-}
-for type_chaudiere, type_chaudiere_keys in zip(['standard', 'basse temperature', 'condensation', 'indetermine'],
-                                               [('standard', 'classique'), 'basse temperature',
-                                                ('condensation', 'condenseurs'), None]):
-    for energie in ['fioul', 'gaz','autre(gpl/butane/propane)']:
-        energie_keywords = energie
-        if energie == 'autre(gpl/butane/propane)':
-            energie_keywords = ('gpl', 'butane', 'propane')
-        if type_chaudiere_keys is not None:
-            gen_ecs_normalized_lib_matching_dict[f'chaudiere {energie} {type_chaudiere}'] = ['chaudiere', energie_keywords,
-                                                                                            type_chaudiere_keys]
-        else:
-            gen_ecs_normalized_lib_matching_dict[f'chaudiere {energie} {type_chaudiere}'] = ['chaudiere', energie_keywords
-                                                                                            ]
-
-
-solaire_dict = dict()
-for k, v in gen_ecs_normalized_lib_matching_dict.items():
-    k_solaire = 'ecs solaire thermique + ' + k
-    solaire_dict[k_solaire] = v + ['avec solaire']
-gen_ecs_normalized_lib_matching_dict.update(solaire_dict)
 gen_ecs_lib_simp_dict = {'ecs electrique indetermine': 'ecs a effet joule electrique',
                          'ballon a accumulation electrique': 'ecs a effet joule electrique',
                          'ecs instantanee electrique': 'ecs a effet joule electrique',
@@ -98,7 +63,7 @@ gen_to_installation_infer_dict = {"ecs a effet joule electrique":"Individuelle",
     'chauffe-eau gpl independant': "Individuelle",
     'chauffe-eau fioul independant': "Individuelle",
                                   }
-for el in ['standard', 'basse temperature', 'condensation', 'indetermine']:
+for type_chaudiere in ['standard', 'basse temperature', 'condensation', 'indetermine']:
     gen_to_installation_infer_dict[f'chaudiere fioul {type_chaudiere}']='Individuelle'
     gen_to_installation_infer_dict[f'chaudiere gaz {type_chaudiere}']='indetermine'
     gen_to_installation_infer_dict[f'chaudiere autre(gpl/butane/propane) {type_chaudiere}']='Individuelle'
@@ -118,7 +83,7 @@ sys_princ_scores = {'thermodynamique': 5,
                         'indépendant': 0, }
 
 sys_princ_score_lib = dict()
-for k in list(gen_ecs_normalized_lib_matching_dict.keys()):
+for k in list(td014_gen_ecs_search_dict.keys()):
     sys_princ_score_lib[k] = 0
     for term, score in sys_princ_scores.items():
         if term in k:
@@ -179,7 +144,7 @@ def postprocessing_td014(td013, td014,td001,td001_sys_ch_agg):
 
     # calcul gen_ecs_lib_infer par matching score text.
     unique_gen_ecs = table.gen_ecs_concat_txt_desc.unique()
-    gen_ecs_lib_infer_dict = {k: affect_lib_by_matching_score(k, gen_ecs_normalized_lib_matching_dict) for k in
+    gen_ecs_lib_infer_dict = {k: affect_lib_by_matching_score(k, td014_gen_ecs_search_dict) for k in
                               unique_gen_ecs}
     table['gen_ecs_lib_infer'] = table.gen_ecs_concat_txt_desc.replace(gen_ecs_lib_infer_dict)
     is_pac = table.coefficient_performance > 2

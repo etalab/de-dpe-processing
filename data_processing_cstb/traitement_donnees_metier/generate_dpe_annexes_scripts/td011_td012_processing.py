@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from .utils import concat_string_cols, strip_accents, affect_lib_by_matching_score, clean_str, agg_pond_top_freq
 from .trtvtables import DPETrTvTables
+from .text_matching_dict import td012_gen_ch_search_dict
 
 td011_types = {'td011_installation_chauffage_id': 'str',
                'td006_batiment_id': 'str',
@@ -57,46 +58,7 @@ gen_ch_lib_simp_dict = {
                         'poele ou insert fioul/gpl': 'poele ou insert fioul/gpl',
                         'convecteurs bi-jonction': 'generateurs a effet joule', }
 
-# GEN CH NORMALIZED DICT
-gen_ch_normalized_lib_matching_dict = {"pac air/air": ['pac', 'air/air', ('electricite', 'electrique')],
-                                       "pac air/eau": ['pac', 'air/eau', ('electricite', 'electrique')],
-                                       "pac eau/eau": ['pac', 'eau/eau', ('electricite', 'electrique')],
-                                       "pac geothermique": ['pac', (
-                                           'geothermique', 'geothermie'),
-                                                            ('electricite', 'electrique')],
-                                       'panneaux rayonnants electriques nfc': ['panneau', ('electricite', 'electrique'),
-                                                                               'nfc'],
-                                       'radiateurs electriques': ['radiateur', ('electricite', 'electrique')],
-                                       'plafonds/planchers rayonnants electriques nfc': [('plancher', 'plafond'),
-                                                                                         ('electricite', 'electrique')],
-                                       "convecteurs electriques nfc": ['convecteur', ('electricite', 'electrique'),
-                                                                       'nfc'],
-                                       "poele ou insert bois": [('poele', 'insert'), ('bois', 'biomasse')],
-                                       "poele ou insert fioul/gpl": [('poele', 'insert'), ('fioul', 'gpl')],
-                                       "chaudiere bois": ['chaudiere',('bois','biomasse')],
-                                       "autres emetteurs a effet joule": [('electricite', 'electrique')],
-                                       "reseau de chaleur": ['reseau', 'chaleur'],
-                                       "convecteurs bi-jonction": ['bi', 'jonction', ('electricite', 'electrique')],
-                                       }
 
-for type_chaudiere, type_chaudiere_keys in zip(['standard', 'basse temperature', 'condensation', 'indetermine'],
-                                               [('standard', 'classique'), 'basse temperature',
-                                                ('condensation', 'condenseurs'), None]):
-    for energie in ['fioul', 'gaz','autre(gpl/butane/propane)']:
-        energie_keywords = energie
-        if energie == 'autre(gpl/butane/propane)':
-            energie_keywords = ('gpl', 'butane', 'propane')
-        if type_chaudiere_keys is not None:
-            gen_ch_normalized_lib_matching_dict[f'chaudiere {energie} {type_chaudiere}'] = ['chaudiere', energie_keywords,
-                                                                                            type_chaudiere_keys]
-        else:
-            gen_ch_normalized_lib_matching_dict[f'chaudiere {energie} {type_chaudiere}'] = ['chaudiere', energie_keywords
-                                                                                            ]
-
-gen_ch_normalized_lib_matching_dict['chaudiere bois/biomasse'] = ['chaudiere',
-                                                                  ('bois', 'biomasse')]
-gen_ch_normalized_lib_matching_dict['chaudiere electrique'] = ['chaudiere',
-                                                               ('electricite', 'electrique')]
 pac_dict = {2.2: 'pac air/air',
             2.6: 'pac air/eau',
             3.2: "pac eau/eau",
@@ -157,7 +119,7 @@ def postprocessing_td012(td012):
 
     # calcul gen_ch_lib_infer par matching score text.
     unique_gen_ch = table.gen_ch_concat_txt_desc.unique()
-    gen_ch_lib_infer_dict = {k: affect_lib_by_matching_score(k, gen_ch_normalized_lib_matching_dict) for k in
+    gen_ch_lib_infer_dict = {k: affect_lib_by_matching_score(k, td012_gen_ch_search_dict) for k in
                              unique_gen_ch}
     table['gen_ch_lib_infer'] = table.gen_ch_concat_txt_desc.replace(gen_ch_lib_infer_dict)
 
