@@ -51,7 +51,7 @@ gen_ecs_lib_simp_dict = {'ecs electrique indetermine': 'ecs a effet joule electr
 #     k_solaire = 'ecs solaire thermique + ' + k
 #     v_solaire = 'ecs solaire thermique + ' + v
 #     solaire_dict[k_solaire] = v_solaire
-gen_ecs_lib_simp_dict.update(solaire_dict)
+#gen_ecs_lib_simp_dict.update(solaire_dict)
 
 gen_to_installation_infer_dict = {"ecs a effet joule electrique": "Individuelle",
                                   "ECS thermodynamique electrique(PAC ou ballon)": "indetermine",

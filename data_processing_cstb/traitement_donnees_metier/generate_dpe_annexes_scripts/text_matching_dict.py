@@ -1,55 +1,59 @@
-
 # GENERATEURS CHAUFFAGE ET ECS
 
 
 ## elements de recherche communs
 
-mixte = ('mixte', 'combine', 'chauffage ecs','lie ','combine ',"idem")
-elec =('electricite', 'electrique','electriques','elec.','joule','joules')
-reseau_chaleur = ('"reseau de chaleur"','"reseaux de chaleurs"','"reseaux de chaleur"',
-                  '"reseau chaleur"','"chauffage urbain"','"sous-station"')
+mixte = ('mixte', 'combine', 'chauffage AND ecs', 'lie ', 'combine ', "idem")
+elec = ('electricite', 'electrique', 'electriques', 'elec.', 'joule', 'joules')
+reseau_chaleur = ('"reseau de chaleur"', '"reseaux de chaleurs"', '"reseaux de chaleur"',
+                  '"reseau chaleur"', '"chauffage urbain"', '"sous-station"')
 pac = ('pompe AND chaleur', 'pac ', 'thermodynamique')
 type_chaudiere = dict(zip(['standard', 'basse temperature', 'condensation'],
-                                               [('standard', 'classique'), '"basse temperature"',
-                                                ('condensation', 'condenseurs')]))
+                          [('standard', 'classique'), '"basse temperature"',
+                           ('condensation', 'condenseurs')]))
 
-chauffe_bain=("individuelle AND ballon", "chauffe-eau", "accumulateur", "chauffe AND bain",'chauffe-bain')
+chauffe_bain = ("individuelle AND ballon", "chauffe-eau", "accumulateur", "chauffe AND bain", 'chauffe-bain')
 
-abscence_ecs_solaire = ('"ecs solaire : non"','sans solaire')
+abscence_ecs_solaire = ('"ecs solaire : non"', 'sans solaire')
 
+energie_chaudiere_mods = ['gaz', 'fioul', 'charbon', 'autre : gpl butane propane']
+type_chaudiere_mods = ['condensation', 'basse temperature', 'standard']
+
+bois = ('bois', 'biomasse', 'flamme AND verte')
+
+chaudiere_elec = ('"chaudiere electrique"', '"chaudiere individuelle electrique"')
+
+chaudiere_bois = ('"chaudiere bois"', '"chaudiere individuelle bois"'
+                  , '"chaudiere a bois"'
+                  , '"chaudiere bois/biomasse"'
+                  , '"chaudiere a bois/biomasse"')
 ## dictionnaires annexes
 
-installation_dict={'Chauffage Collectif':[('collective','collectif','coll','coll.')],
-                                 'Chauffage Individuel':[('individuelle','individuel','ind','ind.')],
-                                }
+installation_dict = {'Chauffage Collectif': [('collective', 'collectif', 'coll', 'coll.')],
+                     'Chauffage Individuel': [('individuelle', 'individuel', 'ind', 'ind.')],
+                     }
 
 energie_dict = {
-               'Gaz naturel':['gaz'],
-               'Electricité non renouvelable':[elec],
-                'Réseau de chaleurs':reseau_chaleur,
-                'Fioul domestique':['fioul'],
-    'Bois, biomasse':[('bois','biomasse')],
-    'Gaz propane ou butane':[('propane','butane','gpl')],
-    'Charbon':['charbon'],
-               }
-
+    'Gaz naturel': ['gaz'],
+    'Electricité non renouvelable': [elec],
+    'Réseau de chaleurs': reseau_chaleur,
+    'Fioul domestique': ['fioul'],
+    'Bois, biomasse': [bois],
+    'Gaz propane ou butane': [('propane', 'butane', 'gpl')],
+    'Charbon': ['charbon'],
+}
 
 energie_dict_lower = {
-               'Gaz naturel':'gaz',
-               'Electricité non renouvelable':'fioul',
-                'Réseau de chaleurs':'reseau de chaleur',
-                'Fioul domestique':'fioul',
-    'Bois, biomasse':'bois',
-    'Gaz propane ou butane':'autre : gpl butane propane',
-    'Charbon':'charbon',
-               }
+    'Gaz naturel': 'gaz',
+    'Electricité non renouvelable': 'fioul',
+    'Réseau de chaleurs': 'reseau de chaleur',
+    'Fioul domestique': 'fioul',
+    'Bois, biomasse': 'bois',
+    'Gaz propane ou butane': 'autre : gpl butane propane',
+    'Charbon': 'charbon',
+}
 
 energie_mods = energie_dict.keys()
-energie_chaudiere_mods = ['gaz','fioul','charbon','autre : gpl butane propane']
-type_chaudiere_mods = ['condensation','basse temperature','standard']
-
-bois = ('bois', 'biomasse','flamme verte')
-
 
 ## DICTIONNAIRE DE RECHERCHE : GENERATEUR CHAUFFAGE DANS td003_descriptif et td005_fiches_techniques
 # les descriptions des systèmes diffèrent en fonction des diagnostiqueurs et logiciels dans ces tables descriptives.
@@ -73,11 +77,8 @@ gen_ch_search_dict['poele'] = {"poele ou insert bois": [('poele', 'insert'), boi
 
 chaudiere_dict_ch = dict()
 
-chaudiere_dict_ch['chaudiere bois'] = [('"chaudiere bois"'
-                                        , '"chaudiere a bois"'
-                                        , '"chaudiere bois/biomasse"'
-                                        , '"chaudiere a bois/biomasse"')]
-chaudiere_dict_ch['chaudiere electrique'] = ['"chaudiere electrique"']
+chaudiere_dict_ch['chaudiere bois'] = [chaudiere_bois, bois]
+chaudiere_dict_ch['chaudiere electrique'] = [chaudiere_elec]
 
 for type_chaudiere, type_chaudiere_keys in zip(type_chaudiere_mods + ['indetermine'],
                                                [('condensation', 'condenseurs'), '"basse temperature"',
@@ -123,7 +124,7 @@ for cat, v in gen_ch_search_dict.items():
     for label in v:
         reverse_cat_gen_ch[label] = cat
 
-
+reverse_cat_gen_ch['indetermine'] = 'indetermine'
 
 ## DICTIONNAIRE DE RECHERCHE : GENERATEUR ECS DANS td003_descriptif et td005_fiches_techniques
 # les descriptions des systèmes diffèrent en fonction des diagnostiqueurs et logiciels dans ces tables descriptives.
@@ -132,21 +133,18 @@ for cat, v in gen_ch_search_dict.items():
 
 gen_ecs_search_dict = dict()
 
-gen_ecs_search_dict['solaire']={"ecs solaire" : ["solaire"],}
-gen_ecs_search_dict['abscence_solaire']= {
+gen_ecs_search_dict['solaire'] = {"ecs solaire": ["solaire"], }
+gen_ecs_search_dict['abscence_solaire'] = {
     "abscence ecs solaire": [('"ecs solaire : non"', '"sans solaire"', '"sans ecs solaire"')], }
 
-gen_ecs_search_dict['ecs_thermodynamique']= {
-    "ecs thermodynamique electrique(PAC ou ballon)": [
+gen_ecs_search_dict['ecs_thermodynamique'] = {
+    "ecs thermodynamique electrique(pac ou ballon)": [
         ('pompe AND chaleur', 'pac', 'thermodynamique', '"air extrait"', '"air exterieur"', '"air ambiant"')],
 
 }
-chaudiere_dict_ecs =dict()
-chaudiere_dict_ecs['chaudiere bois'] = [('"chaudiere bois"'
-                                        , '"chaudiere a bois"'
-                                        , '"chaudiere bois/biomasse"'
-                                        , '"chaudiere a bois/biomasse"')]
-chaudiere_dict_ecs['chaudiere electrique'] = ['"chaudiere electrique"']
+chaudiere_dict_ecs = dict()
+chaudiere_dict_ecs['chaudiere bois'] = [chaudiere_bois,bois]
+chaudiere_dict_ecs['chaudiere electrique'] = [chaudiere_elec]
 for type_chaudiere, type_chaudiere_keys in zip(type_chaudiere_mods + ['indetermine'],
                                                [('condensation', 'condenseurs'), '"basse temperature"',
                                                 ('standard', 'classique'), None]):
@@ -156,34 +154,36 @@ for type_chaudiere, type_chaudiere_keys in zip(type_chaudiere_mods + ['indetermi
             energie_keywords = ('gpl', 'butane', 'propane')
         if type_chaudiere_keys is not None:
             chaudiere_dict_ecs[f'chaudiere {energie} {type_chaudiere}'] = ['chaudiere', energie_keywords,
-                                                                            type_chaudiere_keys]
+                                                                           type_chaudiere_keys]
         else:
             chaudiere_dict_ecs[f'chaudiere {energie} {type_chaudiere}'] = ['chaudiere', energie_keywords
-                                                                            ]
+                                                                           ]
     chaudiere_dict_ecs[f'chaudiere energie indetermine {type_chaudiere}'] = ['chaudiere', type_chaudiere_keys]
 
 chaudiere_dict_ecs.update({
 
     'production mixte gaz': ["gaz", mixte],
     'production mixte fioul': ["fioul", mixte],
-    'production mixte indetermine': [mixte]})
+})
 
-gen_ecs_search_dict['chaudiere']=chaudiere_dict_ecs
-gen_ecs_search_dict['reseau de chaleur']= {"reseau de chaleur": [reseau_chaleur], }
+gen_ecs_search_dict['chaudiere'] = chaudiere_dict_ecs
+gen_ecs_search_dict['production_mixte_indetermine'] = {'production mixte indetermine': [mixte]}
+gen_ecs_search_dict['reseau de chaleur'] = {"reseau de chaleur": [reseau_chaleur], }
 
-gen_ecs_search_dict['effet_joule']= {"ballon a accumulation electrique": [('ballon', 'classique', 'accumulation'), elec],
-                                     'chaudiere electrique': ["chaudiere", elec],
-                                     "ecs instantanee electrique": ['instantanee', elec],
-                                     "ecs electrique indetermine": [elec],
-                                     }
+gen_ecs_search_dict['effet_joule'] = {
+    "ballon a accumulation electrique": [('ballon', 'classique', 'accumulation', 'chauffe-eau'), elec],
+    'chaudiere electrique': ["chaudiere", elec],
+    "ecs instantanee electrique": ['instantanee', elec],
+    "ecs electrique indetermine": [elec],
+}
 
-
-gen_ecs_search_dict['chauffe-eau_independant']={    'chauffe-eau gaz independant': [chauffe_bain, "gaz"],
-    'chauffe-eau gpl independant': [chauffe_bain, "gpl"],
-    'chauffe-eau fioul independant': [chauffe_bain,
-                                      "fioul"],
-    "chauffe-eau independant indetermine": [
-        ("individuelle AND ballon", "chauffe-eau", "accumulateur", "chauffe AND bain")],}
+gen_ecs_search_dict['chauffe-eau_independant'] = {'chauffe-eau gaz independant': [chauffe_bain, "gaz"],
+                                                  'chauffe-eau gpl independant': [chauffe_bain, "gpl"],
+                                                  'chauffe-eau fioul independant': [chauffe_bain,
+                                                                                    "fioul"],
+                                                  "chauffe-eau independant indetermine": [
+                                                      ("individuelle AND ballon", "chauffe-eau", "accumulateur",
+                                                       "chauffe AND bain")], }
 
 # version flat du dictionnaire par catégorie
 gen_ecs_search_dict_flat = dict()
@@ -194,26 +194,26 @@ reverse_cat_gen_ecs = dict()
 for cat, v in gen_ecs_search_dict.items():
     for label in v:
         reverse_cat_gen_ecs[label] = cat
-
+reverse_cat_gen_ecs['indetermine'] = 'indetermine'
 ## DICTIONNAIRE DE RECHERCHE : CHAUFFAGE DANS TD012.
 # ici l'extraction texte est effectuées sur des champs tabulés normés (tables TV) et nécessite de rechercher uniquement les mots présents dans ces tables TV
 # TODO : ordonner et catégoriser
 td012_gen_ch_search_dict = {"pac air/air": ['pac', 'air/air', ('electricite', 'electrique')],
-                                       "pac air/eau": ['pac', 'air/eau', ('electricite', 'electrique')],
-                                       "pac eau/eau": ['pac', 'eau/eau', ('electricite', 'electrique')],
-                                       "pac geothermique": ['pac', (
-                                           'geothermique', 'geothermie'),
-                                                            ('electricite', 'electrique')],
-                                       'panneaux rayonnants electriques nfc': ['panneau', ('electricite', 'electrique'),
-                                                                               'nfc'],
-                                       'radiateurs electriques': ['radiateur', ('electricite', 'electrique')],
-                                       'plafonds/planchers rayonnants electriques nfc': [('plancher', 'plafond'),
-                                                                                         ('electricite', 'electrique')],
+                            "pac air/eau": ['pac', 'air/eau', ('electricite', 'electrique')],
+                            "pac eau/eau": ['pac', 'eau/eau', ('electricite', 'electrique')],
+                            "pac geothermique": ['pac', (
+                                'geothermique', 'geothermie'),
+                                                 ('electricite', 'electrique')],
+                            'panneaux rayonnants electriques nfc': ['panneau', ('electricite', 'electrique'),
+                                                                    'nfc'],
+                            'radiateurs electriques': ['radiateur', ('electricite', 'electrique')],
+                            'plafonds/planchers rayonnants electriques nfc': [('plancher', 'plafond'),
+                                                                              ('electricite', 'electrique')],
                             "convecteurs electriques nfc": ['convecteur', ('electricite', 'electrique'),
-                                                                       'nfc'],
+                                                            'nfc'],
                             "poele ou insert bois": [('poele', 'insert'), ('bois', 'biomasse')],
                             "poele ou insert fioul/gpl": [('poele', 'insert'), ('fioul', 'gpl')],
-                            "chaudiere bois": ['chaudiere',('bois','biomasse')],
+                            "chaudiere bois": ['chaudiere', ('bois', 'biomasse')],
                             "autres emetteurs a effet joule": [('electricite', 'electrique')],
                             "reseau de chaleur": ['reseau', 'chaleur'],
                             "convecteurs bi-jonction": ['bi', 'jonction', ('electricite', 'electrique')],
@@ -254,7 +254,6 @@ td014_gen_ecs_search_dict = {
                                       "fioul"],
     "reseau de chaleur": ["reseau", "chaleur"],
 
-
 }
 for type_chaudiere, type_chaudiere_keys in zip(type_chaudiere_mods + ['indetermine'],
                                                [('condensation', 'condenseurs'), 'basse temperature',
@@ -270,7 +269,7 @@ for type_chaudiere, type_chaudiere_keys in zip(type_chaudiere_mods + ['indetermi
             td014_gen_ecs_search_dict[f'chaudiere {energie} {type_chaudiere}'] = ['chaudiere', energie_keywords
                                                                                   ]
 td014_gen_ecs_search_dict['chaudiere electrique'] = ['chaudiere',
-                                                    ('electricite', 'electrique')]
+                                                     ('electricite', 'electrique')]
 
 # solaire_dict = dict()
 # for k, v in td014_gen_ecs_search_dict.items():
