@@ -3,7 +3,7 @@ import numpy as np
 from .utils import concat_string_cols, strip_accents, affect_lib_by_matching_score, clean_str
 from .trtvtables import DPETrTvTables
 from .text_matching_dict import td014_gen_ecs_search_dict
-from .conversion_normalisation import ener_conv_dict
+from .conversion_normalisation import ener_conv_dict,type_installation_conv_dict
 
 td013_types = {
     'td006_batiment_id': 'str',
@@ -53,19 +53,19 @@ gen_ecs_lib_simp_dict = {'ecs electrique indetermine': 'ecs a effet joule electr
 #     solaire_dict[k_solaire] = v_solaire
 #gen_ecs_lib_simp_dict.update(solaire_dict)
 
-gen_to_installation_infer_dict = {"ecs a effet joule electrique": "Individuelle",
+gen_to_installation_infer_dict = {"ecs a effet joule electrique": "individuel",
                                   "ECS thermodynamique electrique(PAC ou ballon)": "indetermine",
                                   "indetermine": "indetermine",
-                                  "chaudiere bois": "Individuelle",
+                                  "chaudiere bois": "individuel",
                                   "reseau de chaleur": "Collective",
-                                  "chauffe-eau gaz independant": "Individuelle",
-                                  'chauffe-eau gpl independant': "Individuelle",
-                                  'chauffe-eau fioul independant': "Individuelle",
+                                  "chauffe-eau gaz independant": "individuel",
+                                  'chauffe-eau gpl independant': "individuel",
+                                  'chauffe-eau fioul independant': "individuel",
                                   }
 for type_chaudiere in ['standard', 'basse temperature', 'condensation', 'indetermine']:
-    gen_to_installation_infer_dict[f'chaudiere fioul {type_chaudiere}'] = 'Individuelle'
+    gen_to_installation_infer_dict[f'chaudiere fioul {type_chaudiere}'] = 'individuel'
     gen_to_installation_infer_dict[f'chaudiere gaz {type_chaudiere}'] = 'indetermine'
-    gen_to_installation_infer_dict[f'chaudiere autre(gpl/butane/propane) {type_chaudiere}'] = 'Individuelle'
+    gen_to_installation_infer_dict[f'chaudiere autre(gpl/butane/propane) {type_chaudiere}'] = 'individuel'
 
 # solaire_dict = dict()
 # for k, v in gen_to_installation_infer_dict.items():
@@ -168,10 +168,10 @@ def postprocessing_td014(td013, td014, td001, td001_sys_ch_agg):
 
     table['score_gen_ecs_lib_infer'] = table['gen_ecs_lib_infer'].replace(sys_princ_score_lib).astype(float)
 
-    # Type installation ECS (collective ou individuelle)
-    table['type_installation_ecs'] = table.tv027_type_installation.astype('string')
+    # Type installation ECS (collective ou individuel)
+    table['type_installation_ecs'] = table.tv027_type_installation.astype('string').replace(type_installation_conv_dict['tv027_type_installation'])
     null = table.type_installation_ecs.isnull()
-    table.loc[null, 'type_installation_ecs'] = table.tv040_type_installation.loc[null].astype('string')
+    table.loc[null, 'type_installation_ecs'] = table.tv040_type_installation.astype('string').replace(type_installation_conv_dict['tv040_type_installation']).loc[null]
     null = table.type_installation_ecs.isnull()
     from_gen = table.gen_ecs_lib_infer_simp.replace(gen_to_installation_infer_dict)
     null = table.type_installation_ecs.isnull()
@@ -182,7 +182,7 @@ def postprocessing_td014(td013, td014, td001, td001_sys_ch_agg):
 
     is_house = table.tr002_type_batiment_id == '1'
     table.loc[null, 'type_installation_ecs'] = is_house.loc[null].replace(
-        {True: 'Individuelle', False: 'indetermine'})
+        {True: 'individuel', False: 'indetermine'})
 
     del table['tr002_type_batiment_id']
 
@@ -190,9 +190,9 @@ def postprocessing_td014(td013, td014, td001, td001_sys_ch_agg):
 
     null = table.type_installation_ecs == 'indetermine'
 
-    ch_ind = table.type_installation_ch_concat == 'Chauffage Individuel'
+    ch_ind = table.type_installation_ch_concat == 'individuel'
 
-    table.loc[null, 'type_installation_ecs'] = ch_ind.loc[null].replace({True: 'Individuelle', False: 'indetermine'})
+    table.loc[null, 'type_installation_ecs'] = ch_ind.loc[null].replace({True: 'individuel', False: 'indetermine'})
 
     del table['type_installation_ch_concat']
 

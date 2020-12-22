@@ -29,23 +29,23 @@ chaudiere_bois = ('"chaudiere bois"', '"chaudiere individuelle bois"'
                   , '"chaudiere a bois/biomasse"')
 ## dictionnaires annexes
 
-installation_dict = {'Chauffage Collectif': [('collective', 'collectif', 'coll', 'coll.')],
-                     'Chauffage Individuel': [('individuelle', 'individuel', 'ind', 'ind.')],
+installation_dict = {'collectif': [('collective', 'collectif', 'coll', 'coll.')],
+                     'individuel': [('individuelle', 'individuel', 'ind', 'ind.')],
                      }
 
 energie_dict = {
-    'Gaz naturel': ['gaz'],
-    'Electricité non renouvelable': [elec],
-    'Réseau de chaleurs': reseau_chaleur,
-    'Fioul domestique': ['fioul'],
-    'Bois, biomasse': [bois],
-    'Gaz propane ou butane': [('propane', 'butane', 'gpl')],
-    'Charbon': ['charbon'],
+    'gaz': ['gaz'],
+    'electricite': [elec],
+    'reseau de chaleur': reseau_chaleur,
+    'fioul': ['fioul'],
+    'bois': [bois],
+    'autre : gpl butane propane': [('propane', 'butane', 'gpl')],
+    'charbon': ['charbon'],
 }
 
 energie_dict_lower = {
     'Gaz naturel': 'gaz',
-    'Electricité non renouvelable': 'fioul',
+    'Electricité non renouvelable': 'electricite ',
     'Réseau de chaleurs': 'reseau de chaleur',
     'Fioul domestique': 'fioul',
     'Bois, biomasse': 'bois',
@@ -172,7 +172,6 @@ gen_ecs_search_dict['reseau de chaleur'] = {"reseau de chaleur": [reseau_chaleur
 
 gen_ecs_search_dict['effet_joule'] = {
     "ballon a accumulation electrique": [('ballon', 'classique', 'accumulation', 'chauffe-eau'), elec],
-    'chaudiere electrique': ["chaudiere", elec],
     "ecs instantanee electrique": ['instantanee', elec],
     "ecs electrique indetermine": [elec],
 }

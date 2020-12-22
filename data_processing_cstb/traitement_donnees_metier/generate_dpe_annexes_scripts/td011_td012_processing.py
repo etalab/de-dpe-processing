@@ -3,7 +3,7 @@ import numpy as np
 from .utils import concat_string_cols, strip_accents, affect_lib_by_matching_score, clean_str, agg_pond_top_freq
 from .trtvtables import DPETrTvTables
 from .text_matching_dict import td012_gen_ch_search_dict
-from .conversion_normalisation import ener_conv_dict
+from .conversion_normalisation import ener_conv_dict,type_installation_conv_dict
 td011_types = {'td011_installation_chauffage_id': 'str',
                'td006_batiment_id': 'str',
                'tr003_type_installation_chauffage_id': 'category',
@@ -184,13 +184,14 @@ def postprocessing_td012(td012):
 
 
 def agg_systeme_ch_essential(td001, td011, td012):
+    td011['type_instalaltion']=td011.tv025_type_installation.replace(type_installation_conv_dict['tv025_type_installation'])
     sys_ch_princ_rename = {
         'td001_dpe_id': 'td001_dpe_id',
         'gen_ch_lib_infer': 'sys_ch_princ_gen_ch_lib_infer',
         'gen_ch_lib_infer_simp': 'sys_ch_princ_gen_ch_lib_infer_simp',
         'type_energie_chauffage': 'sys_ch_princ_type_energie_chauffage',
         'consommation_chauffage': 'sys_ch_princ_conso_chauffage',
-        "tv025_type_installation": 'sys_ch_princ_type_installation_chauffage',
+        "type_instalaltion": 'sys_ch_princ_type_installation_chauffage',
         'nb_generateurs': 'sys_ch_princ_nb_generateur'
     }
 
@@ -200,7 +201,7 @@ def agg_systeme_ch_essential(td001, td011, td012):
         'gen_ch_lib_infer_simp': 'sys_ch_sec_gen_ch_lib_infer_simp',
         'type_energie_chauffage': 'sys_ch_sec_type_energie_chauffage',
         'consommation_chauffage': 'sys_ch_sec_conso_chauffage',
-        "tv025_type_installation": 'sys_ch_sec_type_installation_chauffage',
+        "type_instalaltion": 'sys_ch_sec_type_installation_chauffage',
         'nb_generateurs': 'sys_ch_sec_nb_generateur'
     }
 
@@ -210,12 +211,12 @@ def agg_systeme_ch_essential(td001, td011, td012):
         'gen_ch_lib_infer_simp': 'sys_ch_tert_gen_ch_lib_infer_simp_concat',
         'type_energie_chauffage': 'sys_ch_tert_type_energie_ch_concat',
         'consommation_chauffage': 'sys_ch_tert_conso_chauffage',
-        "tv025_type_installation": 'sys_ch_tert_type_installation_ch_concat',
+        "type_instalaltion": 'sys_ch_tert_type_installation_ch_concat',
         'nb_generateurs': 'sys_ch_tert_nb_generateurs'
     }
 
     td012 = td012.merge(
-        td011[['td011_installation_chauffage_id', 'tv025_intermittence_id', "tv025_type_installation"]],
+        td011[['td011_installation_chauffage_id', 'tv025_intermittence_id', "type_instalaltion"]],
         on='td011_installation_chauffage_id', how='left')
     table = td012
     rendement_gen_u = table[['rendement_generation', 'coefficient_performance']].max(axis=1)
@@ -238,7 +239,7 @@ def agg_systeme_ch_essential(td001, td011, td012):
 
     cols = ['td001_dpe_id', 'gen_ch_lib_infer_simp', 'gen_ch_lib_infer', 'type_energie_chauffage',
             'consommation_chauffage', 'besoin_ch_infer']
-    cols += ['tv025_intermittence_id', "tv025_type_installation", 'nb_generateurs', 'id_unique']
+    cols += ['tv025_intermittence_id', "type_instalaltion", 'nb_generateurs', 'id_unique']
 
     agg_cols = ['td001_dpe_id', 'gen_ch_lib_infer', 'tv025_intermittence_id']
 
@@ -258,7 +259,7 @@ def agg_systeme_ch_essential(td001, td011, td012):
         'type_energie_chauffage': 'first',
         'consommation_chauffage': 'sum',
         'besoin_ch_infer': 'sum',
-        "tv025_type_installation": 'first',
+        "type_instalaltion": 'first',
         "nb_generateurs": 'sum'
 
     }).reset_index()
@@ -285,7 +286,7 @@ def agg_systeme_ch_essential(td001, td011, td012):
         'type_energie_chauffage': lambda x: ' + '.join(sorted(list(set(x)))),
         'consommation_chauffage': 'sum',
         'besoin_ch_infer': 'sum',
-        "tv025_type_installation": lambda x: ' + '.join(sorted(list(set(x)))),
+        "type_instalaltion": lambda x: ' + '.join(sorted(list(set(x)))),
         'nb_generateurs': 'sum'
     }).reset_index()
 
@@ -355,12 +356,5 @@ def agg_systeme_ch_essential(td001, td011, td012):
     cols_first = [el for el in td001_sys_ch.columns.tolist() if el not in cols_end]
 
     cols = cols_first + cols_end
-
-    # RENAME
-
-    td001_sys_ch.type_installation_ch_concat = td001_sys_ch.type_installation_ch_concat.str.replace(
-        'Chauffage Individuel',
-        'individuel').str.replace('Chauffage Collectif',
-                                  'collectif')
 
     return td001_sys_ch[cols]
