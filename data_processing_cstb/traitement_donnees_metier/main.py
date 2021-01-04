@@ -14,7 +14,7 @@ from generate_dpe_annexes_scripts.td001_merge import merge_td001_dpe_id_envelope
 from generate_dpe_annexes_scripts.td007_processing import agg_td007_to_td001_essential, agg_surf_envelope
 from generate_dpe_annexes_scripts.td008_processing import agg_td008_to_td001_essential, agg_td008_to_td001
 from generate_dpe_annexes_scripts.td010_processing import merge_td010_tr_tv, postprocessing_td010, agg_td010_td001
-from generate_dpe_annexes_scripts.td011_td012_processing import merge_td012_tr_tv, postprocessing_td012, merge_td011_tr_tv, \
+from generate_dpe_annexes_scripts.td011_td012_processing import merge_td012_tr_tv, postprocessing_td011_td012, merge_td011_tr_tv, \
     agg_systeme_ch_essential
 from generate_dpe_annexes_scripts.td013_td014_processing import merge_td013_tr_tv, postprocessing_td014, merge_td014_tr_tv, \
     agg_systeme_ecs_essential
@@ -110,7 +110,7 @@ def run_system_processing(td001, td006, td011, td012, td013, td014):
     td013 = merge_td013_tr_tv(td013)
     td014 = merge_td014_tr_tv(td014)
 
-    td012 = postprocessing_td012(td012)
+    td011,td012 = postprocessing_td011_td012(td011,td012)
 
     cols = [el for el in td011.columns if el not in td011_raw_cols]
     cols.append('td011_installation_chauffage_id')

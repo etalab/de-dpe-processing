@@ -18,7 +18,7 @@ def extract_type_energie_from_td002_td016(td001, td002, td016):
             if col in table_ch:
                 table_ch['energie_concat'] += table_ch[col].astype('string').fillna('indetermine').replace(
                     ener_conv_dict[col]).astype(str).fillna('').str.lower()
-        for energie in energie_normalise_ordered:
+        for energie in reversed(energie_normalise_ordered):
             is_ener = table_ch.energie_concat.str.contains(r'{}'.format(energie))
             table_ch.loc[is_ener, 'type_energie'] = energie
 
@@ -29,7 +29,7 @@ def extract_type_energie_from_td002_td016(td001, td002, td016):
             if col in table_ecs:
                 table_ecs['energie_concat'] += table_ecs[col].astype('string').fillna('indetermine').replace(
                     ener_conv_dict[col]).astype(str).fillna('').str.lower()
-        for energie in energie_normalise_ordered:
+        for energie in reversed(energie_normalise_ordered):
             is_ener = table_ecs.energie_concat.str.contains(r'{}'.format(energie))
             table_ecs.loc[is_ener, 'type_energie'] = energie
         return table_ch, table_ecs

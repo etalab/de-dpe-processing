@@ -139,11 +139,11 @@ gen_ecs_search_dict['abscence_solaire'] = {
 
 gen_ecs_search_dict['ecs_thermodynamique'] = {
     "ecs thermodynamique electrique(pac ou ballon)": [
-        ('pompe AND chaleur', 'pac', 'thermodynamique', '"air extrait"', '"air exterieur"', '"air ambiant"')],
+        ('pompe AND chaleur', 'pac', 'thermodynamique', '"air extrait"', '"air ambiant"')],
 
 }
 chaudiere_dict_ecs = dict()
-chaudiere_dict_ecs['chaudiere bois'] = [chaudiere_bois,bois]
+chaudiere_dict_ecs['chaudiere bois'] = [chaudiere_bois, bois]
 chaudiere_dict_ecs['chaudiere electrique'] = [chaudiere_elec]
 for type_chaudiere, type_chaudiere_keys in zip(type_chaudiere_mods + ['indetermine'],
                                                [('condensation', 'condenseurs'), '"basse temperature"',
@@ -275,3 +275,6 @@ td014_gen_ecs_search_dict['chaudiere electrique'] = ['chaudiere',
 #     k_solaire = 'ecs solaire thermique + ' + k
 #     solaire_dict[k_solaire] = v + ['avec solaire']
 # td014_gen_ecs_search_dict.update(solaire_dict)
+
+
+

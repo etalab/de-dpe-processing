@@ -4,7 +4,10 @@ energie_normalise_ordered = ["autre", "charbon", "electricite renouvelable", "au
                              'bois', 'reseau de chaleur', 'fioul',
                              'gaz', 'electricite'
                              ]
+energie_normalise_ordered = list(reversed(energie_normalise_ordered))
+
 energy_cols = ['tv042_type_energie', 'tr004_description', 'tv045_energie', 'tv044_type_energie']
+
 ener_conv_dict = dict()
 
 ener_conv_dict['tv045_energie'] = {"Electricité (hors électricité d'origine renouvelab": "electricite",
@@ -39,6 +42,7 @@ ener_conv_dict['tv042_type_energie'] = {'Electricité': "electricite",
                                         'Gaz': "gaz", }
 
 for k, v in ener_conv_dict.items():
+
     assert (len(set(v.values()) - set(energie_normalise_ordered)) == 0)
 
 type_installation_conv_dict = dict()
@@ -55,7 +59,7 @@ type_installation_conv_dict['tv040_type_installation'] = {
 }
 
 type_installation_conv_dict['tv025_type_installation'] = {
-    'Chauffage Individuelle': 'individuel',
+    'Chauffage Individuel': 'individuel',
     'Chauffage Collectif': 'collectif',
 
 }

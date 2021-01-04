@@ -3,7 +3,7 @@ import numpy as np
 from .utils import concat_string_cols, strip_accents, affect_lib_by_matching_score, clean_str
 from .trtvtables import DPETrTvTables
 from .text_matching_dict import td014_gen_ecs_search_dict
-from .conversion_normalisation import ener_conv_dict,type_installation_conv_dict
+from .conversion_normalisation import ener_conv_dict, type_installation_conv_dict
 
 td013_types = {
     'td006_batiment_id': 'str',
@@ -39,40 +39,38 @@ td014_types = {'td014_generateur_ecs_id': 'str',
                'tv027_pertes_recuperees_ecs_id': 'category',
                'td001_dpe_id': 'str'}
 
-replace_elec_tv045_ener = {"Electricité (hors électricité d'origine renouvelab": 'Electricité non renouvelable',
-                           "Electricité d'origine renouvelable utilisée dans l": "Electricité d'origine renouvelable", }
+
 
 gen_ecs_lib_simp_dict = {'ecs electrique indetermine': 'ecs a effet joule electrique',
                          'ballon a accumulation electrique': 'ecs a effet joule electrique',
                          'ecs instantanee electrique': 'ecs a effet joule electrique',
                          }
-# solaire_dict = dict()
-# for k, v in gen_ecs_lib_simp_dict.items():
-#     k_solaire = 'ecs solaire thermique + ' + k
-#     v_solaire = 'ecs solaire thermique + ' + v
-#     solaire_dict[k_solaire] = v_solaire
-#gen_ecs_lib_simp_dict.update(solaire_dict)
-
-gen_to_installation_infer_dict = {"ecs a effet joule electrique": "individuel",
-                                  "ECS thermodynamique electrique(PAC ou ballon)": "indetermine",
-                                  "indetermine": "indetermine",
-                                  "chaudiere bois": "individuel",
-                                  "reseau de chaleur": "Collective",
-                                  "chauffe-eau gaz independant": "individuel",
-                                  'chauffe-eau gpl independant': "individuel",
-                                  'chauffe-eau fioul independant': "individuel",
-                                  }
-for type_chaudiere in ['standard', 'basse temperature', 'condensation', 'indetermine']:
-    gen_to_installation_infer_dict[f'chaudiere fioul {type_chaudiere}'] = 'individuel'
-    gen_to_installation_infer_dict[f'chaudiere gaz {type_chaudiere}'] = 'indetermine'
-    gen_to_installation_infer_dict[f'chaudiere autre(gpl/butane/propane) {type_chaudiere}'] = 'individuel'
-
-# solaire_dict = dict()
-# for k, v in gen_to_installation_infer_dict.items():
-#     k_solaire = 'ecs thermique solaire + ' + k
-#     v_solaire = v
-#     solaire_dict[k_solaire] = v_solaire
-# gen_ecs_lib_simp_dict.update(solaire_dict)
+td014_gen_to_installation_infer_dict = {'ecs thermodynamique electrique(pompe a chaleur ou ballon)': 'indetermine',
+                                        'ballon a accumulation electrique': 'individuel',
+                                        'ecs electrique indetermine': 'individuel',
+                                        'ecs instantanee electrique': 'individuel',
+                                        'chauffe-eau gaz independant': 'individuel',
+                                        'chauffe-eau gpl independant': 'individuel',
+                                        'chaudiere bois': 'indetermine',
+                                        'chauffe-eau fioul independant': 'individuel',
+                                        'reseau de chaleur': 'collectif',
+                                        'chaudiere gaz condensation': 'indetermine',
+                                        'chaudiere fioul condensation': 'indetermine',
+                                        'chaudiere charbon condensation': 'indetermine',
+                                        'chaudiere autre : gpl butane propane condensation': 'individuel',
+                                        'chaudiere gaz basse temperature': 'indetermine',
+                                        'chaudiere fioul basse temperature': 'indetermine',
+                                        'chaudiere charbon basse temperature': 'indetermine',
+                                        'chaudiere autre : gpl butane propane basse temperature': 'individuel',
+                                        'chaudiere gaz standard': 'indetermine',
+                                        'chaudiere fioul standard': 'indetermine',
+                                        'chaudiere charbon standard': 'indetermine',
+                                        'chaudiere autre : gpl butane propane standard': 'individuel',
+                                        'chaudiere gaz indetermine': 'indetermine',
+                                        'chaudiere fioul indetermine': 'indetermine',
+                                        'chaudiere charbon indetermine': 'individuel',
+                                        'chaudiere autre : gpl butane propane indetermine': 'individuel',
+                                        'chaudiere electrique': 'individuel', }
 
 sys_princ_scores = {'thermodynamique': 5,
                     'solaire': 4,
@@ -114,7 +112,7 @@ def merge_td014_tr_tv(td014):
 
 def postprocessing_td014(td013, td014, td001, td001_sys_ch_agg):
     table = td014.copy()
-    table['type_energie'] = table["tv045_energie"].astype('string').fillna('indetermine').replace(
+    table['type_energie_ecs'] = table["tv045_energie"].astype('string').fillna('indetermine').replace(
         ener_conv_dict['tv045_energie'])
     table['tr004_description'] = table["tr004_description"].astype('string').fillna('indetermine').replace(
         ener_conv_dict['tr004_description'])
@@ -136,7 +134,7 @@ def postprocessing_td014(td013, td014, td001, td001_sys_ch_agg):
     gen_ecs_concat_txt_desc += table['tv040_type_generateur'].astype('string').replace(np.nan, '') + ' '
     gen_ecs_concat_txt_desc += table["tv040_type_installation"].astype('string').replace(np.nan, '') + ' '
     gen_ecs_concat_txt_desc += table["tr004_description"].astype('string').replace(np.nan, '') + ' '
-    gen_ecs_concat_txt_desc += table["type_energie"].astype('string').replace(np.nan, '') + ' '
+    gen_ecs_concat_txt_desc += table["type_energie_ecs"].astype('string').replace(np.nan, '') + ' '
     gen_ecs_concat_txt_desc += table['tv047_type_generateur'].astype('string').replace(np.nan, '') + ' '
     gen_ecs_concat_txt_desc += table['tr005_description'].astype('string').replace(np.nan, '') + ' '
 
@@ -164,25 +162,26 @@ def postprocessing_td014(td013, td014, td001, td001_sys_ch_agg):
     fioul = table['tv045_energie'] == 'Fioul domestique'
     table.loc[fioul & non_aff, 'gen_ecs_lib_infer'] = 'chaudiere fioul standard'
 
-    table['type_energie_ecs'] = table['tv045_energie'].replace(replace_elec_tv045_ener)
-
     table['score_gen_ecs_lib_infer'] = table['gen_ecs_lib_infer'].replace(sys_princ_score_lib).astype(float)
 
     # Type installation ECS (collective ou individuel)
-    table['type_installation_ecs'] = table.tv027_type_installation.astype('string').replace(type_installation_conv_dict['tv027_type_installation'])
-    null = table.type_installation_ecs.isnull()
-    table.loc[null, 'type_installation_ecs'] = table.tv040_type_installation.astype('string').replace(type_installation_conv_dict['tv040_type_installation']).loc[null]
-    null = table.type_installation_ecs.isnull()
-    from_gen = table.gen_ecs_lib_infer_simp.replace(gen_to_installation_infer_dict)
-    null = table.type_installation_ecs.isnull()
+    table['type_installation_ecs'] = table.tv027_type_installation.replace(
+        type_installation_conv_dict['tv027_type_installation'])
+
+    null = table.type_installation_ecs.isnull() | (table.type_installation_ecs == "indetermine")
+    table.loc[null, 'type_installation_ecs'] = \
+        table.tv040_type_installation.replace(type_installation_conv_dict['tv040_type_installation']).loc[null]
+    from_gen = table.gen_ecs_lib_infer.replace(td014_gen_to_installation_infer_dict)
+    null = table.type_installation_ecs.isnull() | (table.type_installation_ecs == "indetermine")
 
     table.loc[null, 'type_installation_ecs'] = from_gen.loc[null]
 
     table = table.merge(td001.rename(columns={'id': 'td001_dpe_id'})[['tr002_type_batiment_id', 'td001_dpe_id']])
 
+    null = table.type_installation_ecs.isnull() | (table.type_installation_ecs == "indetermine")
     is_house = table.tr002_type_batiment_id == '1'
-    table.loc[null, 'type_installation_ecs'] = is_house.loc[null].replace(
-        {True: 'individuel', False: 'indetermine'})
+    table.loc[null & is_house, 'type_installation_ecs'] = is_house.loc[null & is_house].replace(
+        {True: 'individuel'})
 
     del table['tr002_type_batiment_id']
 
