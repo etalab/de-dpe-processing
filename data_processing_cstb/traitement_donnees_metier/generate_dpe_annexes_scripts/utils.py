@@ -208,7 +208,7 @@ def affect_lib_by_matching_score(txt, lib_dict):
             count = np.max([txt.count(x) for x in comp])
         else:
             count = txt.count(comp)
-
+        count = np.min(count,1)
         if count > 0:
             return count
         else:
@@ -218,7 +218,10 @@ def affect_lib_by_matching_score(txt, lib_dict):
     for k, v in lib_dict.items():
         comp_score_dict[k] = np.sum([compare_(txt, el) for el in v])
 
-    comp = pd.Series(comp_score_dict).sort_values(ascending=False)
+    comp = pd.Series(comp_score_dict).to_frame('score').reset_index()
+    comp['index'] = pd.Categorical(comp['index'], categories=list(lib_dict.keys()), ordered=True)
+    comp = comp.sort_values(by=['score', 'index'], ascending=[False, True])
+
     if comp.max() > 0:
         comp = comp.loc[comp == comp.max()]
 

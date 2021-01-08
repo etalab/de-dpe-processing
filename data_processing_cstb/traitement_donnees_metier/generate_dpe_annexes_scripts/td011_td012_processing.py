@@ -77,7 +77,7 @@ def merge_td012_tr_tv(td012):
     return table
 
 
-def postprocessing_td011_td012(td011,td012):
+def postprocessing_td011_td012(td011, td012):
     td011['type_installation_ch'] = td011.tv025_type_installation.replace(
         type_installation_conv_dict['tv025_type_installation'])
     table = td012.copy()
@@ -124,11 +124,12 @@ def postprocessing_td011_td012(td011,td012):
     table.loc[is_ind, 'gen_ch_lib_infer'] = 'pac indetermine'
 
     # recup/fix poele bois
-    is_bois = table.gen_ch_concat_txt_desc == 'bois, biomasse bois, biomasse'
+    # TODO : a fix c'est pas bon ce qu'on fait !
+    is_bois_ind = table.gen_ch_lib_infer == 'chauffage bois indetermine'
 
-    table.loc[is_bois, 'gen_ch_lib_infer'] = table.loc[is_bois, 'rendement_generation'].replace(poele_dict)
+    table.loc[is_bois_ind, 'gen_ch_lib_infer'] = table.loc[is_bois_ind, 'rendement_generation'].replace(poele_dict)
 
-    is_ind = is_bois & (~table.loc[is_bois, 'gen_ch_lib_infer'].isin(poele_dict.values()))
+    is_ind = is_bois_ind & (~table.loc[is_bois_ind, 'gen_ch_lib_infer'].isin(poele_dict.values()))
     table.loc[is_ind, 'gen_ch_lib_infer'] = 'indetermine'
 
     # recup reseau chaleur
@@ -164,11 +165,10 @@ def postprocessing_td011_td012(td011,td012):
     s_rendement = s_rendement * rendement_gen_u
     table['besoin_ch_infer'] = table['consommation_chauffage'] * s_rendement
 
-    return td011,table
+    return td011, table
 
 
 def agg_systeme_ch_essential(td001, td011, td012):
-
     sys_ch_princ_rename = {
         'td001_dpe_id': 'td001_dpe_id',
         'gen_ch_lib_infer': 'sys_ch_princ_gen_ch_lib_infer',
