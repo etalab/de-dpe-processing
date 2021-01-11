@@ -45,7 +45,7 @@ gen_ecs_lib_simp_dict = {'ecs electrique indetermine': 'ecs a effet joule electr
                          'ballon a accumulation electrique': 'ecs a effet joule electrique',
                          'ecs instantanee electrique': 'ecs a effet joule electrique',
                          }
-td014_gen_to_installation_infer_dict = {'ecs thermodynamique electrique(pompe a chaleur ou ballon)': 'indetermine',
+td014_gen_to_installation_infer_dict = {'ecs thermodynamique electrique(pac ou ballon)': 'indetermine',
                                         'ballon a accumulation electrique': 'individuel',
                                         'ecs electrique indetermine': 'individuel',
                                         'ecs instantanee electrique': 'individuel',
@@ -150,7 +150,7 @@ def postprocessing_td014(td013, td014, td001, td001_sys_ch_agg):
                               unique_gen_ecs}
     table['gen_ecs_lib_infer'] = table.gen_ecs_concat_txt_desc.replace(gen_ecs_lib_infer_dict)
     is_pac = table.coefficient_performance > 2
-    table.loc[is_pac, 'gen_ecs_lib_infer'] = "ecs thermodynamique electrique(pompe a chaleur ou ballon)"
+    table.loc[is_pac, 'gen_ecs_lib_infer'] = "ecs thermodynamique electrique(pac ou ballon)"
     ecs_ind = table.gen_ecs_lib_infer == "ecs electrique indetermine"
     stockage = table.volume_stockage > 20
     table.loc[ecs_ind & stockage, 'gen_ecs_lib_infer'] = 'ballon a accumulation electrique'
