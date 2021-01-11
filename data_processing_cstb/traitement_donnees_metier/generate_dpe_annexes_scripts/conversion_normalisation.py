@@ -1,6 +1,6 @@
 # TYPE ENERGIE
 
-energie_normalise_ordered = ["autre", "charbon", "electricite renouvelable", "autre : gpl butane propane",
+energie_normalise_ordered = ["autre", "charbon", "electricite renouvelable", "gpl/butane/propane",
                              'bois', 'reseau de chaleur', 'fioul',
                              'gaz', 'electricite'
                              ]
@@ -15,13 +15,13 @@ ener_conv_dict['tv045_energie'] = {"Electricité (hors électricité d'origine r
                                    'Réseau de chaleurs': "reseau de chaleur",
                                    'Fioul domestique': "fioul",
                                    'Bois, biomasse': "bois",
-                                   'Gaz propane ou butane': "autre : gpl butane propane",
+                                   'Gaz propane ou butane': "gpl/butane/propane",
                                    "Electricité d'origine renouvelable utilisée dans l": "electricite renouvelable",
                                    "Charbon": "charbon"}
 
 ener_conv_dict['tv044_type_energie'] = {'Bois de chauffage': 'bois',
                                         'Gaz naturel': 'gaz',
-                                        'Gaz propane ou butane': 'autre : gpl butane propane',
+                                        'Gaz propane ou butane': 'gpl/butane/propane',
                                         'Fioul domestique': 'fioul',
                                         'Charbon': 'charbon',
                                         'Electricité': 'electricite',
@@ -36,7 +36,7 @@ ener_conv_dict['tr004_description'] = {'Bois, Biomasse': 'bois',
 ener_conv_dict['tv042_type_energie'] = {'Electricité': "electricite",
                                         'Fioul': "fioul",
                                         'Chauffage urbain': "reseau de chaleur",
-                                        'Propane': "autre : gpl butane propane",
+                                        'Propane': "gpl/butane/propane",
                                         'Charbon': "charbon",
                                         'Bois': "bois",
                                         'Gaz': "gaz", }

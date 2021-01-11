@@ -53,7 +53,7 @@ pac_dict = {2.2: 'pac air/air',
 
 poele_dict = {0.78: 'poele ou insert bois',
               0.66: 'poele ou insert bois',
-              0.72: "poele ou insert fioul/gpl"}
+              0.72: "poele ou insert fioul/gpl/charbon"}
 
 
 def merge_td011_tr_tv(td011):
@@ -123,14 +123,20 @@ def postprocessing_td011_td012(td011, td012):
     is_ind = is_pac & (~table.loc[is_pac, 'gen_ch_lib_infer'].isin(pac_dict.values()))
     table.loc[is_ind, 'gen_ch_lib_infer'] = 'pac indetermine'
 
-    # recup/fix poele bois
-    # TODO : a fix c'est pas bon ce qu'on fait !
+    # recup poele bois from chauffage indetermine
     is_bois_ind = table.gen_ch_lib_infer == 'chauffage bois indetermine'
+    is_poele_rendement = table.rendement_generation.isin(poele_dict.keys())
+    table.loc[is_bois_ind & is_poele_rendement, 'gen_ch_lib_infer'] = table.loc[is_bois_ind & is_poele_rendement,
+                                                                                'rendement_generation'].replace(
+        poele_dict)
 
-    table.loc[is_bois_ind, 'gen_ch_lib_infer'] = table.loc[is_bois_ind, 'rendement_generation'].replace(poele_dict)
+    # recup poele fioul from chauffage indetermine
+    is_fioul_ind = table.gen_ch_lib_infer == 'chauffage fioul indetermine'
+    is_poele_rendement = table.rendement_generation.isin(poele_dict.keys())
 
-    is_ind = is_bois_ind & (~table.loc[is_bois_ind, 'gen_ch_lib_infer'].isin(poele_dict.values()))
-    table.loc[is_ind, 'gen_ch_lib_infer'] = 'indetermine'
+    table.loc[is_fioul_ind & is_poele_rendement, 'gen_ch_lib_infer'] = table.loc[is_fioul_ind & is_poele_rendement,
+                                                                                 'rendement_generation'].replace(
+        poele_dict)
 
     # recup reseau chaleur
     non_aff = table.gen_ch_lib_infer == 'indetermine'
@@ -144,12 +150,16 @@ def postprocessing_td011_td012(td011, td012):
 
     # fix chaudiere elec
 
-    bool_ej = table.gen_ch_lib_infer == 'autres emetteurs a effet joule'
+    bool_cei = table.gen_ch_lib_infer == 'chauffage electrique indetermine'
     bool_ce = table.rendement_generation == 0.77
 
-    table.loc[(bool_ej) & (bool_ce), 'gen_ch_lib_infer'] = 'chaudiere electrique'
+    table.loc[(bool_cei) & (bool_ce), 'gen_ch_lib_infer'] = 'chaudiere electrique'
 
     rendement_gen_u = table[['rendement_generation', 'coefficient_performance']].max(axis=1)
+
+    table['rendement_generateur_u'] = rendement_gen_u
+
+    # chauffage effet joule
 
     s_rendement = pd.Series(index=table.index)
     s_rendement[:] = 1
@@ -226,7 +236,6 @@ def agg_systeme_ch_essential(td001, td011, td012):
     cols += ['tv025_intermittence_id', "type_installation_ch", 'nb_generateurs', 'id_unique']
 
     agg_cols = ['td001_dpe_id', 'gen_ch_lib_infer', 'tv025_intermittence_id']
-
     table['id_unique'] = table.td001_dpe_id + table.gen_ch_lib_infer + table.tv025_intermittence_id.astype(
         str) + table.type_energie_ch
 

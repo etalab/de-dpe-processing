@@ -3,8 +3,12 @@
 ## elements de recherche communs
 # TODO : passer tout en *
 
+# energie possible des chaudières qui ne sont pas au bois
+energie_chaudiere_mods = ['gaz', 'fioul', 'charbon', 'gpl/butane/propane']
 
-energie_chaudiere_mods = ['gaz', 'fioul', 'charbon', 'autre : gpl butane propane']
+# energie à combustion
+
+energie_combustion_mods = energie_chaudiere_mods + ['bois']
 
 type_chaudiere_mods = ['condensation', 'basse temperature', 'standard']
 
@@ -18,11 +22,11 @@ abscence_ecs_solaire = ('"ecs solaire : non"', '"sans solaire"', '"sans ecs sola
 mixte = ('mixte', 'combine', 'chauffage AND ecs', 'lie ', 'combine ', "idem")
 
 reseau_chaleur = ('"reseau de chaleur"', '"reseaux de chaleurs"', '"reseaux de chaleur"',
-                  '"reseau chaleur"', "urbain", "rcu")
+                  '"reseau chaleur"', "urbain", "rcu", "(raccordement AND reseau)")
 
 chauffe_bain = ("individu* AND ballon", "chauffe-eau", "accu*", "chauffe AND bain", 'chauffe-bain')
 
-pac = ('pompe* AND chaleur*', 'pac ', 'thermody*')
+pac = ('pompe* AND chaleur*', 'pac', 'thermody*')
 
 poele = ('poe*', 'insert', 'cuisin*')
 
@@ -31,12 +35,12 @@ chaudiere = ('chaud.', 'chaud', 'chaudi*', 'chaufferie', 'chauudiere', 'condens*
 # autre char qui peuvent vouloir dir chaudiere dans le cas ou l'on a au moins l'energie de chauffage
 chaudieres_plus = tuple(list(('collectif', 'ch.')) + list(chaudiere))
 
-chaudiere_elec = ('"chaudiere elec*"', '"chaudiere individuelle elec*"', '"chaudiere collective elec*"')
+chaudiere_elec = ('"chaudiere electrique"', '"chaudiere individuelle electrique"', '"chaudiere collective electrique"')
 
 chaudiere_bois = ('"chaudiere bois"', '"chaudiere individuelle bois"'
                   , '"chaudiere a bois"'
                   , '"chaudiere bois/biomasse"'
-                  , '"chaudiere a bois/biomasse"', "atmospherique")
+                  , '"chaudiere a bois/biomasse"', "atmos*")
 
 # types chaudieres
 
@@ -46,9 +50,10 @@ basse_temperature = ('"basse temperature"', 'bt ', 'bt.')
 
 # ener
 
-bois = ('bois', "bois//biomasse", 'biomasse', 'flamme AND verte', 'granule*', 'pellet*', 'buche*')
+bois = ('bois', "bois//biomasse", 'bio*', 'flamme AND verte', 'granule*', 'pellet*', 'buche*')
 
-fioul = ('fioul', 'mazout')
+bois_pour_chaudiere_bois = tuple(list(bois) + ['atmos*'])
+fioul = ('fioul', 'mazout', 'fuel')
 
 elec = ('elec*', 'elec.', 'joule*')
 
@@ -64,7 +69,7 @@ energie_dict = {
     'reseau de chaleur': reseau_chaleur,
     'fioul': fioul,
     'bois': [bois],
-    'autre : gpl butane propane': [('propane', 'butane', 'gpl')],
+    'gpl/butane/propane': [('propane', 'butane', 'gpl')],
     'charbon': ['charbon'],
 }
 
@@ -74,7 +79,7 @@ energie_dict_lower = {
     'Réseau de chaleurs': 'reseau de chaleur',
     'Fioul domestique': 'fioul',
     'Bois, biomasse': 'bois',
-    'Gaz propane ou butane': 'autre : gpl butane propane',
+    'Gaz propane ou butane': 'gpl/butane/propane',
     'Charbon': 'charbon',
 }
 
@@ -88,22 +93,23 @@ energie_mods = energie_dict.keys()
 gen_ch_search_dict = dict()
 
 gen_ch_search_dict['pac'] = {"pac geothermique en releve de chaudiere": [pac, "geoth*", 'chaudi*'],
-                             "pac eau/eau en releve de chaudiere": [pac, 'eau', 'chaudi*'],
-                             "pac air/eau en releve de chaudiere": [pac, 'air AND eau', 'chaudi*'],
+                             "pac air/eau en releve de chaudiere": [pac, ('air AND eau', 'aireau'), 'chaudi*'],
+                             "pac eau/eau en releve de chaudiere": [pac, '(eau AND NOT air)', 'chaudi*'],
                              "pac geothermique": [pac, ('geoth*')],
-                             "pac air/eau": [pac, 'air AND eau'],
-                             "pac eau/eau": [pac, 'eau'],
-                             "pac air/air": [tuple(list(pac) + ['clim*', 'split*']), ('air', 'split*')],
-                             "pac indetermine": [pac] + ['clim*', 'split*'], }
+                             "pac air/eau": [pac, ('air AND eau', 'aireau')],
+                             "pac eau/eau": [pac, '(eau AND NOT air)'],
+                             "pac air/air": [tuple(list(pac) + ['clim*', 'split*']), ('air', 'airair')],
+                             "pac indetermine": [tuple(list(pac) + ['clim*', 'split*'])]}
 gen_ch_search_dict['poele'] = {"poele ou insert bois": [poele, bois],
-                               "poele ou insert fioul/gpl/charbon": [poele, ('fioul', 'mazout', 'charbon', 'gpl')],
+                               "poele ou insert fioul/gpl/charbon": [poele, (
+                                   'fioul', 'mazout', 'charbon', 'gpl', 'butane', 'propane')],
                                "poele ou insert indetermine": [poele]
                                }
 
-chaudiere_dict_ch = dict()
+gen_ch_search_dict['chaudiere bois'] = {'chaudiere bois exact': [chaudiere_bois, bois_pour_chaudiere_bois],
+                                        'chaudiere bois': [chaudiere, 'NOT', poele, bois_pour_chaudiere_bois]}
 
-chaudiere_dict_ch['chaudiere bois exact'] = [chaudiere_bois, bois]
-chaudiere_dict_ch['chaudiere bois'] = [chaudiere, 'NOT', poele, bois]
+chaudiere_dict_ch = dict()
 
 chaudiere_dict_ch['chaudiere electrique'] = [chaudiere_elec]
 
@@ -113,7 +119,7 @@ for type_chaudiere, type_chaudiere_keys in zip(type_chaudiere_mods + ['indetermi
 
     for energie in energie_chaudiere_mods:
         energie_keywords = energie
-        if energie == 'autre : gpl butane propane':
+        if energie == 'gpl/butane/propane':
             energie_keywords = ('gpl', 'butane', 'propane')
         if type_chaudiere_keys is not None:
             chaudiere_dict_ch[f'chaudiere {energie} {type_chaudiere}'] = [chaudieres_plus, energie_keywords,
@@ -122,17 +128,21 @@ for type_chaudiere, type_chaudiere_keys in zip(type_chaudiere_mods + ['indetermi
             chaudiere_dict_ch[f'chaudiere {energie} {type_chaudiere}'] = [chaudieres_plus, energie_keywords
                                                                           ]
     # on utilise uniquement le mot chaudiere quand on est indeterminé sur le reste
-    chaudiere_dict_ch[f'chaudiere energie indetermine {type_chaudiere}'] = ['chaudiere',
-                                                                            type_chaudiere_keys]  # uniquement le mot chaudiere quand on % indeterminé
-
-# les radiateurs gaz sont inclus avec les chaudieres car ces systèmes sont a priori exclusifs les un des autres.
-chaudiere_dict_ch['radiateurs gaz'] = [('"radiateur gaz"', '"radiateurs gaz"')]
+    if type_chaudiere_keys is not None:
+        chaudiere_dict_ch[f'chaudiere energie indetermine {type_chaudiere}'] = [chaudieres_plus,
+                                                                                type_chaudiere_keys]
+    else:
+        # uniquement le mot chaudiere quand on % indeterminé
+        chaudiere_dict_ch[f'chaudiere energie indetermine {type_chaudiere}'] = ['chaudiere*']
+    # les radiateurs gaz sont inclus avec les chaudieres car ces systèmes sont a priori exclusifs les un des autres.
+chaudiere_dict_ch['radiateurs gaz'] = [
+    ('"radiateur gaz"', '"radiateurs gaz"', '"radiateurs sur conduits fumees"', '"radiateurs a ventouse"')]
 
 gen_ch_search_dict['chaudiere'] = chaudiere_dict_ch
 gen_ch_search_dict['reseau_chaleur'] = {"reseau de chaleur": [reseau_chaleur], }
 
 gen_ch_search_dict['effet_joule'] = {'radiateurs electriques': [('radiateur', 'radiateurs'), elec],
-                                     "convecteurs bi-jonction": [('bi AND jonction', 'bijonction', 'bi-jonction')],
+                                     "convecteurs bi-jonction electriques": [('bi AND jonction', 'bijonction', 'bi-jonction')],
                                      'panneaux rayonnants electriques nfc': [('panneau', 'panneaux'),
                                                                              ('rayonnant', 'rayonnants'),
                                                                              ('nf', 'nfc')],
@@ -140,14 +150,22 @@ gen_ch_search_dict['effet_joule'] = {'radiateurs electriques': [('radiateur', 'r
                                      'plafonds/planchers rayonnants electriques nfc': [('plancher', 'plafond',
                                                                                         'planchers', 'plafonds'),
                                                                                        ('rayonnant', 'rayonnants')],
-                                     "convecteurs electriques nfc": [('convecteur', 'convecteurs', 'radiateurs'),
+                                     "convecteurs electriques nfc": [('convecteur*', 'radiateur*'),
                                                                      ('nf', 'nfc')],
                                      "panneaux rayonnants electriques": [('panneau', 'panneaux'),
                                                                          ('rayonnant', 'rayonnants')],
 
+                                     "convecteurs electriques": [('convecteur*'), elec]
+
                                      }
+
 gen_ch_search_dict['chauffage electrique indetermine'] = {"chauffage electrique indetermine": [elec]}
 gen_ch_search_dict['chauffage bois indetermine'] = {"chauffage bois indetermine": [bois]}
+gen_ch_search_dict['chauffage fioul indetermine'] = {"chauffage fioul indetermine": [fioul]}
+gen_ch_search_dict['chauffage gaz indetermine'] = {"chauffage gaz indetermine": ['gaz']}
+gen_ch_search_dict['chauffage gpl/butane/propane indetermine'] = {
+    "chauffage gpl/butane/propane indetermine": [('gpl', 'butane', 'propane')]}
+gen_ch_search_dict['chauffage charbon indetermine'] = {"chauffage charbon indetermine": ["charbon"]}
 
 # version flat du dictionnaire par catégorie
 gen_ch_search_dict_flat = dict()
@@ -179,16 +197,17 @@ gen_ecs_search_dict['ecs_thermodynamique'] = {
         ('pompe AND chaleur', 'pac', 'thermodynamique', '"air extrait"', '"air ambiant"')],
 
 }
+gen_ecs_search_dict['chaudiere bois'] = {'chaudiere bois exact': [chaudiere_bois, bois_pour_chaudiere_bois],
+                                         'chaudiere bois': [chaudiere, 'NOT', poele, bois_pour_chaudiere_bois]}
 chaudiere_dict_ecs = dict()
-chaudiere_dict_ch['chaudiere bois exacte'] = [chaudiere_bois, bois]
-chaudiere_dict_ch['chaudiere bois'] = [chaudiere, 'NOT', poele, bois]
+
 chaudiere_dict_ecs['chaudiere electrique'] = [chaudiere_elec]
 for type_chaudiere, type_chaudiere_keys in zip(type_chaudiere_mods + ['indetermine'],
                                                [('condensation', 'condenseurs'), '"basse temperature"',
                                                 ('standard', 'classique'), None]):
     for energie in energie_chaudiere_mods:
         energie_keywords = energie
-        if energie == 'autre : gpl butane propane':
+        if energie == 'gpl/butane/propane':
             energie_keywords = ('gpl', 'butane', 'propane')
         if type_chaudiere_keys is not None:
             chaudiere_dict_ecs[f'chaudiere {energie} {type_chaudiere}'] = [chaudieres_plus, energie_keywords,
@@ -197,7 +216,12 @@ for type_chaudiere, type_chaudiere_keys in zip(type_chaudiere_mods + ['indetermi
             chaudiere_dict_ecs[f'chaudiere {energie} {type_chaudiere}'] = [chaudieres_plus, energie_keywords
                                                                            ]
     # on utilise uniquement le mot chaudiere quand on est indeterminé sur le reste
-    chaudiere_dict_ecs[f'chaudiere energie indetermine {type_chaudiere}'] = ['chaudiere', type_chaudiere_keys]
+    if type_chaudiere_keys is not None:
+        chaudiere_dict_ecs[f'chaudiere energie indetermine {type_chaudiere}'] = [chaudieres_plus,
+                                                                                 type_chaudiere_keys]
+    else:
+        # uniquement le mot chaudiere quand on % indeterminé
+        chaudiere_dict_ecs[f'chaudiere energie indetermine {type_chaudiere}'] = ['chaudiere*']
 
 chaudiere_dict_ecs.update({
 
@@ -254,12 +278,16 @@ td012_gen_ch_search_dict = {"pac air/air": ['pac', 'air/air', ('electricite', 'e
                             "convecteurs electriques nfc": ['convecteur', ('electricite', 'electrique'),
                                                             'nfc'],
                             "poele ou insert bois": [('poele', 'insert'), ('bois', 'biomasse')],
-                            "poele ou insert fioul/gpl/charbon": [('poele', 'insert'), ('fioul', 'gpl', 'charbon')],
+                            "poele ou insert fioul/gpl/charbon": [('poele', 'insert'),
+                                                                  ('fioul', 'gpl', "propane", 'charbon')],
                             "chaudiere bois": ['chaudiere', ('bois', 'biomasse')],
-                            "convecteurs bi-jonction": ['bi', 'jonction', ('electricite', 'electrique')],
+                            "convecteurs bi-jonction electriques": ['bi', 'jonction', ('electricite', 'electrique')],
                             "chauffage bois indetermine": [('bois', 'biomasse')],
                             "chauffage electrique indetermine": [('electricite', 'electrique')],
-
+                            "chauffage fioul indetermine": ['fioul'],
+                            "chauffage gaz indetermine": ['gaz'],
+                            "chauffage gpl/butane/propane indetermine": ['butane'],
+                            "chauffage charbon indetermine": ['charbon'],
                             }
 
 for type_chaudiere, type_chaudiere_keys in zip(type_chaudiere_mods + ['indetermine'],
@@ -267,7 +295,7 @@ for type_chaudiere, type_chaudiere_keys in zip(type_chaudiere_mods + ['indetermi
                                                 ('standard', 'classique'), None]):
     for energie in energie_chaudiere_mods:
         energie_keywords = energie
-        if energie == 'autre : gpl butane propane':
+        if energie == 'gpl/butane/propane':
             energie_keywords = ('gpl', 'butane', 'propane')
         if type_chaudiere_keys is not None:
             td012_gen_ch_search_dict[f'chaudiere {energie} {type_chaudiere}'] = ['chaudiere', energie_keywords,
@@ -303,7 +331,7 @@ for type_chaudiere, type_chaudiere_keys in zip(type_chaudiere_mods + ['indetermi
                                                 ('standard', 'classique'), None]):
     for energie in energie_chaudiere_mods:
         energie_keywords = energie
-        if energie == 'autre : gpl butane propane':
+        if energie == 'gpl/butane/propane':
             energie_keywords = ('gpl', 'butane', 'propane')
         if type_chaudiere_keys is not None:
             td014_gen_ecs_search_dict[f'chaudiere {energie} {type_chaudiere}'] = ['chaudiere', energie_keywords,

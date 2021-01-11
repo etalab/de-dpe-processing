@@ -241,9 +241,10 @@ if __name__ == '__main__':
     list_dir = [el for el in list_dir if '94' in el.name]
     # list_dir.reverse()
 
-    # for dept_dir in list_dir:
-    #     print(dept_dir)
-    #     run_postprocessing_by_depts(dept_dir)
-    #
-    with Pool(processes=5) as pool:
-        pool.starmap(run_postprocessing_by_depts, [(dept_dir,) for dept_dir in list_dir])
+    for dept_dir in list_dir:
+        if dept_dir.name=='94':
+            print(dept_dir)
+            run_postprocessing_by_depts(dept_dir)
+
+    # with Pool(processes=5) as pool:
+    #     pool.starmap(run_postprocessing_by_depts, [(dept_dir,) for dept_dir in list_dir])

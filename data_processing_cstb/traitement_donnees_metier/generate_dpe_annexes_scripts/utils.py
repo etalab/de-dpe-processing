@@ -208,7 +208,7 @@ def affect_lib_by_matching_score(txt, lib_dict):
             count = np.max([txt.count(x) for x in comp])
         else:
             count = txt.count(comp)
-        count = np.min(count,1)
+        count = np.minimum(count,1)
         if count > 0:
             return count
         else:
@@ -220,7 +220,7 @@ def affect_lib_by_matching_score(txt, lib_dict):
 
     comp = pd.Series(comp_score_dict).to_frame('score').reset_index()
     comp['index'] = pd.Categorical(comp['index'], categories=list(lib_dict.keys()), ordered=True)
-    comp = comp.sort_values(by=['score', 'index'], ascending=[False, True])
+    comp = comp.sort_values(by=['score', 'index'], ascending=[False, True]).set_index('index').score
 
     if comp.max() > 0:
         comp = comp.loc[comp == comp.max()]
@@ -324,3 +324,16 @@ def reload_package(package):
 
     return reload_recursive_ex(package)
 
+def clean_desc_txt(x):
+    bad_chars_to_space = ['"', "'", "''", '""',  # these char in addr field generate errors on addok
+                      ",",  # removed by precaution since we dump comma sep csv and we dont want quotechar
+                      "\\n", "\\t","\\r","\\r\\n"  #
+                      "\n", "\t",  # remove carriage return/tab
+                      "/", "\\", "(", ")"  # remove special separators characters and ()
+                                      "[", "]", "_", "°", "^","<br>", ">", "<"
+                                                                    '«', '»',
+
+                      ]
+    for bad_char in bad_chars_to_space:
+        x=x.replace(bad_char,' ')
+    return x
