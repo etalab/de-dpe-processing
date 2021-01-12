@@ -30,6 +30,8 @@ pac = ('pompe* AND chaleur*', 'pac', 'thermody*')
 
 pac_and_thermo = tuple(list(pac) + ['"air extrait"', '"air ambiant"'])
 
+eau_eau = ('"eau eau"', 'eau/eau', 'eau-eau', 'eau AND nappe')
+
 poele = ('poe*', 'insert', 'cuisin*')
 
 chaudiere = ('chaud.', 'chaud', 'chaudi*', 'chaufferie', 'chauudiere', 'condens*')
@@ -61,15 +63,15 @@ elec = ('elec*', 'elec.', 'joule*')
 
 ## dictionnaires annexes
 
-installation_dict = {'collectif': [('collecti*', 'coll', 'coll.')],
-                     'individuel': [('individu*', 'ind', 'ind.')],
-                     }
+installation_search_dict = {'collectif': [('collecti*', 'coll', 'coll.')],
+                            'individuel': [('individu*', 'ind', 'ind.')],
+                            }
 
-energie_dict = {
+energie_search_dict = {
     'gaz': ['gaz'],
     'electricite': [elec],
-    'reseau de chaleur': reseau_chaleur,
-    'fioul': fioul,
+    'reseau de chaleur': [reseau_chaleur],
+    'fioul': [fioul],
     'bois': [bois],
     'gpl/butane/propane': [('propane', 'butane', 'gpl')],
     'charbon': ['charbon'],
@@ -85,7 +87,7 @@ energie_dict_lower = {
     'Charbon': 'charbon',
 }
 
-energie_mods = energie_dict.keys()
+energie_mods = energie_search_dict.keys()
 
 ## DICTIONNAIRE DE RECHERCHE : GENERATEUR CHAUFFAGE DANS td003_descriptif et td005_fiches_techniques
 # les descriptions des systèmes diffèrent en fonction des diagnostiqueurs et logiciels dans ces tables descriptives.
@@ -96,11 +98,14 @@ gen_ch_search_dict = dict()
 
 gen_ch_search_dict['pac'] = {"pac geothermique en releve de chaudiere": [pac, "geoth*", 'chaudi*'],
                              "pac air/eau en releve de chaudiere": [pac, ('air AND eau', 'aireau'), 'chaudi*'],
-                             "pac eau/eau en releve de chaudiere": [pac, '(eau AND NOT air)', 'chaudi*'],
+                             "pac eau/eau en releve de chaudiere": [pac, eau_eau, 'chaudi*'],
+
                              "pac geothermique": [pac, ('geoth*')],
                              "pac air/eau": [pac, ('air AND eau', 'aireau')],
-                             "pac eau/eau": [pac, '(eau AND NOT air)'],
+                             "pac eau/eau": [pac, eau_eau],
                              "pac air/air": [tuple(list(pac) + ['clim*', 'split*']), ('air', 'airair')],
+                             "pac indetermine en releve de chaudiere": [tuple(list(pac) + ['clim*', 'split*']),
+                                                                        'chaudi*'],
                              "pac indetermine": [tuple(list(pac) + ['clim*', 'split*'])]}
 gen_ch_search_dict['poele'] = {"poele ou insert bois": [poele, bois],
                                "poele ou insert fioul/gpl/charbon": [poele, (
@@ -245,18 +250,19 @@ gen_ecs_search_dict['production mixte indetermine'] = {'production mixte indeter
 gen_ecs_search_dict['reseau de chaleur'] = {"reseau de chaleur": [reseau_chaleur], }
 
 gen_ecs_search_dict['effet joule'] = {
-    "ballon a accumulation electrique": [('ballon', 'classique', 'accu*', 'chauffe-eau'), elec],
+    "ballon a accumulation electrique": [('ballon', 'classique', 'accu*', 'chauffe-eau', 'vertical', 'horizontal'),
+                                         elec],
     "ecs instantanee electrique": ['inst*', elec],
 }
 
 gen_ecs_search_dict['chauffe-eau_independant'] = {'chauffe-eau gaz independant': [chauffe_bain, "gaz"],
-                                                  'chauffe-eau gpl independant': [chauffe_bain, "gpl"],
+                                                  'chauffe-eau gpl/butane/propane independant': [chauffe_bain, (
+                                                  'gpl', 'butane', 'propane')],
                                                   'poele bouilleur bois': [poele, bois],
                                                   'chauffe-eau fioul independant': [chauffe_bain,
                                                                                     "fioul"],
                                                   "chauffe-eau independant indetermine": [
-                                                      ("individuelle AND ballon", "chauffe-eau", "accumulateur",
-                                                       "chauffe AND bain")], }
+                                                      chauffe_bain], }
 
 gen_ecs_search_dict['ecs electrique indetermine'] = {"ecs electrique indetermine": [elec]}
 gen_ecs_search_dict['ecs bois indetermine'] = {"ecs bois indetermine": [bois]}
@@ -276,6 +282,24 @@ for cat, v in gen_ecs_search_dict.items():
     for label in v:
         reverse_cat_gen_ecs[label] = cat
 reverse_cat_gen_ecs['indetermine'] = 'indetermine'
+
+# catégorisation des catégories d'ECS pour un traitement spécifique ordonné (basé sur une hypothèse que lorsque l'on a une
+# production d'ECS associé à un système d'ECS on a pas de deuxieme ballon avec production autonome.
+priorisation_ecs = {'solaire': "solaire",
+                    'abscence solaire': "solaire",
+                    'ecs thermodynamique': "principal",
+                    'chaudiere bois': "principal",
+                    'chaudiere': "principal",
+                    'production mixte indetermine': "secondaire",
+                    'reseau de chaleur': "principal",
+                    'effet joule': "secondaire",
+                    'chauffe-eau_independant': "defaut",
+                    'ecs electrique indetermine': "secondaire",
+                    'ecs bois indetermine': "defaut",
+                    'ecs fioul indetermine': "defaut",
+                    'ecs gaz indetermine': "defaut",
+                    'ecs gpl/butane/propane indetermine': "defaut",
+                    'ecs charbon indetermine': "defaut", }
 
 ## DICTIONNAIRE DE RECHERCHE : CHAUFFAGE DANS TD012.
 # ici l'extraction texte est effectuées sur des champs tabulés normés (tables TV) et nécessite de rechercher uniquement les mots présents dans ces tables TV
@@ -339,7 +363,8 @@ td014_gen_ecs_search_dict = {
     "ecs instantanee electrique": ['instantanee', ('electricite', 'electrique')],
 
     'chauffe-eau gaz independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"), "gaz"],
-    'chauffe-eau gpl independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"), "gpl"],
+    'chauffe-eau gpl/butane/propane independant': [
+        ("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"), ('gpl', 'butane', 'propane')],
     "chaudiere bois": [('bois', 'biomasse')],
     'chauffe-eau fioul independant': [("individuelle ballon", "chauffe-eau", "accumulateur", "chauffe bain"),
                                       "fioul"],
@@ -372,3 +397,13 @@ td014_gen_ecs_search_dict.update({
 #     k_solaire = 'ecs solaire thermique + ' + k
 #     solaire_dict[k_solaire] = v + ['avec solaire']
 # td014_gen_ecs_search_dict.update(solaire_dict)
+
+
+tr003_desc_to_gen={ 'Installation de chauffage avec insert ou poêle bois en appoint':"poele ou insert indetermine",
+ 'Installation de chauffage par insert, poêle bois (ou biomasse) avec un chauffage électrique dans la salle de bain':"poele ou insert indetermine",
+ 'Installation de chauffage avec en appoint un insert ou poêle bois et un chauffage électrique dans la salle de bain (différent du chauffage principal)':"poele ou insert indetermine",
+ 'Installation de chauffage avec chaudière en relève de PAC': "pac indetermine en releve de chaudiere",
+ 'Convecteurs bi-jonction': "convecteurs bi-jonction electriques",
+ 'Installation de chauffage avec chaudière en relève de PAC avec insert ou poêle bois en appoint': "pac indetermine en releve de chaudiere",
+ 'Installation de chauffage avec chaudière  gaz ou fioul en  relève  d’une chaudière bois': "chaudiere bois",
+}

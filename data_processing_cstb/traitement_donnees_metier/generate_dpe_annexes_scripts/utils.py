@@ -7,6 +7,7 @@ import os
 import importlib
 import types
 
+
 def clean_str(x):
     x = x.strip()
     x = re.sub(' +', ' ', x)
@@ -208,7 +209,7 @@ def affect_lib_by_matching_score(txt, lib_dict):
             count = np.max([txt.count(x) for x in comp])
         else:
             count = txt.count(comp)
-        count = np.minimum(count,1)
+        count = np.minimum(count, 1)
         if count > 0:
             return count
         else:
@@ -324,16 +325,19 @@ def reload_package(package):
 
     return reload_recursive_ex(package)
 
+
 def clean_desc_txt(x):
     bad_chars_to_space = ['"', "'", "''", '""',  # these char in addr field generate errors on addok
-                      ",",  # removed by precaution since we dump comma sep csv and we dont want quotechar
-                      "\\n", "\\t","\\r","\\r\\n"  #
-                      "\n", "\t",  # remove carriage return/tab
-                      "/", "\\", "(", ")"  # remove special separators characters and ()
-                                      "[", "]", "_", "°", "^","<br>", ">", "<"
-                                                                    '«', '»',
+                          ",",  # removed by precaution since we dump comma sep csv and we dont want quotechar
+                          "\\n", "\\t", "\\r", "\\r\\n"  #
+                                               "\n", "\t",  # remove carriage return/tab
+                          "/", "\\", "(", ")"  # remove special separators characters and ()
+                                          "[", "]", "_", "°", "^", "<br>", ">", "<"
+                                                                                '«', '»','<br'
 
-                      ]
+                          ]
     for bad_char in bad_chars_to_space:
-        x=x.replace(bad_char,' ')
+        x = x.replace(bad_char, ' ')
+    x = ' '.join(x.split())
+    x = x.strip()
     return x

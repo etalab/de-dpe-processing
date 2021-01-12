@@ -1,5 +1,5 @@
 from .text_matching_dict import gen_ch_search_dict, gen_ch_search_dict_flat, gen_ecs_search_dict_flat, \
-    gen_ecs_search_dict, reverse_cat_gen_ecs, reverse_cat_gen_ch, installation_dict, energie_dict, \
+    gen_ecs_search_dict, reverse_cat_gen_ecs, reverse_cat_gen_ch, installation_search_dict, energie_search_dict, \
     solaire_ch_search_dict
 from .utils_elasticsearch import search_and_affect, categorize_search_res
 from .utils import strip_accents, clean_desc_txt
@@ -34,12 +34,12 @@ def extract_td005_ch_variables(td005):
     gen_ch_lib_ft = m.merge(td005_ch[['id', 'td001_dpe_id']], how='left')
 
     m = search_and_affect(td005_ch, id_col='id', val_col='valeur_renseignee',
-                          search_dict=installation_dict)
+                          search_dict=installation_search_dict)
 
     type_installation_ch_ft = m.merge(td005_ch[['id', 'td001_dpe_id']], how='left')
 
     m = search_and_affect(td005_ch, id_col='id', val_col='valeur_renseignee',
-                          search_dict=energie_dict)
+                          search_dict=energie_search_dict)
 
     energie_ch_ft = m.merge(td005_ch[['id', 'td001_dpe_id']], how='left')
 
@@ -76,12 +76,12 @@ def extract_td003_ch_variables(td003):
     gen_ch_lib_desc = m.merge(td003_ch[['id', 'td001_dpe_id']], how='left')
 
     m = search_and_affect(td003_ch, id_col='id', val_col='descriptif',
-                          search_dict=installation_dict)
+                          search_dict=installation_search_dict)
 
     type_installation_ch_desc = m.merge(td003_ch[['id', 'td001_dpe_id']], how='left')
 
     m = search_and_affect(td003_ch, id_col='id', val_col='descriptif',
-                          search_dict=energie_dict)
+                          search_dict=energie_search_dict)
 
     energie_ch_desc = m.merge(td003_ch[['id', 'td001_dpe_id']], how='left')
 
@@ -121,12 +121,12 @@ def extract_td005_ecs_variables(td005):
     gen_ecs_lib_ft = m.merge(td005_ecs[['id', 'td001_dpe_id']], how='left')
 
     m = search_and_affect(td005_ecs, id_col='id', val_col='valeur_renseignee',
-                          search_dict=installation_dict)
+                          search_dict=installation_search_dict)
 
     type_installation_ecs_ft = m.merge(td005_ecs[['id', 'td001_dpe_id']], how='left')
 
     m = search_and_affect(td005_ecs, id_col='id', val_col='valeur_renseignee',
-                          search_dict=energie_dict)
+                          search_dict=energie_search_dict)
 
     energie_ecs_ft = m.merge(td005_ecs[['id', 'td001_dpe_id']], how='left')
 
@@ -157,12 +157,12 @@ def extract_td003_ecs_variables(td003):
     gen_ecs_lib_desc = m.merge(td003_ecs[['id', 'td001_dpe_id']], how='left')
 
     m = search_and_affect(td003_ecs, id_col='id', val_col='descriptif',
-                          search_dict=installation_dict)
+                          search_dict=installation_search_dict)
 
     type_installation_ecs_desc = m.merge(td003_ecs[['id', 'td001_dpe_id']], how='left')
 
     m = search_and_affect(td003_ecs, id_col='id', val_col='descriptif',
-                          search_dict=energie_dict)
+                          search_dict=energie_search_dict)
 
     energie_ecs_desc = m.merge(td003_ecs[['id', 'td001_dpe_id']], how='left')
 
