@@ -141,17 +141,3 @@ def categorize_search_res(table, label_cat=None, category_dict=None):
     table.label = table.label.fillna('indetermine')
     return table
 
-
-def agg_concat_label_text(table, col_label='label', col_vr='valeur_renseignee'):
-    table[[col_label, col_vr]] = table[[col_label, col_vr]].fillna('indetermine')
-    agg = table.groupby('td001_dpe_id').agg({
-
-        col_label: lambda x: ' + '.join(sorted(list(set(x)))),
-        col_vr: lambda x: ' + '.join(sorted(list(set(x))))
-    })
-
-    for col in agg:
-        agg[col] = agg[col].apply(
-            lambda x: ' + '.join(sorted(list(set([el for el in x.split(' + ') if el != 'indetermine'])))))
-        agg[col] = agg[col].replace('', 'indetermine')
-    return agg

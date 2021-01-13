@@ -329,8 +329,8 @@ def reload_package(package):
 def clean_desc_txt(x):
     bad_chars_to_space = ['"', "'", "''", '""',  # these char in addr field generate errors on addok
                           ",",  # removed by precaution since we dump comma sep csv and we dont want quotechar
-                          "\\n", "\\t", "\\r", "\\r\\n"  #
-                                               "\n", "\t",  # remove carriage return/tab
+                          "\\n", "\\t", "\r\n", "\r", "\\r",  #
+                          "\n", "\t",  # remove carriage return/tab
                           "/", "\\", "(", ")"  # remove special separators characters and ()
                                           "[", "]", "_", "°", "^", "<br>", ">", "<"
                                                                                 '«', '»','<br'

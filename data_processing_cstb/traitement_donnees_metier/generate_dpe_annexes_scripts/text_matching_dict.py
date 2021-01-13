@@ -30,7 +30,9 @@ pac = ('pompe* AND chaleur*', 'pac', 'thermody*')
 
 pac_and_thermo = tuple(list(pac) + ['"air extrait"', '"air ambiant"'])
 
-eau_eau = ('"eau eau"', 'eau/eau', 'eau-eau', 'eau AND nappe')
+eau_eau = ('"eau eau"', '"eau/eau"', '"eau-eau"', 'eau AND nappe', 'eaueau')
+air_eau = ('"air eau"', '"air/eau"', '"air-eau"', 'aireau')
+air_air = ('"air air"', '"air/air"', '"air-air"', 'airair', 'air AND NOT eau')
 
 poele = ('poe*', 'insert', 'cuisin*')
 
@@ -101,17 +103,14 @@ gen_ch_search_dict['pac'] = {"pac geothermique en releve de chaudiere": [pac, "g
                              "pac eau/eau en releve de chaudiere": [pac, eau_eau, 'chaudi*'],
 
                              "pac geothermique": [pac, ('geoth*')],
-                             "pac air/eau": [pac, ('air AND eau', 'aireau')],
+                             "pac air/eau": [pac, air_eau],
                              "pac eau/eau": [pac, eau_eau],
-                             "pac air/air": [tuple(list(pac) + ['clim*', 'split*']), ('air', 'airair')],
+                             "pac air/air": [tuple(list(pac) + ['clim*', 'split*']), air_air],
                              "pac indetermine en releve de chaudiere": [tuple(list(pac) + ['clim*', 'split*']),
                                                                         'chaudi*'],
                              "pac indetermine": [tuple(list(pac) + ['clim*', 'split*'])]}
-gen_ch_search_dict['poele'] = {"poele ou insert bois": [poele, bois],
-                               "poele ou insert fioul/gpl/charbon": [poele, (
-                                   'fioul', 'mazout', 'charbon', 'gpl', 'butane', 'propane')],
-                               "poele ou insert indetermine": [poele]
-                               }
+
+gen_ch_search_dict['reseau chaleur'] = {"reseau de chaleur": [reseau_chaleur], }
 
 gen_ch_search_dict['chaudiere bois'] = {'chaudiere bois exact': [chaudiere_bois, bois_pour_chaudiere_bois],
                                         'chaudiere bois': [chaudiere, 'NOT', poele, bois_pour_chaudiere_bois]}
@@ -150,7 +149,7 @@ chaudiere_dict_ch['radiateurs gaz'] = [
 chaudiere_dict_ch[f'chaudiere energie indetermine indetermine'] = ['chaudiere*']
 
 gen_ch_search_dict['chaudiere'] = chaudiere_dict_ch
-gen_ch_search_dict['reseau chaleur'] = {"reseau de chaleur": [reseau_chaleur], }
+
 
 gen_ch_search_dict['effet joule'] = {'radiateurs electriques': [('radiateur', 'radiateurs'), elec],
                                      "convecteurs bi-jonction electriques": [
@@ -171,6 +170,11 @@ gen_ch_search_dict['effet joule'] = {'radiateurs electriques': [('radiateur', 'r
 
                                      }
 
+gen_ch_search_dict['poele'] = {"poele ou insert bois": [poele, bois],
+                               "poele ou insert fioul/gpl/charbon": [poele, (
+                                   'fioul', 'mazout', 'charbon', 'gpl', 'butane', 'propane')],
+                               "poele ou insert indetermine": [poele]
+                               }
 gen_ch_search_dict['chauffage electrique indetermine'] = {"chauffage electrique indetermine": [elec]}
 gen_ch_search_dict['chauffage bois indetermine'] = {"chauffage bois indetermine": [bois]}
 gen_ch_search_dict['chauffage fioul indetermine'] = {"chauffage fioul indetermine": [fioul]}
@@ -257,7 +261,7 @@ gen_ecs_search_dict['effet joule'] = {
 
 gen_ecs_search_dict['chauffe-eau_independant'] = {'chauffe-eau gaz independant': [chauffe_bain, "gaz"],
                                                   'chauffe-eau gpl/butane/propane independant': [chauffe_bain, (
-                                                  'gpl', 'butane', 'propane')],
+                                                      'gpl', 'butane', 'propane')],
                                                   'poele bouilleur bois': [poele, bois],
                                                   'chauffe-eau fioul independant': [chauffe_bain,
                                                                                     "fioul"],
@@ -399,11 +403,13 @@ td014_gen_ecs_search_dict.update({
 # td014_gen_ecs_search_dict.update(solaire_dict)
 
 
-tr003_desc_to_gen={ 'Installation de chauffage avec insert ou poêle bois en appoint':"poele ou insert indetermine",
- 'Installation de chauffage par insert, poêle bois (ou biomasse) avec un chauffage électrique dans la salle de bain':"poele ou insert indetermine",
- 'Installation de chauffage avec en appoint un insert ou poêle bois et un chauffage électrique dans la salle de bain (différent du chauffage principal)':"poele ou insert indetermine",
- 'Installation de chauffage avec chaudière en relève de PAC': "pac indetermine en releve de chaudiere",
- 'Convecteurs bi-jonction': "convecteurs bi-jonction electriques",
- 'Installation de chauffage avec chaudière en relève de PAC avec insert ou poêle bois en appoint': "pac indetermine en releve de chaudiere",
- 'Installation de chauffage avec chaudière  gaz ou fioul en  relève  d’une chaudière bois': "chaudiere bois",
-}
+tr003_desc_to_gen = {'Installation de chauffage avec insert ou poêle bois en appoint': "poele ou insert indetermine",
+                     'Installation de chauffage par insert, poêle bois (ou biomasse) avec un chauffage électrique dans la salle de bain': "poele ou insert indetermine",
+                     'Installation de chauffage avec en appoint un insert ou poêle bois et un chauffage électrique dans la salle de bain (différent du chauffage principal)': "poele ou insert indetermine",
+                     'Installation de chauffage avec chaudière en relève de PAC': "pac indetermine en releve de chaudiere",
+                     'Convecteurs bi-jonction': "convecteurs bi-jonction electriques",
+                     'Installation de chauffage avec chaudière en relève de PAC avec insert ou poêle bois en appoint': "pac indetermine en releve de chaudiere",
+                     'Installation de chauffage avec chaudière  gaz ou fioul en  relève  d’une chaudière bois': "chaudiere bois",
+                     }
+ordered_ch_labels = ['chauffage solaire']+list(gen_ch_search_dict_flat.keys())+['chauffage autre indetermine','indetermine']
+ordered_ecs_labels =list(gen_ecs_search_dict_flat.keys())+['ecs autre indetermine','indetermine']
