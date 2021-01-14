@@ -413,3 +413,20 @@ tr003_desc_to_gen = {'Installation de chauffage avec insert ou poêle bois en ap
                      }
 ordered_ch_labels = ['chauffage solaire']+list(gen_ch_search_dict_flat.keys())+['chauffage autre indetermine','indetermine']
 ordered_ecs_labels =list(gen_ecs_search_dict_flat.keys())+['ecs autre indetermine','indetermine']
+
+
+priorisation_ecs={'solaire':"solaire",
+ 'abscence solaire':"solaire",
+ 'ecs thermodynamique':"principal",
+ 'chaudiere bois':"principal",
+ 'chaudiere':"principal",
+ 'production mixte indetermine':"secondaire",
+ 'reseau de chaleur':"principal",
+ 'effet joule':"secondaire",
+ 'chauffe-eau_independant':"defaut",
+ 'ecs electrique indetermine':"secondaire",
+ 'ecs bois indetermine':"defaut",
+ 'ecs fioul indetermine':"defaut",
+ 'ecs gaz indetermine':"defaut",
+ 'ecs gpl/butane/propane indetermine':"defaut",
+ 'ecs charbon indetermine':"defaut",}
