@@ -102,12 +102,12 @@ def postprocessing_td011_td012(td011, td012):
     gen_ch_concat_txt_desc += table["tr004_description"].astype('string').replace(np.nan, ' ') + ' '
     gen_ch_concat_txt_desc += table["type_energie_ch"].astype('string').replace(np.nan, ' ') + ' '
     gen_ch_concat_txt_desc += table['tv046_nom_reseau'].isnull().replace({False: 'réseau de chaleur',
-                                                                          True: ""})
+                                                                          True: " "})
     gen_ch_concat_txt_desc = gen_ch_concat_txt_desc.str.lower().apply(lambda x: strip_accents(x))
 
     table['gen_ch_concat_txt_desc'] = gen_ch_concat_txt_desc
 
-    table['gen_ch_concat_txt_desc'] = table['gen_ch_concat_txt_desc'].apply(lambda x: clean_str(x))
+    table['gen_ch_concat_txt_desc'] = ' ' + table['gen_ch_concat_txt_desc'].apply(lambda x: clean_str(x)) + ' '
 
     # calcul gen_ch_lib_infer par matching score text.
     unique_gen_ch = table.gen_ch_concat_txt_desc.unique()
@@ -137,6 +137,15 @@ def postprocessing_td011_td012(td011, td012):
     table.loc[is_fioul_ind & is_poele_rendement, 'gen_ch_lib_infer'] = table.loc[is_fioul_ind & is_poele_rendement,
                                                                                  'rendement_generation'].replace(
         poele_dict)
+
+    # affect la bonne ener au poele
+    is_poele_fioul_and = table.gen_ch_lib_infer == "poele ou insert fioul/gpl/charbon"
+    for ener in ['fioul', 'charbon', 'gpl/butane/propane']:
+        is_ener = table.type_energie_ch == ener
+        table.loc[is_poele_fioul_and & is_ener, 'gen_ch_lib_infer'] = f'poele ou insert {ener}'
+    # par défaut -> fioul
+    is_poele_fioul_and = table.gen_ch_lib_infer == "poele ou insert fioul/gpl/charbon"
+    table.loc[is_poele_fioul_and, 'gen_ch_lib_infer'] = f'poele ou insert fioul'
 
     # recup reseau chaleur
     non_aff = table.gen_ch_lib_infer == 'indetermine'

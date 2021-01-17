@@ -16,6 +16,7 @@ ener_conv_dict['tv045_energie'] = {"Electricité (hors électricité d'origine r
                                    'Fioul domestique': "fioul",
                                    'Bois, biomasse': "bois",
                                    'Gaz propane ou butane': "gpl/butane/propane",
+                                   "Autres combustibles fossiles": "gpl/butane/propane",
                                    "Electricité d'origine renouvelable utilisée dans l": "electricite renouvelable",
                                    "Charbon": "charbon"}
 
@@ -42,7 +43,6 @@ ener_conv_dict['tv042_type_energie'] = {'Electricité': "electricite",
                                         'Gaz': "gaz", }
 
 for k, v in ener_conv_dict.items():
-
     assert (len(set(v.values()) - set(energie_normalise_ordered)) == 0)
 
 type_installation_conv_dict = dict()
@@ -63,5 +63,3 @@ type_installation_conv_dict['tv025_type_installation'] = {
     'Chauffage Collectif': 'collectif',
 
 }
-
-
