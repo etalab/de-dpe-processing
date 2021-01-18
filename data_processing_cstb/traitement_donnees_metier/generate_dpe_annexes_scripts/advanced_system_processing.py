@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from .text_matching_dict import gen_ch_search_dict_flat, reverse_cat_gen_ch, gen_ch_search_dict, reverse_cat_gen_ecs, \
     gen_ecs_search_dict, gen_ecs_search_dict_flat, tr003_desc_to_gen, energie_combustion_mods, priorisation_ecs, \
-    energie_chaudiere_mods,type_chaudiere_mods
+    energie_chaudiere_mods, type_chaudiere_mods
 from .conversion_normalisation import energie_normalise_ordered
 from .td003_td005_text_extraction_processing import extract_td003_ch_variables, extract_td003_ecs_variables, \
     extract_td005_ch_variables, extract_td005_ecs_variables
@@ -52,7 +52,6 @@ def main_advanced_system_processing(td001_sys_ch, td001, td002, td016,
     td001_sys = calcul_libelle_simplifie(td001_sys)
 
     # choix des variables de sortie.
-
 
 
 def generate_lib_for_sys_ch_and_ecs(td001_sys, gen_ch_lib_ft, type_installation_ch_ft, energie_ch_ft, solaire_ch_ft,
@@ -243,19 +242,21 @@ def generate_lib_for_sys_ch_and_ecs(td001_sys, gen_ch_lib_ft, type_installation_
 
     ## libéllé générateur chauffage
 
+    gen_ch_lib['label'] = pd.Categorical(gen_ch_lib.label,
+                                         categories=list(gen_ch_search_dict_flat.keys()) + ['indetermine'],
+                                         ordered=True)
+
     gen_ch_lib = gen_ch_lib.sort_values(by=['td001_dpe_id', 'category', 'label', 'source'])
 
-    # on ne garde que le meilleur libéllé de chaque catégorie
     gen_ch_lib = gen_ch_lib.drop_duplicates(subset=['td001_dpe_id', 'category'])
 
-    # on concatene les libéllés pour avoir un seul libéllé concaténé par dpe
     gen_ch_lib = gen_ch_lib.groupby('td001_dpe_id').label.apply(lambda x: ' + '.join(np.unique(x)))
 
     gen_ch_lib = gen_ch_lib.to_frame('gen_ch_lib_final')
 
     td001_sys = td001_sys.merge(gen_ch_lib.reset_index(), on='td001_dpe_id', how='left')
 
-    td001_sys.gen_ch_lib_final = td001_sys.gen_ch_lib_final.fillna('indetermine')
+    td001_sys.gen_ch_lib_final = td001_sys.gen_ch_lib_final.fillna('indetermine').astype(str)
 
     ## ajout du chauffage solaire au libéllé générateur
 
@@ -287,6 +288,10 @@ def generate_lib_for_sys_ch_and_ecs(td001_sys, gen_ch_lib_ft, type_installation_
 
     ## concatenation du type d'installation de chauffage.
 
+    type_installation_ch['label'] = pd.Categorical(type_installation_ch['label'],
+                                                   categories=['collectif', 'individuel', 'indetermine'],
+                                                   ordered=True)
+
     type_installation_ch = type_installation_ch.sort_values(by=['td001_dpe_id', 'is_indetermine',
                                                                 'source', 'label'])
     type_installation_ch = type_installation_ch.drop_duplicates(subset=['td001_dpe_id'])
@@ -299,6 +304,8 @@ def generate_lib_for_sys_ch_and_ecs(td001_sys, gen_ch_lib_ft, type_installation_
 
     ## concatenation du type d'energie de chauffage
 
+    energie_ch['label'] = pd.Categorical(energie_ch['label'],
+                                         categories=energie_normalise_ordered, ordered=True)
     energie_ch = energie_ch.sort_values(by=['td001_dpe_id', 'label', 'source'])
 
     energie_ch = energie_ch.drop_duplicates(subset=['td001_dpe_id', 'label'])
@@ -311,6 +318,10 @@ def generate_lib_for_sys_ch_and_ecs(td001_sys, gen_ch_lib_ft, type_installation_
     td001_sys.type_energie_ch = td001_sys.type_energie_ch.fillna('indetermine')
 
     ## concatenation des libéllés de générateurs d'ECS
+
+    gen_ecs_lib['label'] = pd.Categorical(gen_ecs_lib.label,
+                                          categories=list(gen_ecs_search_dict_flat.keys()) + ['indetermine'],
+                                          ordered=True)
 
     gen_ecs_lib['priorite'] = gen_ecs_lib.category.replace(priorisation_ecs)
 
@@ -406,9 +417,39 @@ def generate_lib_for_sys_ch_and_ecs(td001_sys, gen_ch_lib_ft, type_installation_
     is_ener = td001_sys.gen_ecs_lib_final_defaut.str.contains('ecs bois indetermine')
     td001_sys.loc[is_production_mixte & is_ener, 'gen_ecs_lib_final'] = f'chaudiere bois'
 
+    ### type d'installation d'ECS
+
+    type_installation_ecs['label'] = pd.Categorical(type_installation_ecs['label'],
+                                                    categories=['collectif', 'individuel', 'indetermine'], ordered=True)
+    type_installation_ecs = type_installation_ecs.sort_values(by=['td001_dpe_id', 'is_indetermine',
+                                                                  'source', 'label'])
+    type_installation_ecs = type_installation_ecs.drop_duplicates(subset=['td001_dpe_id'])
+
+    type_installation_ecs = type_installation_ecs.set_index('td001_dpe_id').label.to_frame('type_installation_ecs')
+
+    td001_sys = td001_sys.merge(type_installation_ecs.reset_index(), on='td001_dpe_id', how='left')
+
+    td001_sys.type_installation_ecs = td001_sys.type_installation_ecs.fillna('indetermine')
+
+    ### type d'energie d'ECS
+
+    energie_ecs['label'] = pd.Categorical(energie_ecs['label'],
+                                          categories=energie_normalise_ordered, ordered=True)
+
+    energie_ecs = energie_ecs.sort_values(by=['td001_dpe_id', 'label', 'source'])
+
+    energie_ecs = energie_ecs.drop_duplicates(subset=['td001_dpe_id', 'label'])
+
+    energie_ecs = energie_ecs.groupby('td001_dpe_id').label.apply(lambda x: ' + '.join(np.unique(x))).to_frame(
+        'type_energie_ecs')
+
+    td001_sys = td001_sys.merge(energie_ecs.reset_index(), on='td001_dpe_id', how='left')
+    td001_sys.type_energie_ecs = td001_sys.type_energie_ecs.fillna('indetermine')
+
+    return td001_sys
+
 
 def concat_and_sort_gen_ch_lib(gen_ch_lib_desc, gen_ch_lib_ft, td011_p, td012_p):
-
     """
 
     assemblage des libéllés de chauffage extraits des fiches techniques/descriptifs et extrait du modèle de donnée affilié 3CL.
@@ -481,10 +522,6 @@ def concat_and_sort_gen_ch_lib(gen_ch_lib_desc, gen_ch_lib_ft, td011_p, td012_p)
 
     gen_ch_lib = gen_ch_lib.reset_index(drop=True)
 
-    gen_ch_lib['label'] = pd.Categorical(gen_ch_lib.label,
-                                         categories=list(gen_ch_search_dict_flat.keys()) + ['indetermine'],
-                                         ordered=True)
-
     return gen_ch_lib
 
 
@@ -523,9 +560,6 @@ def concat_and_sort_type_installation_ch_lib(type_installation_ch_desc, type_ins
 
     type_installation_ch['is_indetermine'] = type_installation_ch.label == 'indetermine'
 
-    type_installation_ch['label'] = pd.Categorical(type_installation_ch['label'],
-                                                   categories=['collectif', 'individuel', 'indetermine'], ordered=True)
-
     return type_installation_ch
 
 
@@ -558,8 +592,6 @@ def concat_and_sort_energie_ch_lib(energie_ch_desc, energie_ch_ft, td012_p):
     energie_ch = pd.concat([energie_ch_from_data, energie_ch_from_txt], axis=0)
 
     energie_ch['is_indetermine'] = energie_ch.label == 'indetermine'
-    energie_ch['label'] = pd.Categorical(energie_ch['label'],
-                                         categories=energie_normalise_ordered, ordered=True)
 
     return energie_ch
 
@@ -623,9 +655,6 @@ def concat_and_sort_gen_ecs_lib(gen_ecs_lib_desc, gen_ecs_lib_ft, td014_p):
     gen_ecs_lib = pd.concat([gen_ecs_lib_from_data, gen_ecs_lib_from_txt], axis=0)
 
     gen_ecs_lib['source'] = pd.Categorical(gen_ecs_lib.source, categories=['data', 'txt'], ordered=True)
-    gen_ecs_lib['label'] = pd.Categorical(gen_ecs_lib.label,
-                                          categories=list(gen_ecs_search_dict_flat.keys()) + ['indetermine'],
-                                          ordered=True)
 
     return gen_ecs_lib
 
@@ -666,9 +695,6 @@ def concat_and_sort_type_installation_ecs_lib(type_installation_ecs_desc, type_i
 
     type_installation_ecs['is_indetermine'] = type_installation_ecs.label == 'indetermine'
 
-    type_installation_ecs['label'] = pd.Categorical(type_installation_ecs['label'],
-                                                    categories=['collectif', 'individuel', 'indetermine'], ordered=True)
-
     return type_installation_ecs
 
 
@@ -702,14 +728,10 @@ def concat_and_sort_energie_ecs_lib(energie_ecs_desc, energie_ecs_ft, td014_p):
 
     energie_ecs['is_indetermine'] = energie_ecs.label == 'indetermine'
 
-    energie_ecs['label'] = pd.Categorical(energie_ecs['label'],
-                                          categories=energie_normalise_ordered, ordered=True)
-
     return energie_ecs
 
 
 def redressement_td001_sys(td001_sys):
-
     # remove trailing indetermine
     td001_sys['gen_ch_lib_final'] = td001_sys.gen_ch_lib_final.str.replace(' \+ indetermine', '')
     td001_sys['gen_ecs_lib_final'] = td001_sys.gen_ecs_lib_final.str.replace(' \+ indetermine', '')
@@ -784,11 +806,11 @@ def redressement_td001_sys(td001_sys):
     gpl = td001_sys.td002_type_energie_ch.str.contains('gpl/butane/propane')
     td001_sys.loc[gpl & poele_ind, 'gen_ch_lib_final'] = td001_sys.loc[
         gpl & poele_ind, 'gen_ch_lib_final'].str.replace('poele ou insert indetermine',
-                                                           'poele ou insert gpl/butane/propane')
+                                                         'poele ou insert gpl/butane/propane')
     gpl = td001_sys.td016_type_energie_ch.str.contains('gpl/butane/propane')
     td001_sys.loc[gpl & poele_ind, 'gen_ch_lib_final'] = td001_sys.loc[
         gpl & poele_ind, 'gen_ch_lib_final'].str.replace('poele ou insert indetermine',
-                                                           'poele ou insert gpl/butane/propane')
+                                                         'poele ou insert gpl/butane/propane')
 
     # ECS
 
@@ -944,9 +966,7 @@ def redressement_td001_sys(td001_sys):
     td001_sys.loc[is_ind_ch & is_reseau_ecs, 'gen_ch_lib_final'] = 'reseau de chaleur'
     td001_sys.loc[is_ind_ecs & is_reseau_ch, 'gen_ecs_lib_final'] = 'reseau de chaleur'
 
-
     # ===================================== THERMODYNAMIQUE =======================================================
-
 
     # si l'un est thermodynamique et l'autre indeterminé on considère l'autre comme thermodynamique.
     is_ind_ecs = td001_sys.gen_ecs_lib_final.str.contains('production mixte indetermine')
@@ -969,7 +989,6 @@ def redressement_td001_sys(td001_sys):
     sel = sel & (td001_sys.chaudiere_ch != '')
     td001_sys.loc[sel, 'gen_ecs_lib_final'] = td001_sys.loc[sel, 'gen_ecs_lib_final'] + ' + ' + td001_sys.loc[
         sel, 'chaudiere_ch']
-
 
     # ===================================== CHAUDIERE ELEC ET BOIS ================================================
 
@@ -1065,7 +1084,6 @@ def redressement_td001_sys(td001_sys):
 
             td001_sys.loc[ind & ener, 'gen_ch_lib_final'] = ' + '.join(
                 [f'chauffage {el} indetermine' for el in type_ener.split(' + ')])
-
 
     td001_sys.gen_ch_lib_final = td001_sys.gen_ch_lib_final.str.replace('chauffage electricite', 'chauffage electrique')
 
@@ -1167,50 +1185,65 @@ def redressement_td001_sys(td001_sys):
         if k not in gen_to_energy:
             gen_to_energy[k] = ''
 
-    gen_to_energy['poele ou insert fioul/gpl/charbon'] = ''
-    gen_to_energy['poele ou insert indetermine'] = ''
+    gen_to_energy['poele ou insert indetermine'] = 'autre'
 
     td001_sys['type_energie_ch_from_gen'] = td001_sys.gen_ch_lib_final.copy()
     for k, v in gen_to_energy.items():
         td001_sys['type_energie_ch_from_gen'] = td001_sys['type_energie_ch_from_gen'].str.replace(k, v)
 
     td001_sys['type_energie_ch_from_gen'] = td001_sys['type_energie_ch_from_gen'].apply(
-        lambda x: ' + '.join(np.unique([el for el in x.split(' + ') if el != ''])))
+        lambda x: ' + '.join(sorted(list(set([el for el in x.split(' + ') if el != ''])))))
 
-    null = td001_sys.type_energie_ch.isnull()
+    td001_sys['type_energie_ch_concat'] = ''
 
-    td001_sys.loc[null, 'type_energie_ch'] = td001_sys.loc[null, 'type_energie_ch_from_gen']
+    for col_ener in ['type_energie_ch_from_gen', 'type_energie_ch',
+                     'mix_energetique_ch', 'td002_type_energie_ch', 'td016_type_energie_ch']:
+        is_null = td001_sys[col_ener].isnull()
+        td001_sys.loc[~is_null, 'type_energie_ch_concat'] += ' + ' + td001_sys.loc[~is_null, col_ener]
 
-    is_releve = td001_sys.gen_ch_lib_final.str.contains('releve')
-    td001_sys.loc[is_releve, 'type_energie_ch'] = td001_sys.loc[is_releve, 'type_energie_ch'] + ' + ' + td001_sys.loc[
-        is_releve, 'type_energie_ch_from_gen']
+    td001_sys.type_energie_ch_concat = td001_sys.type_energie_ch_concat.str.replace('indetermine', '')
 
-    td001_sys.loc[is_releve, 'type_energie_ch'] = td001_sys.loc[is_releve, 'type_energie_ch'].apply(
-        lambda x: ' + '.join(np.unique([el for el in x.split(' + ')])))
+    td001_sys['type_energie_ch_concat'] = td001_sys['type_energie_ch_concat'].apply(
+        lambda x: ' + '.join(sorted(list(set([el for el in x.split(' + ') if el != ''])))))
 
-    bad_corr = td001_sys.type_energie_ch != td001_sys.type_energie_ch_from_gen
-    gpl_gaz_mixup = td001_sys.type_energie_ch.str.contains('gpl/butane/propane') & bad_corr
+    # Nettoyage des mentions autre lorsqu'un combustible correspondant est présent.
+    is_autre = td001_sys.type_energie_ch_concat.str.contains('autre')
+    is_autres_ener = td001_sys.type_energie_ch_concat.str.contains('fioul|reseau de chaleur|gpl/butane/propane')
+    td001_sys.loc[is_autres_ener & is_autre, 'type_energie_ch_concat'] = td001_sys.loc[
+        is_autres_ener & is_autre, 'type_energie_ch_concat'].str.replace('autre', '')
+
+    # Correction des confusions GPL -> GAZ
+    bad_corr = td001_sys.type_energie_ch_concat != td001_sys.type_energie_ch_from_gen
+    gpl_gaz_mixup = td001_sys.type_energie_ch_concat.str.contains('gpl/butane/propane') & bad_corr
     gpl_gaz_mixup = gpl_gaz_mixup & td001_sys.type_energie_ch_from_gen.str.contains('gaz')
-    td001_sys.loc[gpl_gaz_mixup, 'type_energie_ch'] = td001_sys.loc[gpl_gaz_mixup, 'type_energie_ch'].str.replace(
-        'gpl/butane/propane', 'gaz')
+    td001_sys.loc[gpl_gaz_mixup, 'type_energie_ch_concat'] = td001_sys.loc[
+        gpl_gaz_mixup, 'type_energie_ch_concat'].str.replace('gpl/butane/propane', 'gaz')
 
-    td001_sys.loc[gpl_gaz_mixup, 'type_energie_ch'] = td001_sys.loc[gpl_gaz_mixup, 'type_energie_ch'].apply(
-        lambda x: ' + '.join(np.unique([el for el in x.split(' + ')])))
+    # Correction des confusions GAZ -> GPL
 
-    bad_corr = td001_sys.type_energie_ch != td001_sys.type_energie_ch_from_gen
+    bad_corr = td001_sys.type_energie_ch_concat != td001_sys.type_energie_ch_from_gen
+    gpl_gaz_mixup = td001_sys.type_energie_ch_from_gen.str.contains('gpl/butane/propane') & bad_corr
+    gpl_gaz_mixup = gpl_gaz_mixup & td001_sys.type_energie_ch_concat.str.contains('gaz')
+    td001_sys.loc[gpl_gaz_mixup, 'type_energie_ch_concat'] = td001_sys.loc[
+        gpl_gaz_mixup, 'type_energie_ch_concat'].str.replace('gaz', 'gpl/butane/propane')
 
-    inf = td001_sys[bad_corr].type_energie_ch.str.count('\+') < td001_sys[bad_corr].type_energie_ch_from_gen.str.count(
-        '\+')
-    inf = inf[inf].index
-    td001_sys.loc[inf, 'type_energie_ch'] = td001_sys.loc[inf, 'type_energie_ch_from_gen']
+    td001_sys['type_energie_ch_concat'] = td001_sys['type_energie_ch_concat'].apply(
+        lambda x: ' + '.join(sorted(list(set([el for el in x.split(' + ') if el != '']))))).str.strip()
+
+    bad_corr = td001_sys.type_energie_ch_concat != td001_sys.type_energie_ch_from_gen
+    # S'il reste des incohérences entre système et energie on privilégie alors le type d'energie des générateurs
+    td001_sys.loc[bad_corr, 'type_energie_ch_concat'] = td001_sys.loc[bad_corr, 'type_energie_ch_from_gen']
+    td001_sys['type_energie_ch'] = td001_sys.type_energie_ch_concat
 
     # ECS
 
     gen_to_energy = dict()
 
     for k in ordered_ecs_labels:
+        if k == 'ecs thermodynamique electrique(pac ou ballon)':
+            k = 'ecs thermodynamique electrique\(pac ou ballon\)'
         ener = energie_normalise_ordered
-        for ener in reversed(energie_normalise_ordered):
+        for ener in reversed(ener):
             if ener in k:
                 gen_to_energy[k] = ener
         if 'pac' in k or 'elec' in k:
@@ -1223,33 +1256,55 @@ def redressement_td001_sys(td001_sys):
         td001_sys['type_energie_ecs_from_gen'] = td001_sys['type_energie_ecs_from_gen'].str.replace(k, v)
 
     td001_sys['type_energie_ecs_from_gen'] = td001_sys['type_energie_ecs_from_gen'].apply(
-        lambda x: ' + '.join(np.unique([el for el in x.split(' + ') if el != ''])))
+        lambda x: ' + '.join(sorted(list(set([el for el in x.split(' + ') if el != ''])))))
 
-    null = td001_sys.type_energie_ecs.isnull()
+    td001_sys['type_energie_ecs_concat'] = ''
 
-    td001_sys.loc[null, 'type_energie_ecs'] = td001_sys.loc[null, 'type_energie_ecs_from_gen']
+    for col_ener in ['type_energie_ecs_from_gen', 'type_energie_ecs',
+                     'mix_energetique_ecs', 'td002_type_energie_ecs', 'td016_type_energie_ecs']:
+        is_null = td001_sys[col_ener].isnull()
+        td001_sys.loc[~is_null, 'type_energie_ecs_concat'] += ' + ' + td001_sys.loc[~is_null, col_ener]
 
-    bad_corr = td001_sys.type_energie_ecs != td001_sys.type_energie_ecs_from_gen
+    td001_sys.type_energie_ecs_concat = td001_sys.type_energie_ecs_concat.str.replace('indetermine', '')
 
-    bad_corr = td001_sys.type_energie_ecs != td001_sys.type_energie_ecs_from_gen
-    gpl_gaz_mixup = td001_sys.type_energie_ecs.str.contains('gpl/butane/propane') & bad_corr
+    td001_sys['type_energie_ecs_concat'] = td001_sys['type_energie_ecs_concat'].apply(
+        lambda x: ' + '.join(sorted(list(set([el for el in x.split(' + ') if el != ''])))))
+
+    # Nettoyage des mentions autre lorsqu'un combustible correspondant est présent.
+    is_autre = td001_sys.type_energie_ecs_concat.str.contains('autre')
+    is_autres_ener = td001_sys.type_energie_ecs_concat.str.contains('fioul|reseau de chaleur|gpl/butane/propane')
+    td001_sys.loc[is_autres_ener & is_autre, 'type_energie_ecs_concat'] = td001_sys.loc[
+        is_autres_ener & is_autre, 'type_energie_ecs_concat'].str.replace('autre', '')
+
+    # Correction des confusions GPL -> GAZ
+    bad_corr = td001_sys.type_energie_ecs_concat != td001_sys.type_energie_ecs_from_gen
+    gpl_gaz_mixup = td001_sys.type_energie_ecs_concat.str.contains('gpl/butane/propane') & bad_corr
     gpl_gaz_mixup = gpl_gaz_mixup & td001_sys.type_energie_ecs_from_gen.str.contains('gaz')
-    td001_sys.loc[gpl_gaz_mixup, 'type_energie_ecs'] = td001_sys.loc[gpl_gaz_mixup, 'type_energie_ecs'].str.replace(
-        'gpl/butane/propane', 'gaz')
+    td001_sys.loc[gpl_gaz_mixup, 'type_energie_ecs_concat'] = td001_sys.loc[
+        gpl_gaz_mixup, 'type_energie_ecs_concat'].str.replace('gpl/butane/propane', 'gaz')
 
-    td001_sys.loc[gpl_gaz_mixup, 'type_energie_ecs'] = td001_sys.loc[gpl_gaz_mixup, 'type_energie_ecs'].apply(
-        lambda x: ' + '.join(np.unique([el for el in x.split(' + ')])))
+    # Correction des confusions GAZ -> GPL
 
-    bad_corr = td001_sys.type_energie_ecs != td001_sys.type_energie_ecs_from_gen
+    bad_corr = td001_sys.type_energie_ecs_concat != td001_sys.type_energie_ecs_from_gen
+    gpl_gaz_mixup = td001_sys.type_energie_ecs_from_gen.str.contains('gpl/butane/propane') & bad_corr
+    gpl_gaz_mixup = gpl_gaz_mixup & td001_sys.type_energie_ecs_concat.str.contains('gaz')
+    td001_sys.loc[gpl_gaz_mixup, 'type_energie_ecs_concat'] = td001_sys.loc[
+        gpl_gaz_mixup, 'type_energie_ecs_concat'].str.replace('gaz', 'gpl/butane/propane')
 
-    inf = td001_sys[bad_corr].type_energie_ecs.str.count('\+') < td001_sys[
-        bad_corr].type_energie_ecs_from_gen.str.count('\+')
-    inf = inf[inf].index
-    td001_sys.loc[inf, 'type_energie_ecs'] = td001_sys.loc[inf, 'type_energie_ecs_from_gen']
+    td001_sys['type_energie_ecs_concat'] = td001_sys['type_energie_ecs_concat'].apply(
+        lambda x: ' + '.join(sorted(list(set([el for el in x.split(' + ') if el != '']))))).str.strip()
+
+    bad_corr = td001_sys.type_energie_ecs_concat != td001_sys.type_energie_ecs_from_gen
+
+    # S'il reste des incohérences entre système et energie on privilégie alors le type d'energie des générateurs
+    td001_sys.loc[bad_corr, 'type_energie_ecs_concat'] = td001_sys.loc[bad_corr, 'type_energie_ecs_from_gen']
+    td001_sys['type_energie_ecs'] = td001_sys.type_energie_ecs_concat
 
     return td001_sys
 
+
 def calcul_libelle_simplifie(td001_sys):
+    # TODO : FINIR ICI
     td001_sys['gen_ch_lib_final_simp'] = td001_sys['gen_ch_lib_final'].copy()
 
     ### simplification des dénominations generateurs
