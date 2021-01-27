@@ -39,7 +39,7 @@ gorenove_types = {
 }
 
 
-def rename_dpe_table_light(table):
+def rename_dpe_table_light(table, reformat_gorenove=False):
     rep = {'epaisseur': 'ep',
            'isolation': 'isol',
            'resistance_thermique': 'res_therm',
@@ -48,10 +48,13 @@ def rename_dpe_table_light(table):
            'exterieur': 'ext',
 
            'chauffage': 'ch',
-           'u_baie': 'u',
+           'baie_baie_vitree': 'baie',
+           'baie_vitree': 'baie',
            'materiaux': 'mat'}
 
     remove = ['_infer', '_top', '_avg', '_orientee', '_concat']
+
+    compo = ['mur', 'pb', 'ph', 'baie', 'ch', 'ecs']
 
     cols = list()
     for col in table:
@@ -59,10 +62,16 @@ def rename_dpe_table_light(table):
             col = col.replace(*el)
         for el in remove:
             col = col.replace(el, '')
+        if reformat_gorenove:
+            for el in compo:
+                if el in col:
+                    col = col.replace(el + '_', '')
+                    col = col.replace('_' + el, '')
+                    col = el + '_' + col
+
         cols.append(col)
     table.columns = cols
     return table
-
 
 def concat_td001_gorenove(td001, td001_list):
     """

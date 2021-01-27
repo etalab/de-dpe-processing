@@ -38,18 +38,18 @@ def postprocessing_td007(td007, td008):
     table = td007.copy()
 
     # calcul matériau
-    table['mat_struct'] = np.nan
+    table['mat'] = np.nan
     is_tv004 = ~table['tv004_materiaux'].isnull()
 
-    table.loc[is_tv004, 'mat_struct'] = table.loc[is_tv004, 'tv004_materiaux']
+    table.loc[is_tv004, 'mat'] = table.loc[is_tv004, 'tv004_materiaux'].str.lower().str.strip().replace('inconnu','indetermine')
 
     is_tv006 = ~table['tv006_materiaux'].isnull()
 
-    table.loc[is_tv006, 'mat_struct'] = table.loc[is_tv006, 'tv006_materiaux']
+    table.loc[is_tv006, 'mat'] = table.loc[is_tv006, 'tv006_materiaux'].str.lower().str.strip().replace('inconnu','indetermine')
 
     is_tv008 = ~table['tv008_materiaux'].isnull()
 
-    table.loc[is_tv008, 'mat_struct'] = table.loc[is_tv008, 'tv008_materiaux']
+    table.loc[is_tv008, 'mat'] = table.loc[is_tv008, 'tv008_materiaux'].str.lower().str.strip().replace('inconnu','indetermine')
 
     # calcul isolation
 
@@ -195,6 +195,7 @@ def calc_surf_paroi_opaque(td007, td008):
 
 
 def agg_surf_envelope(td007, td008):
+
     # surface
 
     td008_porte = td008.loc[td008.cat_baie_simple_infer == 'porte']
@@ -206,7 +207,7 @@ def agg_surf_envelope(td007, td008):
     surf_porte = td008_porte.groupby('td001_dpe_id')['surfacexnb_baie_calc'].sum()
     surf_porte.name = 'surf_porte_totale'
 
-    surf_vitree_orient = td008_vitree.pivot_table(index='td001_dpe_id', columns='orientation_infer',
+    surf_vitree_orient = td008_vitree.pivot_table(index='td001_dpe_id', columns='orientation_baie_infer',
                                                   values='surfacexnb_baie_calc', aggfunc='sum')
 
     surf_vitree_orient.columns = [f'surf_vitree_{el.lower().replace(" ", "_")}' for el in
@@ -285,16 +286,16 @@ def agg_td007_to_td001_essential(td007):
     # is_mdeper_isole = agg_pond_top_freq(td007_mur, 'is_paroi_isole', 'surf_paroi_opaque_deperditive_infer',
     #                                     'td001_dpe_id').to_frame('is_mur_deper_isole')
 
-    mat_mur_deper_agg = agg_pond_top_freq(td007_mur, 'mat_struct', 'surf_paroi_opaque_deperditive_infer',
+    mat_mur_deper_agg = agg_pond_top_freq(td007_mur, 'mat', 'surf_paroi_opaque_deperditive_infer',
                                            'td001_dpe_id').to_frame('mat_mur_deper_top')
 
-    mat_mur_ext_agg = agg_pond_top_freq(td007_mur, 'mat_struct', 'surf_paroi_opaque_ext_infer',
+    mat_mur_ext_agg = agg_pond_top_freq(td007_mur, 'mat', 'surf_paroi_opaque_ext_infer',
                                          'td001_dpe_id').to_frame('mat_mur_ext_top')
 
-    mat_pb_agg = agg_pond_top_freq(td007_pb, 'mat_struct', 'surf_paroi_opaque_deperditive_infer',
+    mat_pb_agg = agg_pond_top_freq(td007_pb, 'mat', 'surf_paroi_opaque_deperditive_infer',
                                    'td001_dpe_id').to_frame('mat_pb_deper_top')
 
-    mat_ph_agg = agg_pond_top_freq(td007_ph, 'mat_struct', 'surf_paroi_opaque_deperditive_infer',
+    mat_ph_agg = agg_pond_top_freq(td007_ph, 'mat', 'surf_paroi_opaque_deperditive_infer',
                                    'td001_dpe_id').to_frame('mat_ph_deper_top')
 
     agg = pd.concat([u_mur_ext_avg,
@@ -452,7 +453,7 @@ def generate_mur_table(td007):
 
 
 def agg_td007_mur_to_td001(td007_mur):
-    td007_mur = td007_mur.rename(columns={'tv004_epaisseur': 'ep_mat_struct',
+    td007_mur = td007_mur.rename(columns={'tv004_epaisseur': 'ep_mat',
                                             'tv002_local_non_chauffe': 'type_local_non_chauffe',
                                             'coefficient_transmission_thermique_paroi': 'u'})
 
@@ -481,7 +482,7 @@ def agg_td007_mur_to_td001(td007_mur):
     concat.extend([type_local_non_chauffe_arr_agg, type_local_non_chauffe_agg_top, pivot])
 
     for var in ['meth_calc_u', 'u', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
-                'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'mat_struct', 'ep_mat_struct',
+                'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'mat', 'ep_mat',
                 ]:
         var_agg = agg_pond_top_freq(td007_mur, var, 'surf_paroi_opaque_infer',
                                     'td001_dpe_id').to_frame(f'{var}_mur_top')
@@ -490,8 +491,8 @@ def agg_td007_mur_to_td001(td007_mur):
     for type_adjacence in ['EXTERIEUR', 'LNC', 'BAT_ADJ']:
         sel = td007_mur.loc[td007_mur.type_adjacence == type_adjacence]
         for var in ['meth_calc_u', 'u', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
-                    'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'mat_struct',
-                    'ep_mat_struct',
+                    'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'mat',
+                    'ep_mat',
                     ]:
             var_agg = agg_pond_top_freq(sel, var, 'surf_paroi_opaque_infer',
                                         'td001_dpe_id').to_frame(f'{var}_mur_{type_adjacence.lower()}_top')
@@ -670,7 +671,7 @@ def agg_td007_pb_to_td001(td007_pb):
         'coefficient_transmission_thermique_paroi': 'u'})
     concat = list()
     type_adjacence_top = agg_pond_top_freq(td007_pb, 'type_adjacence', 'surf_paroi_opaque_infer',
-                                           'td001_dpe_id').to_frame(f'type_adjacence_top')
+                                           'td001_dpe_id').to_frame(f'type_adjacence_pb_top')
 
     type_adjacence_arr_agg = td007_pb.groupby('td001_dpe_id').type_adjacence.agg(
         lambda x: np.sort(x.dropna().unique()).tolist())
@@ -693,7 +694,7 @@ def agg_td007_pb_to_td001(td007_pb):
     concat.extend([type_local_non_chauffe_arr_agg, type_local_non_chauffe_agg_top, pivot])
 
     for var in ['meth_calc_u', 'u', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
-                'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'mat_struct',
+                'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'mat',
                 ]:
         var_agg = agg_pond_top_freq(td007_pb, var, 'surf_paroi_opaque_infer',
                                     'td001_dpe_id').to_frame(f'{var}_pb_top')
@@ -701,7 +702,7 @@ def agg_td007_pb_to_td001(td007_pb):
     for type_adjacence_simple in ['EXTERIEUR', 'TP_VS', 'LNC', 'BAT_ADJ']:
         sel = td007_pb.loc[td007_pb.type_adjacence_simple == type_adjacence_simple]
         for var in ['meth_calc_u', 'u', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
-                    'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'mat_struct',
+                    'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'mat',
                     ]:
             var_agg = agg_pond_top_freq(sel, var, 'surf_paroi_opaque_infer',
                                         'td001_dpe_id').to_frame(f'{var}_pb_{type_adjacence_simple.lower()}_top')
@@ -861,7 +862,7 @@ def agg_td007_ph_to_td001(td007_ph):
         'coefficient_transmission_thermique_paroi': 'u'})
     concat = list()
     type_adjacence_top = agg_pond_top_freq(td007_ph, 'type_adjacence', 'surf_paroi_opaque_infer',
-                                           'td001_dpe_id').to_frame(f'type_adjacence_top')
+                                           'td001_dpe_id').to_frame(f'type_adjacence_ph_top')
 
     type_adjacence_arr_agg = td007_ph.groupby('td001_dpe_id').type_adjacence.agg(
         lambda x: np.sort(x.dropna().unique()).tolist())
@@ -883,7 +884,7 @@ def agg_td007_ph_to_td001(td007_ph):
     concat.extend([type_local_non_chauffe_arr_agg, type_local_non_chauffe_agg_top, pivot])
 
     for var in ['meth_calc_u', 'u', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
-                'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'mat_struct',
+                'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'mat',
                 ]:
         var_agg = agg_pond_top_freq(td007_ph, var, 'surf_paroi_opaque_infer',
                                     'td001_dpe_id').to_frame(f'{var}_ph_top')
@@ -892,7 +893,7 @@ def agg_td007_ph_to_td001(td007_ph):
     for type_adjacence in ['EXTERIEUR', 'LNC', 'BAT_ADJ']:
         sel = td007_ph.loc[td007_ph.type_adjacence == type_adjacence]
         for var in ['meth_calc_u', 'u', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
-                    'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'mat_struct',
+                    'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'mat',
                     ]:
             var_agg = agg_pond_top_freq(sel, var, 'surf_paroi_opaque_infer',
                                         'td001_dpe_id').to_frame(f'{var}_ph_{type_adjacence.lower()}_top')

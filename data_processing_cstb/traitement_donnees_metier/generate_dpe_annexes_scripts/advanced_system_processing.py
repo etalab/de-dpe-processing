@@ -10,14 +10,16 @@ from .td003_td005_text_extraction_processing import extract_td003_ch_variables, 
 from .td002_td016_processing import extract_type_energie_from_td002_td016, merge_td002_td016_trtrv
 
 
-def main_advanced_system_processing(td001_sys_ch, td001, td002, td016,
-                                    td001_sys_ecs, td003, td005, td011_p, td012_p, td014_p):
+def main_advanced_system_processing(td001_sys_ch_agg, td001, td002, td016,
+                                    td001_sys_ecs_agg, td003, td005, td011_p, td012_p, td014_p):
+    td001 = td001.rename(columns={'id': 'td001_dpe_id'})
     td001_sys = td001.rename(columns={'id': 'td001_dpe_id'})[['td001_dpe_id', 'tr002_type_batiment_id']].merge(
-        td001_sys_ch[['td001_dpe_id',
-                      'gen_ch_lib_infer_concat',
+        td001_sys_ch_agg[['td001_dpe_id',
+                      'gen_ch_lib_infer_concat', 'mix_energetique_ch'
                       ]], on='td001_dpe_id',
         how='left')
-    td001_sys = td001_sys.merge(td001_sys_ecs[['td001_dpe_id', 'gen_ecs_lib_infer_concat']], on='td001_dpe_id',
+    td001_sys = td001_sys.merge(td001_sys_ecs_agg[['td001_dpe_id', 'gen_ecs_lib_infer_concat', 'mix_energetique_ecs']],
+                                on='td001_dpe_id',
                                 how='left')
 
     # ELASTIC SEARCH descriptif et fiches techniques
@@ -52,6 +54,22 @@ def main_advanced_system_processing(td001_sys_ch, td001, td002, td016,
     td001_sys = calcul_libelle_simplifie(td001_sys)
 
     # choix des variables de sortie.
+    cols = ['td001_dpe_id',
+            'gen_ch_lib_final', 'type_installation_ch', 'type_energie_ch', 'gen_ch_lib_final_simp',
+            'gen_ch_lib_principal', 'gen_ch_lib_appoint',
+            'gen_ch_lib_non_retraite',
+            'gen_ecs_lib_non_retraite',
+            'is_ch_solaire_data', 'is_ch_solaire_txt',
+            'is_ch_solaire',
+            'gen_ecs_lib_final', 'type_installation_ecs', 'type_energie_ecs', 'gen_ecs_lib_final_simp',
+            'gen_ecs_lib_principal', 'gen_ecs_lib_appoint', 'gen_ecs_lib_final_sec',
+            'gen_ecs_lib_final_defaut', 'is_ecs_solaire_txt', 'is_ecs_solaire_data',
+            'is_ecs_solaire',
+            'td002_type_energie_ch', 'td002_type_energie_ecs',
+            'td016_type_energie_ch', 'td016_type_energie_ecs', 'type_energie_ch_concat', 'type_energie_ecs_concat',
+            'src_gen_ch_lib', 'src_gen_ecs_lib']
+
+    return td001_sys[cols]
 
 
 def generate_lib_for_sys_ch_and_ecs(td001_sys, gen_ch_lib_ft, type_installation_ch_ft, energie_ch_ft, solaire_ch_ft,
@@ -61,20 +79,20 @@ def generate_lib_for_sys_ch_and_ecs(td001_sys, gen_ch_lib_ft, type_installation_
                                     , td011_p, td012_p, td014_p):
     # =========================assemblage des libéllés extrait des données textes et du modèle de données =============
 
-    gen_ch_lib = concat_and_sort_gen_ch_lib(gen_ch_lib_desc, gen_ch_lib_ft, td012_p)
+    gen_ch_lib = concat_and_sort_gen_ch_lib(gen_ch_lib_desc, gen_ch_lib_ft, td011_p=td011_p, td012_p=td012_p)
 
     type_installation_ch = concat_and_sort_type_installation_ch_lib(type_installation_ch_desc, type_installation_ch_ft,
                                                                     td011_p)
     energie_ch = concat_and_sort_energie_ch_lib(energie_ch_desc, energie_ch_ft,
                                                 td012_p)
 
-    gen_ecs_lib = concat_and_sort_gen_ecs_lib(gen_ecs_lib_desc, gen_ecs_lib_ft, td012_p)
+    gen_ecs_lib = concat_and_sort_gen_ecs_lib(gen_ecs_lib_desc, gen_ecs_lib_ft, td014_p=td014_p)
 
     type_installation_ecs = concat_and_sort_type_installation_ecs_lib(type_installation_ecs_desc,
                                                                       type_installation_ecs_ft,
-                                                                      td014_p)
+                                                                      td014_p=td014_p)
     energie_ecs = concat_and_sort_energie_ecs_lib(energie_ecs_desc, energie_ecs_ft,
-                                                  td014_p)
+                                                  td014_p=td014_p)
 
     # ==================================amelioration des labels et suppresion des labels indetermine ==================
 
@@ -1300,6 +1318,52 @@ def redressement_td001_sys(td001_sys):
     td001_sys.loc[bad_corr, 'type_energie_ecs_concat'] = td001_sys.loc[bad_corr, 'type_energie_ecs_from_gen']
     td001_sys['type_energie_ecs'] = td001_sys.type_energie_ecs_concat
 
+    lib_final_eq_lib_data = (td001_sys.gen_ch_lib_infer_concat == td001_sys.gen_ch_lib_final).fillna(False)
+    
+    # INDICATEURS source info
+    
+    td001_sys['src_gen_ch_lib'] = 'libelle non redresse determine'
+
+    ind_data = td001_sys.gen_ch_lib_infer_concat.str.contains('indetermine').fillna(False)
+    not_data = td001_sys.gen_ch_lib_infer_concat.isnull()
+    td001_sys.loc[
+        lib_final_eq_lib_data & (~ind_data), 'src_gen_ch_lib'] = 'libelle fiable et coherent ft desc et td012'
+
+    is_redresse = td001_sys.gen_ch_lib_final != td001_sys.gen_ch_lib_non_retraite
+    td001_sys.loc[is_redresse, 'src_gen_ch_lib'] = 'libelle redresse determine'
+
+    is_ind = td001_sys.gen_ch_lib_final == 'indetermine'
+
+    td001_sys.loc[is_ind, 'src_gen_ch_lib'] = 'libelle indetermine'
+
+    is_ind = td001_sys.gen_ch_lib_final.str.contains('indetermine')
+
+    td001_sys.loc[is_ind, 'src_gen_ch_lib'] = td001_sys.loc[is_ind, 'src_gen_ch_lib'].str.replace(' determine',
+                                                                                                    ' partiellement indetermine')
+
+    is_ind = td001_sys.gen_ecs_lib_final.str.contains('indetermine')
+
+    lib_final_eq_lib_data = (td001_sys.gen_ecs_lib_infer_concat == td001_sys.gen_ecs_lib_final).fillna(False)
+
+    td001_sys['src_gen_ecs_lib'] = 'libelle non redresse determine'
+
+    ind_data = td001_sys.gen_ecs_lib_infer_concat.str.contains('indetermine').fillna(False)
+    not_data = td001_sys.gen_ecs_lib_infer_concat.isnull()
+    td001_sys.loc[
+        lib_final_eq_lib_data & (~ind_data), 'src_gen_ecs_lib'] = 'libelle fiable et coherent ft desc et td012'
+
+    is_redresse = td001_sys.gen_ecs_lib_final != td001_sys.gen_ecs_lib_non_retraite
+    td001_sys.loc[is_redresse, 'src_gen_ecs_lib'] = 'libelle redresse determine'
+
+    is_ind = td001_sys.gen_ecs_lib_final == 'indetermine'
+
+    td001_sys.loc[is_ind, 'src_gen_ecs_lib'] = 'libelle indetermine'
+
+    is_ind = td001_sys.gen_ecs_lib_final.str.contains('indetermine')
+
+    td001_sys.loc[is_ind, 'src_gen_ecs_lib'] = td001_sys.loc[is_ind, 'src_gen_ecs_lib'].str.replace(' determine',
+                                                                                                      ' partiellement indetermine')
+
     return td001_sys
 
 
@@ -1323,7 +1387,6 @@ def calcul_libelle_simplifie(td001_sys):
     for ener in energie_chaudiere_mods:
         gen_ch_simp_dict[f'chauffage {ener} indetermine'] = f'chaudiere {ener} standard'
         gen_ch_simp_dict[f'chauffage electricite + {ener} indetermine'] = f'chaudiere {ener} standard'
-
         gen_ch_simp_dict[f'chaudiere {ener} indetermine'] = f'chaudiere {ener} standard'
 
     for k, v in gen_ch_simp_dict.items():
@@ -1331,12 +1394,11 @@ def calcul_libelle_simplifie(td001_sys):
         td001_sys.gen_ch_lib_final_simp = td001_sys.gen_ch_lib_final_simp.str.replace(v + ' + ' + v, v)
         td001_sys.gen_ch_lib_final_simp = td001_sys.gen_ch_lib_final_simp.str.replace(v + ' + ' + v, v)
 
-    ### simplification réseau de chaleur
-    # si réseau de chaleur alors on considère que c'est le système de chauffage du bâtiment
-    a
-    is_reseau_ch = td001_sys.gen_ch_lib_final.str.contains('reseau de chaleur')
-    is_not_solaire = ~td001_sys.gen_ch_lib_final.str.contains('solaire')
-    td001_sys.loc[is_reseau_ch & is_not_solaire, 'gen_ch_lib_final_simp'] = 'reseau de chaleur'
+    # ### simplification réseau de chaleur
+    # #si réseau de chaleur alors on considère que c'est le système de chauffage du bâtiment
+    # is_reseau_ch = td001_sys.gen_ch_lib_final.str.contains('reseau de chaleur')
+    # is_not_solaire = ~td001_sys.gen_ch_lib_final.str.contains('solaire')
+    # td001_sys.loc[is_reseau_ch&is_not_solaire,'gen_ch_lib_final_simp']='reseau de chaleur'
 
     ### limiter les combinaisons de systemes à 2
 
@@ -1385,6 +1447,7 @@ def calcul_libelle_simplifie(td001_sys):
         gen_ecs_simp_dict[f'ecs {ener} indetermine'] = f'chaudiere {ener} standard'
         gen_ecs_simp_dict[f'ecs electricite + {ener} indetermine'] = f'chaudiere {ener} standard'
         gen_ecs_simp_dict[f'production mixte {ener}'] = f'chaudiere {ener} standard'
+        gen_ecs_simp_dict[f'chaudiere {ener} indetermine'] = f'chaudiere {ener} standard'
 
     for k, v in gen_ecs_simp_dict.items():
         td001_sys.gen_ecs_lib_final_simp = td001_sys.gen_ecs_lib_final_simp.str.replace(k, v)
@@ -1400,3 +1463,5 @@ def calcul_libelle_simplifie(td001_sys):
 
     td001_sys.loc[plus, 'gen_ecs_lib_appoint'] = td001_sys.loc[plus, 'gen_ecs_lib_final_simp'].apply(
         lambda x: [el for el in x.split(' + ')][1])
+
+    return td001_sys

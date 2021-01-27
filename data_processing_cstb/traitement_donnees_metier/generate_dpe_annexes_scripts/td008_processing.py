@@ -45,20 +45,20 @@ def postprocessing_td008(td008):
     td008 = td008.copy()
 
     # orientation processing avec tv020 et reference.
-    td008['orientation_infer'] = td008['tv020_orientation_paroi'].astype('string').fillna('indetermine')
-    indetermine = td008.orientation_infer == 'indetermine'
+    td008['orientation_baie_infer'] = td008['tv020_orientation_paroi'].astype('string').fillna('indetermine')
+    indetermine = td008.orientation_baie_infer == 'indetermine'
     horiz = td008['tv020_coefficient_orientation_id'] == "13"
-    td008.loc[horiz, 'orientation_infer'] = 'Horizontale'
+    td008.loc[horiz, 'orientation_baie_infer'] = 'Horizontale'
     ouest = td008.reference.str.lower().str.contains('ouest')
     nord = td008.reference.str.lower().str.contains('nord')
     sud = td008.reference.str.lower().str.contains('sud')
     est = td008.reference.str.lower().str.contains('est')
-    td008.loc[nord & indetermine, 'orientation_infer'] = "Nord"
-    td008.loc[sud & indetermine, 'orientation_infer'] = "Sud"
-    td008.loc[ouest & indetermine, 'orientation_infer'] = "Ouest"
-    td008.loc[est & indetermine, 'orientation_infer'] = "Est"
-    td008.loc[(ouest & est & indetermine), 'orientation_infer'] = "Est ou Ouest"
-    td008.orientation_infer = td008.orientation_infer.astype('category')
+    td008.loc[nord & indetermine, 'orientation_baie_infer'] = "Nord"
+    td008.loc[sud & indetermine, 'orientation_baie_infer'] = "Sud"
+    td008.loc[ouest & indetermine, 'orientation_baie_infer'] = "Ouest"
+    td008.loc[est & indetermine, 'orientation_baie_infer'] = "Est"
+    td008.loc[(ouest & est & indetermine), 'orientation_baie_infer'] = "Est ou Ouest"
+    td008['orientation_baie_infer'] = td008['orientation_baie_infer'].str.lower().str.strip().astype('category')
 
     # type vitrage processing avec tv009, tv010, tv021 et reference
     td008['fen_lib_from_tv009'] = td008['tv009_type_vitrage'].astype('string') + ' ' + td008[
@@ -140,7 +140,7 @@ def postprocessing_td008(td008):
 
     td008['surfacexnb_baie_calc'] = td008.surface * td008.nb_baie_calc
     # MATERIAU
-    td008['materiaux'] = td008.tv021_materiaux.astype('string').fillna('indetermine')
+    td008['mat'] = td008.tv021_materiaux.astype('string').fillna('indetermine')
 
     mat_tv010 = td008.tv010_type_materiaux
 
@@ -162,10 +162,14 @@ def postprocessing_td008(td008):
 
     baie_mat_tv010 = baie_mat_tv010.fillna('indetermine')
 
-    mat = td008.materiaux
+    mat = td008.mat
     indetermine = mat == 'indetermine'
 
-    td008.loc[indetermine, 'materiaux'] = baie_mat_tv010.loc[indetermine]
+    td008.loc[indetermine, 'mat'] = baie_mat_tv010.loc[indetermine].str.lower()
+    td008.mat = td008.mat.str.lower().str.strip()
+    # REMPLISSAGE
+
+    td008['remplissage'] = td008.tv009_remplissage.str.lower().str.strip().copy()
 
     # TYPE MENUISERIE
     ## type menuiserie en fonction des caractéristiques déjà inférée
@@ -229,6 +233,13 @@ def postprocessing_td008(td008):
     cat_baie.loc[p_simple] = 'porte'
     td008['cat_baie_infer'] = cat_baie
 
+    # U
+    td008['u_baie'] = td008.coefficient_transmission_thermique_baie
+    isnull = (td008.u_baie.isnull()) | (td008.u_baie == 0)
+    td008.loc[isnull, 'u_baie'] = td008.loc[isnull, 'tv012_ujn'].astype(float).values
+    isnull = (td008.u_baie.isnull()) | (td008.u_baie == 0)
+    td008.loc[isnull, 'u_baie'] = td008.loc[isnull, 'tv010_uw'].astype(float).values
+
     # METHODE SAISIE U
 
     not_vitrage = td008.tv009_code.isnull()
@@ -263,36 +274,36 @@ def postprocessing_td008(td008):
     return td008
 
 
-def agg_td008_to_td001_essential(td008):
-    # AGG orientation
-
-    td008_vitree = td008.loc[td008.cat_baie_simple_infer.isin(['baie_vitree',
-                                                               'brique_ou_poly'])]
-    orientation_agg = td008_vitree.groupby('td001_dpe_id')['orientation_infer'].apply(
-        lambda x: ' + '.join(list(set(x.tolist()))))
-
-    est_double = orientation_agg.str.count('Est') > 1
-    ouest_double = orientation_agg.str.count('Ouest') > 1
-    est_and_ouest_double = (est_double & ouest_double)
-
-    orientation_agg.loc[est_and_ouest_double] = orientation_agg.loc[est_and_ouest_double].str.replace('Est ou Ouest + ',
-                                                                                                      '').str.replace(
-        '\+ Est ou Ouest ', '')
-
-    # AGG top freq type vitrage
-
-    type_vitrage_agg = agg_pond_top_freq(td008_vitree, 'type_vitrage_simple_infer', 'max_surface', 'td001_dpe_id')
-
-    # AGG Ujn avg
-
-    td008_sel = td008_vitree.loc[td008_vitree.coefficient_transmission_thermique_baie > 0]
-    u_baie_avg = agg_pond_avg(td008_sel, 'coefficient_transmission_thermique_baie', 'max_surface',
-                             'td001_dpe_id').to_frame('u_baie_avg')
-
-    agg = pd.concat([u_baie_avg, type_vitrage_agg, orientation_agg], axis=1)
-    agg.columns = ['u_baie_avg', 'type_vitrage_simple_top', 'orientation_concat']
-
-    return agg
+# def agg_td008_to_td001_essential(td008):
+#     # AGG orientation
+#
+#     td008_vitree = td008.loc[td008.cat_baie_simple_infer.isin(['baie_vitree',
+#                                                                'brique_ou_poly'])]
+#     orientation_agg = td008_vitree.groupby('td001_dpe_id')['orientation_baie_infer'].apply(
+#         lambda x: ' + '.join(list(set(x.tolist()))))
+#
+#     est_double = orientation_agg.str.count('Est') > 1
+#     ouest_double = orientation_agg.str.count('Ouest') > 1
+#     est_and_ouest_double = (est_double & ouest_double)
+#
+#     orientation_agg.loc[est_and_ouest_double] = orientation_agg.loc[est_and_ouest_double].str.replace('Est ou Ouest + ',
+#                                                                                                       '').str.replace(
+#         '\+ Est ou Ouest ', '')
+#
+#     # AGG top freq type vitrage
+#
+#     type_vitrage_agg = agg_pond_top_freq(td008_vitree, 'type_vitrage_simple_infer', 'max_surface', 'td001_dpe_id')
+#
+#     # AGG Ujn avg
+#
+#     td008_sel = td008_vitree.loc[td008_vitree.coefficient_transmission_thermique_baie > 0]
+#     u_baie_avg = agg_pond_avg(td008_sel, 'coefficient_transmission_thermique_baie', 'max_surface',
+#                              'td001_dpe_id').to_frame('u_baie_avg')
+#
+#     agg = pd.concat([u_baie_avg, type_vitrage_agg, orientation_agg], axis=1)
+#     agg.columns = ['u_baie_avg', 'type_vitrage_simple_top', 'orientation_concat']
+#
+#     return agg
 
 
 def agg_td008_to_td001(td008):
@@ -301,28 +312,34 @@ def agg_td008_to_td001(td008):
 
     td008_vitree = td008.loc[td008.cat_baie_simple_infer.isin(['baie_vitree',
                                                                'brique_ou_poly'])]
-    orientation_agg = td008_vitree.groupby('td001_dpe_id')['orientation_infer'].apply(
-        lambda x: ' + '.join(list(set(x.tolist()))))
+    orientation_agg = td008_vitree.groupby('td001_dpe_id')['orientation_baie_infer'].apply(
+        lambda x: ' + '.join(sorted(list(set(x.tolist())))))
 
-    est_double = orientation_agg.str.count('Est') > 1
-    ouest_double = orientation_agg.str.count('Ouest') > 1
+    est_double = orientation_agg.str.count('est') > 1
+    ouest_double = orientation_agg.str.count('ouest') > 1
     est_and_ouest_double = (est_double & ouest_double)
 
-    orientation_agg.loc[est_and_ouest_double] = orientation_agg.loc[est_and_ouest_double].str.replace('Est ou Ouest + ',
+    orientation_agg.loc[est_and_ouest_double] = orientation_agg.loc[est_and_ouest_double].str.replace('est ou ouest \+',
                                                                                                       '').str.replace(
-        '\+ Est ou Ouest ', '')
-    concat.append(orientation_agg)
+        '\+ est ou ouest', '')
 
+    is_indetermine = orientation_agg.str.contains('indetermine')
+
+    orientation_agg.loc[is_indetermine] = orientation_agg.loc[is_indetermine].str.replace('indetermine \+',
+                                                                                          '').str.replace(
+        '\+ indetermine', '')
+    orientation_agg = orientation_agg.str.strip()
+    concat.append(orientation_agg)
     # AGG SURFS
     surfs = td008.pivot_table(index='td001_dpe_id', columns='cat_baie_infer', values='surfacexnb_baie_calc',
                               aggfunc='sum')
     surfs.columns = [f'surf_{col}' for col in surfs]
     concat.append(surfs)
 
-    td008 = td008.rename(columns={'coefficient_transmission_thermique_baie': 'u_baie',
-                                  'type_vitrage_simple_infer': 'type_vitrage',
-                                  'tv010_uw': 'Uw',
-                                  'tv010_ug': 'Ug'})
+    td008 = td008.rename(columns={
+        'type_vitrage_simple_infer': 'type_vitrage',
+        'tv010_uw': 'Uw',
+        'tv010_ug': 'Ug'})
 
     td008.Uw = td008.Uw.astype('string').fillna('indetermine')
     td008.Ug = td008.Ug.astype('string').fillna('indetermine')
@@ -338,7 +355,8 @@ def agg_td008_to_td001(td008):
     # AGG parois vitrees
     td008_vit = td008.loc[td008.cat_baie_simple_infer != 'porte']
 
-    for col in ['u_baie', 'Uw', 'Ug', 'type_occultation', 'materiaux', 'type_vitrage','facteur_solaire_corr', 'meth_calc_u', 'meth_calc_Fs']:
+    for col in ['u_baie', 'Uw', 'Ug', 'type_occultation', 'mat', 'type_vitrage', 'remplissage','facteur_solaire_corr',
+                'meth_calc_u', 'meth_calc_Fs']:
         var_agg = agg_pond_top_freq(td008_vit, col, 'surfacexnb_baie_calc',
                                     'td001_dpe_id').to_frame(col + '_baie_vitree_top')
         concat.append(var_agg)
@@ -347,7 +365,7 @@ def agg_td008_to_td001(td008):
 
     td008_opaque = td008.loc[td008.cat_baie_simple_infer == 'porte']
 
-    for col in ['u_baie', 'materiaux', 'meth_calc_u', 'meth_calc_Fs']:
+    for col in ['u_baie', 'mat', 'meth_calc_u', 'meth_calc_Fs']:
         var_agg = agg_pond_top_freq(td008_opaque, col, 'surfacexnb_baie_calc',
                                     'td001_dpe_id').to_frame(col + '_porte_top')
         concat.append(var_agg)
@@ -357,7 +375,7 @@ def agg_td008_to_td001(td008):
     for type_baie in ['fenetre', 'porte_fenetre']:
 
         sel = td008_vit.loc[td008_vit.cat_baie_infer == type_baie]
-        for col in ['u_baie', 'Uw', 'Ug', 'type_occultation', 'materiaux', 'type_vitrage', 'meth_calc_u',
+        for col in ['u_baie', 'Uw', 'Ug', 'type_occultation', 'mat', 'type_vitrage', 'remplissage', 'meth_calc_u',
                     'meth_calc_Fs']:
             var_agg = agg_pond_top_freq(sel, col, 'surfacexnb_baie_calc',
                                         'td001_dpe_id').to_frame(col + f'_{type_baie}_top')

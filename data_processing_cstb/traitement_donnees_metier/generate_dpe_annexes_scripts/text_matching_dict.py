@@ -437,3 +437,156 @@ priorisation_ecs = {'solaire': "solaire",
                     'ecs gaz indetermine': "defaut",
                     'ecs gpl/butane/propane indetermine': "defaut",
                     'ecs charbon indetermine': "defaut", }
+
+#  ============================================ ENVELOPPE  ============================================================
+
+#
+isolation_search_dict = {
+    "ITI+ITR": ["(iti) AND (itr)"],
+    "ITE+ITR": ['(ite) AND (itr)'],
+    "ITI": [('iti', "isolation thermique par l''interieur", '"isol interieure"')],
+    "ITE": ['ite', '"isolation thermique par l''exterieur"', '"isol exterieure"'],
+    "isole exact": [('"avec isolation"', "isolante", "isover", 'laine', 'ldv', 'poly*', '"u=0.1"',
+                     '"u=0.2"',
+                     '"u=0.3"',
+                     '"u=0.4"',
+                     '"u=0.5"',
+                     '"u=0.6"',
+                     '"u=0.7"',
+                     )],
+    "non isole": [('"non isole"', "isole : non", '"non isoles"')],
+    "isole": ["isol*"],
+}
+
+murs_materiau_search_dict = {
+    # BETONS
+    'Béton cellulaire': ["beton* AND cellulaire"],
+    'Murs en blocs de béton pleins': ["beton* AND (plein OR pleins)"],
+    'Murs en blocs de béton creux': ["beton* AND creu*"],
+    'Murs en béton banché': ["beton* AND banche"],
+    'Murs en béton de mâchefer': ["beton* AND machefer"],
+    "Murs en béton": ["beton*"],  # label simplifié
+    # PIERRE
+    'Murs en pierre de taille et moellons avec remplissage tout venant': [
+        '(pierre AND taille) OR (moellon* AND rempli*)'],
+    "Murs en pierre de taille et moellons constitué d'un seul matériaux": ['(pierre AND taille) OR (moellon*)'],
+    "Murs en pierre": ["pierre"],  # label simplifié
+    # briques
+    'Murs en briques pleines simples': ["(briques OR briques) AND (pleines OR pleine) AND NOT (lame)"],
+    "Murs en briques pleines doubles avec lame d'air": ["(briques OR briques) AND (pleines OR pleine) AND (lame)"],
+    'Murs en briques creuses': ["(briques OR briques) AND (creuse OR creuses)"],
+    "Murs en briques": ["(briques OR briques)"],  # label simplifié
+
+    #  terre
+    "Murs en pisé ou béton de terre stabilisé (à partir d'argile crue)": ['terre AND stabilise AND beton'],
+    'Monomur terre cuite': ["terre AND cuite"],
+
+    # BOIS
+    'Murs en pan de bois sans remplissage tout venant': ['(bois) AND ("avec remplissage")'],
+    'Murs en pan de bois avec remplissage tout venant': ['(bois) AND NOT (rondin) AND NOT ("avec remplissage")'],
+    'Murs bois (rondin)': ['bois AND rondin'],
+    "Murs en bois": ["bois"],  # label simplifié
+    'Cloison de plâtre': ["platre"],
+}
+murs_materiau_search_dict = {k.lower().strip(): v for k, v in murs_materiau_search_dict.items()}
+
+pb_materiau_search_dict = {"Dalle béton": ['beton*'],
+                           "Plancher entre solives métalliques avec ou sans remplissage": ['solive*', 'metal*'],
+                           "Plancher entre solives bois avec ou sans remplissage": ['solive*', 'bois*'],
+                           "Plancher bois sur solives métalliques": ['solive*', 'metal*'],
+                           "Bardeaux et remplissage": ['bardeau*'],
+                           "Voutains sur solives métalliques": ['voutain*', 'solive*', 'metal'],
+                           "Voutains en briques ou moellons": ['voutain*', ('brique*', 'moellon*')],
+                           "Plancher bois sur solives bois": ['bois*', "solive*"],
+                           "Plancher lourd type entrevous terre-cuite, poutrelles béton": ['entrevou*', 'terre*',
+                                                                                           'beton*'],
+                           "Plancher à entrevous isolant": ['entrevou*', 'isol*'],
+                           "Plancher mitoyen non deperditif": ['plancher*', 'mitoyen'],
+                           "Plancher avec ou sans remplissage": ['plancher*'],
+                           "indetermine": ['inconnu']}
+pb_materiau_search_dict = {k.lower().strip(): v for k, v in pb_materiau_search_dict.items()}
+
+ph_materiau_search_dict = {"Toiture en chaume": ['chaume*'],
+                           "Dalle béton": ['beton*'],
+                           "Plafond entre solives métalliques avec ou sans remplissage": ['solive*', 'metal*'],
+                           "Plafond entre solives bois avec ou sans remplissage": ['solive*', 'bois*'],
+                           "Plafond bois sur solives métalliques": ['solive*', 'bois*', 'metal*', 'sur'],
+                           "Plafond bois sous solives métalliques": ['solive*', 'bois*', 'metal*'],
+                           "Plafond bois sur solives bois": ['solive*', 'bois*'],
+                           "Plafond bois sous solives bois": ['solive*', 'bois*'],
+                           "Plafond lourd type entrevous terre-cuite, poutrelles béton": ['entrevou*', 'terre*',
+                                                                                          'beton*'],
+                           "Bardeaux et remplissage": ['bardeau*'],
+                           "Combles aménagés sous rampant": ['comble*', 'amenage*'],
+                           "Plafond avec ou sans remplissage sous combles": ['plafond*', 'comble*'],
+                           "Plafond en plaque de plâtre": ['plafond', 'platre'],
+                           "Plafond mitoyen non deperditif": [('plancher*', "plafond*"), 'mitoyen'],
+
+                           "Plafond avec ou sans remplissage": ['plafond*'],
+                           }
+ph_materiau_search_dict = {k.lower().strip(): v for k, v in ph_materiau_search_dict.items()}
+
+# VITRAGES
+
+type_vitrage_search_dict = {
+    'triple vitrage exact': [('"triple vitrage"', '"uw : 1"', '"ujn : 1"')],
+    'double vitrage exact': [('"double vitrage"', "dv", '\"4/16/4"', '\"4/12/4"')],
+    'triple vitrage': ['triple', 'vitrage*'],
+    'simple vitrage exact': [('"simple vitrage"', "sv")],
+    'double vitrage': [('double AND vitrage*', '"uw : 2"', '"ujn : 2"', '"uw : 3"')],
+    'simple vitrage': ['simple', 'vitrage*'],
+    'survitrage': ['survitrage'],
+
+}
+type_remplissage_search_dict = {
+    'argon ou krypton': [('argon*', 'krypton*')],
+    'air sec': [('air*', 'mm*')],
+
+}
+
+materiau_baie_search_dict = {
+    'bois': ['bois*'],
+    'pvc': ['pvc*'],
+    'metal': ['metal*'],
+
+}
+
+orientation_baie_search_dict = {
+    'est': ['est*'],
+    'nord': ['nord*'],
+    'ouest': ['ouest*'],
+    'sud': ['nord*'],
+}
+
+# =============================== VENTILATION CLIM ENR ===============================================================
+
+type_ventilation_search_dict = {
+    "Système de ventilation par entrées d’air hautes et basses": ['entre*', "d'air*", ('haute*', 'basse*')],
+    "Ventilation mécanique auto réglable « avant 1982 »": ['meca*', 'auto*', 'avant', ('1982', '82')],
+    "Ventilation mécanique auto réglable « après 1982 »": ['meca*', 'auto*', 'apres', ('1982', '82')],
+    "Ventilation mécanique auto réglable": ['meca*', 'auto*'],
+    "Ventilation mécanique gaz hygroréglable": ['gaz', 'hygro*'],
+    "Ventilation mécanique double flux avec échangeur": [('double* AND flux*', 'df'), 'avec'],
+
+    "Ventilation mécanique double flux sans échangeur": [('double* AND flux*', 'df')],
+    "Extracteur mécanique sur conduit non modifié de ventilation naturelle existante": ['meca*',
+                                                                                        'conduit*', 'natur*'],
+    "Puits canadien": [('puit*', 'canad*')],
+    "Ventilation hybride avec entrées d’air hygroréglables": ["hybr*", 'hygro*'],
+    "Ventilation naturelle par conduit avec entrées d’air hygroréglables": ["natur*", 'hygro*'],
+    "Ventilation mécanique à extraction et entrées d’air hygroréglables": ['entre*', 'hygro*'],
+    "Ventilation naturelle par conduit": ['nature*'],
+    "Ventilation hybride": ['hybride*'],
+    "Ventilation mécanique à extraction hygroréglable": ['hygro*'],
+    "Ventilation par ouverture des fenêtres": ['ouverture*', 'fenetre*'],
+}
+
+presence_climatisation_search_dict = {'presence_climatisation': [
+    tuple(list(elec_or_pac) + ['clim*', 'air*', 'ventilo*', 'vrv', 'cassette*', 'split*', 'monosplit*',
+                               ]), 'NOT', ('pas', 'abscence', 'sans', 'aucune')]}
+
+enr_search_dict = {'solaire photovoltaique': ['photo*'],
+                   'solaire thermique (ecs+chauffage)': ['thermique', 'solaire', 'chau*', ('ecs', 'sanita*')],
+                   'solaire thermique (ecs)': ['solaire', ('ecs', 'sanita*')],
+                   'solaire thermique (chauffage)': ['solaire', 'chauffage'],
+                   'solaire thermique': ['solaire*', 'thermique*']}

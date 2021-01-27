@@ -12,7 +12,7 @@ from generate_dpe_annexes_scripts.td007_processing import merge_td007_tr_tv, pos
 from generate_dpe_annexes_scripts.td008_processing import merge_td008_tr_tv, postprocessing_td008
 from generate_dpe_annexes_scripts.td001_merge import merge_td001_dpe_id_envelope
 from generate_dpe_annexes_scripts.td007_processing import agg_td007_to_td001_essential, agg_surf_envelope
-from generate_dpe_annexes_scripts.td008_processing import agg_td008_to_td001_essential, agg_td008_to_td001
+from generate_dpe_annexes_scripts.td008_processing import  agg_td008_to_td001
 from generate_dpe_annexes_scripts.td010_processing import merge_td010_tr_tv, postprocessing_td010, agg_td010_td001
 from generate_dpe_annexes_scripts.td011_td012_processing import merge_td012_tr_tv, postprocessing_td011_td012, merge_td011_tr_tv, \
     agg_systeme_ch_essential
@@ -49,15 +49,15 @@ def run_enveloppe_processing(td001, td006, td007, td008, td010):
     td007_ph = generate_ph_table(td007)
     td007_murs = generate_mur_table(td007)
 
-    # TABLES SYNTHETIQUES TOUTES THEMATIQUES
-
-    td007_agg_essential = agg_td007_to_td001_essential(td007)
-    td008_agg_essential = agg_td008_to_td001_essential(td008)
+    # # TABLES SYNTHETIQUES TOUTES THEMATIQUES
+    #
+    # td007_agg_essential = agg_td007_to_td001_essential(td007)
+    # td008_agg_essential = agg_td008_to_td001_essential(td008)
     surfaces_agg_essential = agg_surf_envelope(td007, td008)
+    #
+    # td001_enveloppe_agg = pd.concat([td007_agg_essential, td008_agg_essential, surfaces_agg_essential], axis=1)
 
-    td001_enveloppe_agg = pd.concat([td007_agg_essential, td008_agg_essential, surfaces_agg_essential], axis=1)
-
-    td001_enveloppe_agg.index.name = 'td001_dpe_id'
+    # td001_enveloppe_agg.index.name = 'td001_dpe_id'
     cols = [el for el in td008.columns if el not in td008_raw_cols + ['fen_lib_from_tv009',
                                                                       'fen_lib_from_tv021']]
     cols.append('td008_baie_id')
@@ -96,7 +96,7 @@ def run_enveloppe_processing(td001, td006, td007, td008, td010):
                               td007_ph_agg=td007_ph_agg,
                               td007_pb_agg=td007_pb_agg, td008_agg=td008_agg, td010_agg=td010_agg,td006_agg=td006_agg)
 
-    return td001_enveloppe_agg, td008_p, td007_p, env_compo_dict, env_compo_agg_dict
+    return surfaces_agg_essential,td008_p, td007_p, env_compo_dict, env_compo_agg_dict
 
 
 def run_system_processing(td001, td006, td011, td012, td013, td014):
@@ -180,13 +180,13 @@ def run_postprocessing_by_depts(dept_dir):
     td010 = pd.read_csv(dept_dir / 'td010_pont_thermique.csv', dtype=str)
 
     # ENVELOPPE PROCESSING
-    td001_enveloppe_agg, td008_p, td007_p, env_compo_dict, env_compo_agg_dict = run_enveloppe_processing(td001,
+    surfaces_agg_essential,td008_p, td007_p, env_compo_dict, env_compo_agg_dict = run_enveloppe_processing(td001,
                                                                                                          td006,
                                                                                                          td007,
                                                                                                          td008,
                                                                                                          td010)
 
-    round_float_cols(td001_enveloppe_agg).to_csv(annexe_dept_dir / 'td001_enveloppe_agg_annexe.csv')
+    round_float_cols(surfaces_agg_essential).to_csv(annexe_dept_dir / 'td001_enveloppe_surface_agg_annexe.csv')
     round_float_cols(td007_p).to_csv(annexe_dept_dir / 'td007_paroi_opaque_annexe.csv')
     round_float_cols(td008_p).to_csv(annexe_dept_dir / 'td008_baie_annexe.csv')
     for k, v in env_compo_dict.items():

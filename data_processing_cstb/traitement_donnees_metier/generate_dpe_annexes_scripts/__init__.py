@@ -10,5 +10,7 @@ from . import utils
 from . import td003_td005_text_extraction_processing
 from . import gorenove_scripts
 from . import text_matching_dict
+from . import advanced_system_processing
+from . import advanced_enveloppe_processing
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'

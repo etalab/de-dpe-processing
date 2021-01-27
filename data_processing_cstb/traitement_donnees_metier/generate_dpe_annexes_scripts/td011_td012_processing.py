@@ -321,7 +321,7 @@ def agg_systeme_ch_essential(td001, td011, td012):
             'sys_ch_sec_type_energie_ch',
             'sys_ch_tert_type_energie_ch_concat']
 
-    td001_sys_ch['mix_energetique_chauffage'] = concat_string_cols(td001_sys_ch, cols=cols, join_string=' + ',
+    td001_sys_ch['mix_energetique_ch'] = concat_string_cols(td001_sys_ch, cols=cols, join_string=' + ',
                                                                    is_unique=True, is_sorted=True)
 
     cols = ['sys_ch_princ_type_installation_ch',
