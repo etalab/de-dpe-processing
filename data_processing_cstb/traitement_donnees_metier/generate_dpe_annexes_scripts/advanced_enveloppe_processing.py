@@ -5,40 +5,101 @@ from .td003_td005_text_extraction_processing import extract_td003_baie_variables
     extract_td003_pb_variables, extract_td003_ph_variables, extract_td005_baie_variables, extract_td005_murs_variables, \
     extract_td005_pb_variables, extract_td005_ph_variables
 from .text_matching_dict import *
+from .gorenove_scripts import rename_dpe_table_light
 
+def main_advanced_enveloppe_processing(td001,td003, td005,env_compo_agg_dict):
+    env_dict_cols = {
+        'td007_murs_agg': ['u_mur_exterieur_top', 'mat_mur_exterieur_top', 'ep_mat_mur_exterieur_top'],
+        "td007_ph_agg": ['type_adjacence_ph_top', 'u_ph_top', 'mat_ph_top'],
+        "td007_pb_agg": ['type_adjacence_pb_top', 'u_pb_top', 'mat_pb_top'],
+        "td010_agg": ['pos_isol_mur_ext', 'pos_isol_pb', 'pos_isol_ph'],
+        "td008_agg": ['u_baie_baie_vitree_top', 'facteur_solaire_corr_baie_vitree_top',
+                      'type_vitrage_baie_vitree_top', 'remplissage_baie_vitree_top', 'mat_baie_vitree_top',
+                      'orientation_baie_infer', 'avancee_masque_max',
+                      "presence_balcon"],
+    }
 
-def main_advanced_enveloppe_processing(td003, td005):
+    td001_env = td001[['td001_dpe_id']]
+
+    for k, v in env_dict_cols.items():
+        td001_env = td001_env.merge(env_compo_agg_dict[k][v], on='td001_dpe_id', how='left')
+
+    td001_env = rename_dpe_table_light(td001_env)
+    final_cols = td001_env.columns
     # ELASTIC SEARCH descriptif et fiches techniques
-
+    print('ES : murs')
     materiau_mur_ft, isolation_mur_ft = extract_td005_murs_variables(td005)
+    print('ES : murs')
 
     materiau_mur_desc, isolation_mur_desc = extract_td003_murs_variables(td003)
+    print('ES : ph')
 
     materiau_ph_ft, isolation_ph_ft = extract_td005_ph_variables(td005)
+    print('ES : ph')
 
     materiau_ph_desc, isolation_ph_desc = extract_td003_ph_variables(td003)
+    print('ES : pb')
 
     materiau_pb_ft, isolation_pb_ft = extract_td005_pb_variables(td005)
+    print('ES : pb')
 
     materiau_pb_desc, isolation_pb_desc = extract_td003_pb_variables(td003)
+    print('ES : vitrage')
 
     type_vitrage_ft, type_remplissage_ft, materiau_baie_ft, orientation_baie_ft = extract_td005_baie_variables(td005)
+    print('ES : vitrage')
 
     type_vitrage_desc, type_remplissage_desc, materiau_baie_desc, orientation_baie_desc = extract_td003_baie_variables(
         td003)
-    
-    td001_env = concat_mur_txt(td001_env,materiau_mur_ft=materiau_mur_ft,materiau_mur_desc=materiau_mur_desc,
-                               isolation_mur_ft=isolation_mur_ft,isolation_mur_desc=isolation_mur_desc)
-    td001_env = concat_pb_txt(td001_env,materiau_pb_ft=materiau_pb_ft,materiau_pb_desc=materiau_pb_desc,
-                               isolation_pb_ft=isolation_pb_ft,isolation_pb_desc=isolation_pb_desc)
-    td001_env = concat_ph_txt(td001_env,materiau_ph_ft=materiau_ph_ft,materiau_ph_desc=materiau_ph_desc,
-                               isolation_ph_ft=isolation_ph_ft,isolation_ph_desc=isolation_ph_desc)
-    # TODO
-    td001_env = concat_baie_txt(td001_env)
+    print('fusion')
+
+    td001_env = concat_mur_txt(td001_env, materiau_mur_ft=materiau_mur_ft, materiau_mur_desc=materiau_mur_desc,
+                               isolation_mur_ft=isolation_mur_ft, isolation_mur_desc=isolation_mur_desc)
+    td001_env = concat_pb_txt(td001_env, materiau_pb_ft=materiau_pb_ft, materiau_pb_desc=materiau_pb_desc,
+                              isolation_pb_ft=isolation_pb_ft, isolation_pb_desc=isolation_pb_desc)
+    td001_env = concat_ph_txt(td001_env, materiau_ph_ft=materiau_ph_ft, materiau_ph_desc=materiau_ph_desc,
+                              isolation_ph_ft=isolation_ph_ft, isolation_ph_desc=isolation_ph_desc)
+    td001_env = concat_baie_txt(td001_env, type_vitrage_desc=type_vitrage_desc, type_vitrage_ft=type_vitrage_ft,
+                                type_remplissage_desc=type_remplissage_desc, type_remplissage_ft=type_remplissage_ft,
+                                materiau_baie_desc=materiau_baie_desc, materiau_baie_ft=materiau_baie_ft,
+                                orientation_baie_ft=orientation_baie_ft, orientation_baie_desc=orientation_baie_desc)
+
+    # SUB BY TXT
+    vars_to_sub = ['mat_mur_ext', 'pos_isol_mur_ext', 'mat_ph',
+                   'pos_isol_ph', 'mat_pb',
+                   'pos_isol_pb', 'type_vitrage_baie',
+                   'remplissage_baie', 'mat_baie', 'orientation_baie']
+
+    for var in vars_to_sub:
+        is_null = (td001_env[var].isnull()) | (td001_env[var] == 'inconnu') | (td001_env[var] == 'indetermine')
+        td001_env.loc[is_null, var] = td001_env.loc[is_null, var + '_txt']
+
+    # corr isolation
+
+    is_non_isole = td001_env['u_mur_ext'] > 1.5
+
+    td001_env.loc[is_non_isole, 'pos_isol_mur'] = 'non isole'
+
+    td001_env.pos_isol_mur = td001_env.pos_isol_mur.replace('Non isolé', 'non isole')
+
+    is_non_isole = td001_env['u_pb'] > 1.5
+
+    td001_env.loc[is_non_isole, 'pos_isol_pb'] = 'non isole'
+
+    td001_env.pos_isol_pb = td001_env.pos_isol_pb.replace('Non isolé', 'non isole')
+
+    is_non_isole = td001_env['u_ph'] > 1.5
+
+    td001_env.loc[is_non_isole, 'pos_isol_ph'] = 'non isole'
+
+    td001_env.pos_isol_ph = td001_env.pos_isol_ph.replace('Non isolé', 'non isole')
+
+    return td001_env[final_cols]
 
 def concat_mur_txt(td001_env, materiau_mur_desc, materiau_mur_ft, isolation_mur_desc, isolation_mur_ft):
+
     materiau_mur_from_txt = pd.concat([materiau_mur_desc[['label', 'td001_dpe_id']],
-                                       materiau_mur_ft[['label', 'td001_dpe_id']]], axis=0)
+                                           materiau_mur_ft[['label', 'td001_dpe_id']]], axis=0)
 
     materiau_mur_from_txt['label'] = pd.Categorical(materiau_mur_from_txt.label,
                                                     categories=list(murs_materiau_search_dict.keys()) + ['indetermine'],
@@ -66,7 +127,7 @@ def concat_mur_txt(td001_env, materiau_mur_desc, materiau_mur_ft, isolation_mur_
     # suppression de la dénomination exact qui ne correpond qu'a une méthode de recherche plus rigide
     isolation_mur_from_txt.label = isolation_mur_from_txt.label.str.replace(' exact', '')
 
-    td001_env = td001_env.merge(isolation_mur_from_txt.rename(columns={"label": 'pos_isol_mur_txt'}),
+    td001_env = td001_env.merge(isolation_mur_from_txt.rename(columns={"label": 'pos_isol_mur_ext_txt'}),
                                 on='td001_dpe_id', how='left')
 
     return td001_env
@@ -143,7 +204,7 @@ def concat_pb_txt(td001_env, materiau_pb_desc, materiau_pb_ft, isolation_pb_desc
 
 
 def concat_baie_txt(td001_env, type_vitrage_desc, type_vitrage_ft, type_remplissage_desc, type_remplissage_ft,
-                  materiau_baie_desc, materiau_baie_ft, orientation_baie_desc, orientation_baie_ft):
+                    materiau_baie_desc, materiau_baie_ft, orientation_baie_desc, orientation_baie_ft):
     # libéllés des type vitrage issues des données textes
     type_vitrage_from_txt = pd.concat([type_vitrage_desc[['label', 'td001_dpe_id']],
                                        type_vitrage_ft[['label', 'td001_dpe_id']]], axis=0)

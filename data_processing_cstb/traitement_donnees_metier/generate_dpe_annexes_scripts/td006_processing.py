@@ -5,6 +5,7 @@ from .trtvtables import DPETrTvTables
 
 td006_types = {'longueur': 'float'}
 
+
 def merge_td006_tr_tv(td006):
     meta = DPETrTvTables()
     table = td006.copy()
@@ -19,7 +20,7 @@ def merge_td006_tr_tv(td006):
 
 def processing_td006(td006):
 
-    td006['type_ventilation'] = td006.tv015_type.astype(str).replace('nan',np.nan).fillna('NA')
+    td006['type_ventilation'] = td006.tv015_type.astype(str).replace('nan', np.nan).fillna('NA')
 
     inertie_dict = {'TV026_003': "Lourde",
                     'TV026_008': "Légère",
@@ -35,6 +36,7 @@ def processing_td006(td006):
     td006['type_prise_air'] = td006.tv014_type_prise_air
 
     return td006
+
 
 def agg_td006_td001(td006):
     td006 = processing_td006(td006)

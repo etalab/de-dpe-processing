@@ -66,7 +66,7 @@ def main_advanced_system_processing(td001_sys_ch_agg, td001, td002, td016,
             'gen_ecs_lib_final_defaut', 'is_ecs_solaire_txt', 'is_ecs_solaire_data',
             'is_ecs_solaire',
             'td002_type_energie_ch', 'td002_type_energie_ecs',
-            'td016_type_energie_ch', 'td016_type_energie_ecs', 'type_energie_ch_concat', 'type_energie_ecs_concat',
+            'td016_type_energie_ch', 'td016_type_energie_ecs',
             'src_gen_ch_lib', 'src_gen_ecs_lib']
 
     return td001_sys[cols]

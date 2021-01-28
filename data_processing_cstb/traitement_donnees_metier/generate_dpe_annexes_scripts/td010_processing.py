@@ -37,7 +37,7 @@ def agg_td010_td001(td010):
     long.columns = [f'longueur_{col}' for col in long]
 
     type_isol_mur = agg_pond_top_freq(td010, 'tv013_isolation_mur', 'longueur',
-                                      'td001_dpe_id').to_frame('pos_isol_mur')
+                                      'td001_dpe_id').to_frame('pos_isol_mur_ext')
     td010_pb = td010.loc[td010.type_liaison == 'pb_mur']
     type_isol_pb = agg_pond_top_freq(td010_pb, 'tv013_plancher_bas', 'longueur',
                                            'td001_dpe_id').to_frame('pos_isol_pb')

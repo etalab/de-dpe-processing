@@ -2,7 +2,7 @@ from .text_matching_dict import gen_ch_search_dict_flat, gen_ecs_search_dict_fla
     reverse_cat_gen_ecs, reverse_cat_gen_ch, installation_search_dict, energie_search_dict, \
     solaire_ch_search_dict, ph_materiau_search_dict, pb_materiau_search_dict, \
     materiau_baie_search_dict, isolation_search_dict, type_vitrage_search_dict, type_remplissage_search_dict, \
-    orientation_baie_search_dict
+    orientation_baie_search_dict, type_ventilation_search_dict, presence_climatisation_search_dict, enr_search_dict
 from .utils_elasticsearch import search_and_affect, categorize_search_res
 from .utils import strip_accents, clean_desc_txt
 
@@ -402,7 +402,7 @@ def extract_td005_baie_variables(td005):
 
     orientation_baie_ft = m.merge(td005_fen[['id', 'td001_dpe_id', 'valeur_renseignee']], how='left')
 
-    return type_vitrage_ft,type_remplissage_ft,materiau_baie_ft,orientation_baie_ft
+    return type_vitrage_ft, type_remplissage_ft, materiau_baie_ft, orientation_baie_ft
 
 
 def extract_td003_baie_variables(td003):
@@ -424,24 +424,142 @@ def extract_td003_baie_variables(td003):
     td003_fen.descriptif = td003_fen.descriptif.str.lower().apply(lambda x: strip_accents(x))
     td003_fen.descriptif = td003_fen.descriptif.apply(lambda x: clean_desc_txt(x))
 
-    m = search_and_affect(td003_fen, id_col='id', val_col='valeur_renseignee',
+    m = search_and_affect(td003_fen, id_col='id', val_col='descriptif',
                           search_dict=type_vitrage_search_dict)
 
-    type_vitrage_desc = m.merge(td003_fen[['id', 'td001_dpe_id', 'valeur_renseignee']], how='ledesc')
+    type_vitrage_desc = m.merge(td003_fen[['id', 'td001_dpe_id', 'descriptif']], how='left')
 
-    m = search_and_affect(td003_fen, id_col='id', val_col='valeur_renseignee',
+    m = search_and_affect(td003_fen, id_col='id', val_col='descriptif',
                           search_dict=type_remplissage_search_dict)
 
-    type_remplissage_desc = m.merge(td003_fen[['id', 'td001_dpe_id', 'valeur_renseignee']], how='ledesc')
+    type_remplissage_desc = m.merge(td003_fen[['id', 'td001_dpe_id', 'descriptif']], how='left')
 
-    m = search_and_affect(td003_fen, id_col='id', val_col='valeur_renseignee',
+    m = search_and_affect(td003_fen, id_col='id', val_col='descriptif',
                           search_dict=materiau_baie_search_dict)
 
-    materiau_baie_desc = m.merge(td003_fen[['id', 'td001_dpe_id', 'valeur_renseignee']], how='ledesc')
+    materiau_baie_desc = m.merge(td003_fen[['id', 'td001_dpe_id', 'descriptif']], how='left')
 
-    m = search_and_affect(td003_fen, id_col='id', val_col='valeur_renseignee',
+    m = search_and_affect(td003_fen, id_col='id', val_col='descriptif',
                           search_dict=orientation_baie_search_dict)
 
-    orientation_baie_desc = m.merge(td003_fen[['id', 'td001_dpe_id', 'valeur_renseignee']], how='ledesc')
+    orientation_baie_desc = m.merge(td003_fen[['id', 'td001_dpe_id', 'descriptif']], how='left')
 
     return type_vitrage_desc, type_remplissage_desc, materiau_baie_desc, orientation_baie_desc
+
+
+def extract_td003_td005_ventilation_variables(td003, td005):
+    """
+    extract from td003,td005 ventilation description
+    Parameters
+    ----------
+    td003
+    td005
+
+    Returns
+    -------
+
+    """
+    td005_ventilation = td005.loc[td005.tr011_sous_categorie_fiche_technique_id == '15']
+    td005_ventilation.valeur_renseignee = td005_ventilation.valeur_renseignee.fillna('indetermine')
+
+    td005_ventilation.valeur_renseignee = td005_ventilation.valeur_renseignee.str.lower().apply(
+        lambda x: strip_accents(x))
+    td005_ventilation.valeur_renseignee = td005_ventilation.valeur_renseignee.apply(lambda x: clean_desc_txt(x))
+
+    td003_ventilation = td003.loc[td003.tr007_type_descriptif_id == '13']
+    td003_ventilation.descriptif = td003_ventilation.descriptif.fillna('indetermine')
+
+    td003_ventilation.descriptif = td003_ventilation.descriptif.str.lower().apply(lambda x: strip_accents(x))
+    td003_ventilation.descriptif = td003_ventilation.descriptif.apply(lambda x: clean_desc_txt(x))
+
+    m = search_and_affect(td005_ventilation, id_col='id', val_col='valeur_renseignee',
+                          search_dict=type_ventilation_search_dict)
+
+    type_ventilation_ft = m.merge(td005_ventilation[['id', 'td001_dpe_id', 'valeur_renseignee']], how='left')
+
+    m = search_and_affect(td003_ventilation, id_col='id', val_col='descriptif',
+                          search_dict=type_ventilation_search_dict)
+
+    type_ventilation_desc = m.merge(td003_ventilation[['id', 'td001_dpe_id', 'descriptif']], how='left')
+
+    return type_ventilation_ft, type_ventilation_desc
+
+
+def extract_td003_td005_climatisation_variables(td003, td005):
+    """
+    extract from td003,td005 ventilation description
+    Parameters
+    ----------
+    td003
+    td005
+
+    Returns
+    -------
+
+    """
+
+    td005_climatisation = td005.loc[td005.tr011_sous_categorie_fiche_technique_id == '18']
+    td005_climatisation.valeur_renseignee = td005_climatisation.valeur_renseignee.fillna('indetermine')
+
+    td005_climatisation.valeur_renseignee = td005_climatisation.valeur_renseignee.str.lower().apply(
+        lambda x: strip_accents(x))
+    td005_climatisation.valeur_renseignee = td005_climatisation.valeur_renseignee.apply(lambda x: clean_desc_txt(x))
+
+    td003_climatisation = td003.loc[td003.tr007_type_descriptif_id == '12']
+    td003_climatisation.descriptif = td003_climatisation.descriptif.fillna('indetermine')
+
+    td003_climatisation.descriptif = td003_climatisation.descriptif.str.lower().apply(lambda x: strip_accents(x))
+    td003_climatisation.descriptif = td003_climatisation.descriptif.apply(lambda x: clean_desc_txt(x))
+
+    m = search_and_affect(td005_climatisation, id_col='id', val_col='valeur_renseignee',
+                          search_dict=presence_climatisation_search_dict)
+
+    presence_climatisation_ft = m.merge(td005_climatisation[['id', 'td001_dpe_id', 'valeur_renseignee']], how='left')
+
+    m = search_and_affect(td003_climatisation, id_col='id', val_col='descriptif',
+                          search_dict=presence_climatisation_search_dict)
+
+    presence_climatisation_desc = m.merge(td003_climatisation[['id', 'td001_dpe_id', 'descriptif']], how='left')
+
+    return presence_climatisation_ft, presence_climatisation_desc
+
+
+def extract_td003_td005_enr_variables(td003, td005):
+    """
+    extract from td003,td005 ventilation description
+    Parameters
+    ----------
+    td003
+    td005
+
+    Returns
+    -------
+
+    """
+
+    td005_enr = td005.loc[td005.tr011_sous_categorie_fiche_technique_id == '19']
+    td005_enr.valeur_renseignee = td005_enr.valeur_renseignee.fillna('indetermine')
+
+    td005_enr.valeur_renseignee = td005_enr.valeur_renseignee.str.lower().apply(lambda x: strip_accents(x))
+    td005_enr.valeur_renseignee = td005_enr.valeur_renseignee.apply(lambda x: clean_desc_txt(x))
+
+    td003_enr = td003.loc[td003.tr007_type_descriptif_id == '17']
+    td003_enr.descriptif = td003_enr.descriptif.fillna('indetermine')
+
+    td003_enr.descriptif = td003_enr.descriptif.str.lower().apply(lambda x: strip_accents(x))
+    td003_enr.descriptif = td003_enr.descriptif.apply(lambda x: clean_desc_txt(x))
+
+    m = search_and_affect(td005_enr, id_col='id', val_col='valeur_renseignee',
+                          search_dict=enr_search_dict)
+
+    enr_ft = m.merge(td005_enr[['id', 'td001_dpe_id', 'valeur_renseignee']], how='left')
+
+    m = search_and_affect(td003_enr, id_col='id', val_col='descriptif',
+                          search_dict=enr_search_dict)
+
+    enr_desc = m.merge(td003_enr[['id', 'td001_dpe_id', 'descriptif']], how='left')
+
+    return enr_ft, enr_desc
+
+
+
