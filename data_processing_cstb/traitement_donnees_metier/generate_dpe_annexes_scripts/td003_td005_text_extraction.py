@@ -1,5 +1,5 @@
 from .text_matching_dict import gen_ch_search_dict_flat, gen_ecs_search_dict_flat, \
-    reverse_cat_gen_ecs, reverse_cat_gen_ch, installation_search_dict, energie_search_dict, \
+    reverse_cat_gen_ecs, reverse_cat_gen_ch, installation_search_dict, energie_search_dict, murs_materiau_search_dict,\
     solaire_ch_search_dict, ph_materiau_search_dict, pb_materiau_search_dict, \
     materiau_baie_search_dict, isolation_search_dict, type_vitrage_search_dict, type_remplissage_search_dict, \
     orientation_baie_search_dict, type_ventilation_search_dict, presence_climatisation_search_dict, enr_search_dict
@@ -191,7 +191,7 @@ def extract_td003_murs_variables(td003):
     td003_mur.descriptif = td003_mur.descriptif.apply(lambda x: clean_desc_txt(x))
 
     m = search_and_affect(td003_mur, id_col='id', val_col='descriptif',
-                          search_dict=ph_materiau_search_dict)
+                          search_dict=murs_materiau_search_dict)
 
     materiau_mur_desc = m.merge(td003_mur[['id', 'td001_dpe_id', 'descriptif']], how='left')
 
@@ -223,7 +223,7 @@ def extract_td005_murs_variables(td005):
     td005_mur.valeur_renseignee = td005_mur.valeur_renseignee.apply(lambda x: clean_desc_txt(x))
 
     m = search_and_affect(td005_mur, id_col='id', val_col='valeur_renseignee',
-                          search_dict=ph_materiau_search_dict)
+                          search_dict=murs_materiau_search_dict)
 
     materiau_mur_ft = m.merge(td005_mur[['id', 'td001_dpe_id', 'valeur_renseignee']], how='left')
 

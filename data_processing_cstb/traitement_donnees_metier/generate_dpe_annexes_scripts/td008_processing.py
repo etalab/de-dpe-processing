@@ -237,7 +237,7 @@ def postprocessing_td008(td008):
     td008['u_baie'] = td008.coefficient_transmission_thermique_baie
     isnull = (td008.u_baie.isnull()) | (td008.u_baie == 0)
     td008.loc[isnull, 'u_baie'] = td008.loc[isnull, 'tv012_ujn'].astype(float).values
-    isnull = (td008.u_baie.isnull()) | (td008.u_baie == 0)
+    isnull = ((td008.u_baie.isnull()) | (td008.u_baie == 0))&(td008.tv010_uw.str.isnumeric()!=False)
     td008.loc[isnull, 'u_baie'] = td008.loc[isnull, 'tv010_uw'].astype(float).values
 
     # METHODE SAISIE U

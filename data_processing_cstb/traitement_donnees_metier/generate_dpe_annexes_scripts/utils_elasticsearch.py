@@ -86,7 +86,7 @@ def search_from_search_dict(es_client, search_dict, index_name):
 
         }
         # es_client.count(index=index_name, body=search_body)
-        a_dict = es_client.search(index=index_name, body=search_body, size=5000000)
+        a_dict = es_client.search(index=index_name, body=search_body, size=5000000,request_timeout=60*5)
 
         hits = a_dict['hits']['hits']
 
@@ -102,11 +102,11 @@ def search_and_affect(data_to_search, id_col, val_col, search_dict):
     es_client = setup_es_client(index_name)
     L = data_to_search.shape[0]
     bulk(es_client, gendata(index_name, data_to_search[id_col], data_to_search[val_col]))
-    count_r = es_client.count(index=index_name)['count']
+    count_r = es_client.count(index=index_name,request_timeout=60*5)['count']
 
     while L != count_r:
         time.sleep(0.1)
-        count_r = es_client.count(index=index_name)['count']
+        count_r = es_client.count(index=index_name,request_timeout=60*5)['count']
 
     res_serie = search_from_search_dict(es_client, search_dict, index_name=index_name)
 

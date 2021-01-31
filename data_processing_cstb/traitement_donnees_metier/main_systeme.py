@@ -13,7 +13,6 @@ from generate_dpe_annexes_scripts.td007_processing import merge_td007_tr_tv, pos
 from generate_dpe_annexes_scripts.td008_processing import merge_td008_tr_tv, postprocessing_td008
 from generate_dpe_annexes_scripts.td001_merge import merge_td001_dpe_id_envelope
 from generate_dpe_annexes_scripts.td007_processing import agg_td007_to_td001_essential, agg_surf_envelope
-from generate_dpe_annexes_scripts.td008_processing import agg_td008_to_td001_essential, agg_td008_to_td001
 from generate_dpe_annexes_scripts.td010_processing import merge_td010_tr_tv, postprocessing_td010, agg_td010_td001
 from generate_dpe_annexes_scripts.td011_td012_processing import merge_td012_tr_tv, postprocessing_td011_td012, \
     merge_td011_tr_tv, \
@@ -144,15 +143,16 @@ if __name__ == '__main__':
     lasts = [a_dir for a_dir in list_dir if (annexe_dir / a_dir.name / 'td001_sys_agg_adv.csv').is_file()]
     print(len(firsts), len(lasts))
     list_dir = firsts + lasts
-    #list_dir = [el for el in list_dir if '94' in el.name]
-    # list_dir.reverse()
-    # es_bat = Path(os.environ[
-    #                   'USERPROFILE'] + r'\apps\elasticsearch-7.9.1-windows-x86_64\elasticsearch-7.9.1\bin\elasticsearch.bat')
-    # p_es = subprocess.Popen(str(es_bat.absolute()))
-    # for dept_dir in list_dir:
-    #     if dept_dir.name == '94':
-    #         print(dept_dir)
-    #         run_postprocessing_by_depts(dept_dir)
+    list_dir = firsts
 
-    with Pool(processes=3) as pool:
-        pool.starmap(run_postprocessing_by_depts, [(dept_dir,) for dept_dir in list_dir])
+
+    # list_dir = [el for el in list_dir if '94' in el.name]
+    # list_dir.reverse()
+
+    for dept_dir in list_dir:
+        #if dept_dir.name == '94':
+        print(dept_dir)
+        run_postprocessing_by_depts(dept_dir)
+
+    # with Pool(processes=3) as pool:
+    #     pool.starmap(run_postprocessing_by_depts, [(dept_dir,) for dept_dir in list_dir])

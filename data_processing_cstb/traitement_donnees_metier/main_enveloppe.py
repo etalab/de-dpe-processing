@@ -168,17 +168,27 @@ def run_postprocessing_by_depts(dept_dir):
 if __name__ == '__main__':
     build_doc(annexe_dir)
     list_dir = list(Path(data_dir).iterdir())
+    # wipe = True
+    # if wipe is True:
+    #     for a_dir in list_dir:
+    #         if (annexe_dir / a_dir.name / 'td001_env_agg_adv.csv').is_file():
+    #             (annexe_dir / a_dir.name / 'td001_env_agg_adv.csv').unlink()
     firsts = [a_dir for a_dir in list_dir if
               not (annexe_dir / a_dir.name / 'td001_env_agg_adv.csv').is_file()]
     lasts = [a_dir for a_dir in list_dir if (annexe_dir / a_dir.name / 'td001_env_agg_adv.csv').is_file()]
     print(len(firsts), len(lasts))
     list_dir = firsts + lasts
+    list_dir = firsts
     # list_dir = [el for el in list_dir if '94' in el.name]
     # list_dir.reverse()
     # for dept_dir in list_dir:
     #     if dept_dir.name == '94':
     #         print(dept_dir)
     #         run_postprocessing_by_depts(dept_dir)
+    es_bat = Path(os.environ[
+                      'USERPROFILE'] + r'\apps\elasticsearch-7.10.2-windows-x86_64\elasticsearch-7.10.2\bin\elasticsearch.bat')
+    p_es = subprocess.Popen(str(es_bat.absolute()))
 
-    with Pool(processes=3) as pool:
+    with Pool(processes=2) as pool:
         pool.starmap(run_postprocessing_by_depts, [(dept_dir,) for dept_dir in list_dir])
+    p_es.terminate()

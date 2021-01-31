@@ -1,12 +1,13 @@
 import pandas as pd
 import numpy as np
 from .text_matching_dict import enr_search_dict, type_ventilation_search_dict, presence_climatisation_search_dict
-from .td003_td005_text_extraction_processing import extract_td003_td005_ventilation_variables, \
+from .td003_td005_text_extraction import extract_td003_td005_ventilation_variables, \
     extract_td003_td005_climatisation_variables, extract_td003_td005_enr_variables
 
 
 def main_advanced_general_processing(td001, td003, td005, td001_td006):
-    td001_gen = td001[['td001_dpe_id','nom_methode_dpe_norm']].merge(td001_td006, on='td001_dpe_id', how='left')
+
+    td001_gen = td001[['td001_dpe_id','nom_methode_dpe_norm','periode_construction']].merge(td001_td006, on='td001_dpe_id', how='left')
 
     # ELASTIC SEARCH descriptif et fiches techniques
 
@@ -78,6 +79,7 @@ def main_advanced_general_processing(td001, td003, td005, td001_td006):
 
     td001_gen.presence_climatisation = (~td001_gen.presence_climatisation.isnull()).astype(int)
 
-    useful_cols = ['td001_dpe_id', 'nom_methode_dpe_norm','type_prise_air', 'type_ventilation',
+    useful_cols = ['td001_dpe_id', 'nom_methode_dpe_norm','periode_construction','type_prise_air', 'type_ventilation',
        'inertie','presence_climatisation','enr']
+
     return td001_gen[useful_cols]

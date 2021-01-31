@@ -4,7 +4,7 @@ from .text_matching_dict import gen_ch_search_dict_flat, reverse_cat_gen_ch, gen
     gen_ecs_search_dict, gen_ecs_search_dict_flat, tr003_desc_to_gen, energie_combustion_mods, priorisation_ecs, \
     energie_chaudiere_mods, type_chaudiere_mods
 from .conversion_normalisation import energie_normalise_ordered
-from .td003_td005_text_extraction_processing import extract_td003_ch_variables, extract_td003_ecs_variables, \
+from .td003_td005_text_extraction import extract_td003_ch_variables, extract_td003_ecs_variables, \
     extract_td005_ch_variables, extract_td005_ecs_variables
 
 from .td002_td016_processing import extract_type_energie_from_td002_td016, merge_td002_td016_trtrv
@@ -23,12 +23,15 @@ def main_advanced_system_processing(td001_sys_ch_agg, td001, td002, td016,
                                 how='left')
 
     # ELASTIC SEARCH descriptif et fiches techniques
-
+    print('search CH TD005')
     gen_ch_lib_ft, type_installation_ch_ft, energie_ch_ft, solaire_ch_ft = extract_td005_ch_variables(td005)
+    print('search CH TD003')
 
     gen_ch_lib_desc, type_installation_ch_desc, energie_ch_desc, solaire_ch_desc = extract_td003_ch_variables(td003)
+    print('search ECS TD005')
 
     gen_ecs_lib_ft, type_installation_ecs_ft, energie_ecs_ft = extract_td005_ecs_variables(td005)
+    print('search ECS TD003')
 
     gen_ecs_lib_desc, type_installation_ecs_desc, energie_ecs_desc = extract_td003_ecs_variables(td003)
 

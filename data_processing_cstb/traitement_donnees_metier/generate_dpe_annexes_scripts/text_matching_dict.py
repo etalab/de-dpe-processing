@@ -487,6 +487,7 @@ murs_materiau_search_dict = {
     'Murs en pan de bois avec remplissage tout venant': ['(bois) AND NOT (rondin) AND NOT ("avec remplissage")'],
     'Murs bois (rondin)': ['bois AND rondin'],
     "Murs en bois": ["bois"],  # label simplifié
+    # Platre
     'Cloison de plâtre': ["platre"],
 }
 murs_materiau_search_dict = {k.lower().strip(): v for k, v in murs_materiau_search_dict.items()}
@@ -503,7 +504,6 @@ pb_materiau_search_dict = {"Dalle béton": ['beton*'],
                                                                                            'beton*'],
                            "Plancher à entrevous isolant": ['entrevou*', 'isol*'],
                            "Plancher mitoyen non deperditif": ['plancher*', 'mitoyen'],
-                           "Plancher avec ou sans remplissage": ['plancher*'],
                            "indetermine": ['inconnu']}
 pb_materiau_search_dict = {k.lower().strip(): v for k, v in pb_materiau_search_dict.items()}
 
@@ -523,7 +523,6 @@ ph_materiau_search_dict = {"Toiture en chaume": ['chaume*'],
                            "Plafond en plaque de plâtre": ['plafond', 'platre'],
                            "Plafond mitoyen non deperditif": [('plancher*', "plafond*"), 'mitoyen'],
 
-                           "Plafond avec ou sans remplissage": ['plafond*'],
                            }
 ph_materiau_search_dict = {k.lower().strip(): v for k, v in ph_materiau_search_dict.items()}
 

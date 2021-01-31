@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from .td003_td005_text_extraction_processing import extract_td003_baie_variables, extract_td003_murs_variables, \
+from .td003_td005_text_extraction import extract_td003_baie_variables, extract_td003_murs_variables, \
     extract_td003_pb_variables, extract_td003_ph_variables, extract_td005_baie_variables, extract_td005_murs_variables, \
     extract_td005_pb_variables, extract_td005_ph_variables
 from .text_matching_dict import *
@@ -71,8 +71,10 @@ def main_advanced_enveloppe_processing(td001,td003, td005,env_compo_agg_dict):
                    'remplissage_baie', 'mat_baie', 'orientation_baie']
 
     for var in vars_to_sub:
-        is_null = (td001_env[var].isnull()) | (td001_env[var] == 'inconnu') | (td001_env[var] == 'indetermine')
+        is_null = (td001_env[var].isnull()) | (td001_env[var] == 'inconnu') | (td001_env[var] == 'indetermine')| (td001_env[var] == 'INCOHERENT')
         td001_env.loc[is_null, var] = td001_env.loc[is_null, var + '_txt']
+        is_null = (td001_env[var].isnull()) | (td001_env[var] == 'inconnu') | (td001_env[var] == 'indetermine')| (td001_env[var] == 'INCOHERENT')
+        td001_env.loc[is_null, var] = np.nan
 
     # corr isolation
 
