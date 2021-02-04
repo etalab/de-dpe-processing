@@ -103,5 +103,5 @@ if __name__ == '__main__':
             with open(zipped_file, "wb") as f:  # use `wb` mode
                 f.write(mf.getvalue())
     with open(td001_zipped_dir/'meta_data.json','w') as f:
-        json.dump(json_meta_gorenove,f,indent=4)
+        json.dump(json_meta_gorenove,f,indent=4,ensure_ascii=False)
 

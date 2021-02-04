@@ -5,7 +5,7 @@ import json
 from generate_dpe_annexes_scripts import td001_processing
 from generate_dpe_annexes_scripts.td001_processing import postprocessing_td001
 from generate_dpe_annexes_scripts.utils import round_float_cols, unique_ordered
-from config import paths
+from config import paths,nb_proc
 from multiprocessing import Pool
 
 from generate_dpe_annexes_scripts.td006_processing import agg_td006_td001, merge_td006_tr_tv
@@ -17,7 +17,7 @@ data_dir = paths['DPE_DEPT_PATH']
 annexe_dir = paths['DPE_DEPT_ANNEXE_PATH']
 annexe_dir = Path(annexe_dir)
 annexe_dir.mkdir(exist_ok=True, parents=True)
-
+es_server_path = paths['ES_SERVER_PATH']
 
 def run_postprocessing_by_depts(dept_dir):
     print(dept_dir)
@@ -54,6 +54,9 @@ if __name__ == '__main__':
     #     if dept_dir.name == '94':
     #         print(dept_dir)
     #         run_postprocessing_by_depts(dept_dir)
+    p_es = subprocess.Popen(str(es_server_path.absolute()))
 
-    with Pool(processes=3) as pool:
+    with Pool(processes=nb_proc) as pool:
         pool.starmap(run_postprocessing_by_depts, [(dept_dir,) for dept_dir in list_dir])
+
+    p_es.terminate()

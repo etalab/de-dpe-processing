@@ -5,7 +5,7 @@ import json
 from generate_dpe_annexes_scripts import td001_processing
 from generate_dpe_annexes_scripts.td001_processing import postprocessing_td001
 from generate_dpe_annexes_scripts.utils import round_float_cols, unique_ordered
-from config import paths
+from config import paths,nb_proc
 from multiprocessing import Pool
 from generate_dpe_annexes_scripts.td007_processing import merge_td007_tr_tv, postprocessing_td007, generate_pb_table, \
     generate_ph_table, generate_mur_table, agg_td007_mur_to_td001, agg_td007_ph_to_td001, agg_td007_pb_to_td001
@@ -126,6 +126,7 @@ data_dir = paths['DPE_DEPT_PATH']
 annexe_dir = paths['DPE_DEPT_ANNEXE_PATH']
 annexe_dir = Path(annexe_dir)
 annexe_dir.mkdir(exist_ok=True, parents=True)
+es_server_path = paths['ES_SERVER_PATH']
 
 
 def run_postprocessing_by_depts(dept_dir):
@@ -179,16 +180,8 @@ if __name__ == '__main__':
     print(len(firsts), len(lasts))
     list_dir = firsts + lasts
     list_dir = firsts
-    # list_dir = [el for el in list_dir if '94' in el.name]
-    # list_dir.reverse()
-    # for dept_dir in list_dir:
-    #     if dept_dir.name == '94':
-    #         print(dept_dir)
-    #         run_postprocessing_by_depts(dept_dir)
-    es_bat = Path(os.environ[
-                      'USERPROFILE'] + r'\apps\elasticsearch-7.10.2-windows-x86_64\elasticsearch-7.10.2\bin\elasticsearch.bat')
-    p_es = subprocess.Popen(str(es_bat.absolute()))
+    p_es = subprocess.Popen(str(es_server_path.absolute()))
 
-    with Pool(processes=2) as pool:
+    with Pool(processes=nb_proc) as pool:
         pool.starmap(run_postprocessing_by_depts, [(dept_dir,) for dept_dir in list_dir])
     p_es.terminate()
