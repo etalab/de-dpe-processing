@@ -97,6 +97,7 @@ data_dir = paths['DPE_DEPT_PATH']
 annexe_dir = paths['DPE_DEPT_ANNEXE_PATH']
 annexe_dir = Path(annexe_dir)
 annexe_dir.mkdir(exist_ok=True, parents=True)
+es_server_path = paths['ES_SERVER_PATH']
 
 
 def run_postprocessing_by_depts(dept_dir):

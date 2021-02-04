@@ -5,7 +5,7 @@ import json
 from generate_dpe_annexes_scripts import td001_processing
 from generate_dpe_annexes_scripts.td001_processing import postprocessing_td001
 from generate_dpe_annexes_scripts.utils import round_float_cols, unique_ordered
-from config import paths,nb_proc
+from config import paths, nb_proc
 from multiprocessing import Pool
 from generate_dpe_annexes_scripts.td007_processing import merge_td007_tr_tv, postprocessing_td007, generate_pb_table, \
     generate_ph_table, generate_mur_table, agg_td007_mur_to_td001, agg_td007_ph_to_td001, agg_td007_pb_to_td001
@@ -184,4 +184,5 @@ if __name__ == '__main__':
 
     with Pool(processes=nb_proc) as pool:
         pool.starmap(run_postprocessing_by_depts, [(dept_dir,) for dept_dir in list_dir])
+
     p_es.terminate()
