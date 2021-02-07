@@ -15,7 +15,7 @@ def main_advanced_enveloppe_processing(td001,td003, td005,env_compo_agg_dict):
         "td010_agg": ['pos_isol_mur_ext', 'pos_isol_pb', 'pos_isol_ph'],
         "td008_agg": ['u_baie_baie_vitree_top', 'facteur_solaire_corr_baie_vitree_top',
                       'type_vitrage_baie_vitree_top', 'remplissage_baie_vitree_top', 'mat_baie_vitree_top',
-                      'orientation_baie_infer', 'avancee_masque_max',
+                      'orientation_baie_infer', 'avancee_masque_max','type_occultation_baie_vitree_top',"u_baie_porte_top",
                       "presence_balcon"],
     }
 
