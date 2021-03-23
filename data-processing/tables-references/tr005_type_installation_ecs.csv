@@ -1,0 +1,4 @@
+"id","code","description","est_efface","simu_ordre","simulateur","solaire"
+"1","TR005_001","Un seul système d'ECS sans solaire","0","NULL","1","0"
+"2","TR005_002","Un seul système d'ECS avec solaire","0","NULL","1","1"
+"3","TR005_003","Deux systèmes d'ECS dans une maison ou un appartement","0","NULL","1","0"

@@ -1,0 +1,5 @@
+"id","code","type_production","capacite_vs","pecs","est_efface"
+"1","TV037_001","Instantanée","Vs = 0","21","0"
+"2","TV037_002","Semi-instantanée","0 < Vs ? 20","21-0,8xVs","0"
+"3","TV037_003","Semi-accumulation","20 < Vs ? 150","5-1,751x[(Vs-20)/65]","0"
+"4","TV037_004","Accumulation","150 < Vs","(7,14xVs+428)/1000","0"

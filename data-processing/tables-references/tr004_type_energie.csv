@@ -1,0 +1,6 @@
+"id","code","description","est_efface","simu_ordre","simulateur"
+"1","TR004_001","Bois, Biomasse","0","NULL","1"
+"2","TR004_002","Electricité","0","NULL","1"
+"3","TR004_003","Gaz","0","NULL","1"
+"4","TR004_004","Autres énergies","0","NULL","1"
+"5","TR004_005","Production d'électricité","0","NULL","1"

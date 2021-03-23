@@ -1,0 +1,5 @@
+"id","code","type_batiment","surface","becs","est_efface"
+"1","TV039_001","Maison ou appartement","? 27 m²","0,988x(40-?cw)xSh","0"
+"2","TV039_002","Maison ou appartement","> 27 m²","0,0558x(470,9xln(Sh)-1075)x(40-?cw)","0"
+"3","TV039_003","Immeuble de N appartements","? 27 m²","Nx0,988x(40-?cw)xShmoy","0"
+"4","TV039_004","Immeuble de N appartements","> 27 m²","Nx0,0558x(470,9xln(Shmoy)-1075)x(40-?cw)","0"

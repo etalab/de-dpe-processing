@@ -1,1 +1,0 @@
-# Récupération manuelle pour le moment via phpmyadmin
