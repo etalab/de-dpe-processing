@@ -438,6 +438,26 @@ priorisation_ecs = {'solaire': "solaire",
                     'ecs gpl/butane/propane indetermine': "defaut",
                     'ecs charbon indetermine': "defaut", }
 
+gen_ch_simp_dict = {
+    'convecteurs electriques nfc': 'generateurs a effet joule',
+    'panneaux rayonnants electriques nfc': 'generateurs a effet joule',
+    'panneaux rayonnants electriques': 'generateurs a effet joule',
+    'radiateurs electriques': 'generateurs a effet joule',
+    'autres emetteurs a effet joule': 'generateurs a effet joule',
+    'plafonds/planchers rayonnants electriques nfc': 'generateurs a effet joule',
+    'plafonds/planchers rayonnants electriques': 'generateurs a effet joule',
+    "convecteurs bi-jonction electriques": 'generateurs a effet joule',
+    'convecteurs bi-jonction': 'generateurs a effet joule',
+    "convecteurs electriques": 'generateurs a effet joule',
+    'chauffage electrique indetermine': 'generateurs a effet joule',
+
+}
+gen_ecs_simp_dict = {
+    'ballon a accumulation electrique': 'ecs electrique a effet joule',
+    'ecs electrique indetermine': 'ecs electrique a effet joule',
+    'ecs instantanee electrique': 'ecs electrique a effet joule',
+
+}
 #  ============================================ ENVELOPPE  ============================================================
 
 #
@@ -547,7 +567,7 @@ type_remplissage_search_dict = {
 materiau_baie_search_dict = {
     'bois': ['bois*'],
     'pvc': ['pvc*'],
-    'metal': ['metal*'],
+    'métal': ['metal*'],
 
 }
 

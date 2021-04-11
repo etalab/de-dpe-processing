@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from .text_matching_dict import gen_ch_search_dict_flat, reverse_cat_gen_ch, gen_ch_search_dict, reverse_cat_gen_ecs, \
     gen_ecs_search_dict, gen_ecs_search_dict_flat, tr003_desc_to_gen, energie_combustion_mods, priorisation_ecs, \
-    energie_chaudiere_mods, type_chaudiere_mods
+    energie_chaudiere_mods, type_chaudiere_mods,gen_ecs_simp_dict,gen_ch_simp_dict
 from .conversion_normalisation import energie_normalise_ordered
 from .td003_td005_text_extraction import extract_td003_ch_variables, extract_td003_ecs_variables, \
     extract_td005_ch_variables, extract_td005_ecs_variables
@@ -1371,21 +1371,10 @@ def redressement_td001_sys(td001_sys):
 
 
 def calcul_libelle_simplifie(td001_sys):
-    # TODO : FINIR ICI
     td001_sys['gen_ch_lib_final_simp'] = td001_sys['gen_ch_lib_final'].copy()
 
     ### simplification des dénominations generateurs
 
-    gen_ch_simp_dict = {
-        'convecteurs electriques nfc': 'generateurs a effet joule',
-        'panneaux rayonnants electriques nfc': 'generateurs a effet joule',
-        'radiateurs electriques': 'generateurs a effet joule',
-        'autres emetteurs a effet joule': 'generateurs a effet joule',
-        'plafonds/planchers rayonnants electriques nfc': 'generateurs a effet joule',
-        'convecteurs bi-jonction': 'generateurs a effet joule',
-        "convecteurs electriques": 'generateurs a effet joule',
-        'chauffage electrique indetermine': 'generateurs a effet joule',
-    }
 
     for ener in energie_chaudiere_mods:
         gen_ch_simp_dict[f'chauffage {ener} indetermine'] = f'chaudiere {ener} standard'
@@ -1439,12 +1428,7 @@ def calcul_libelle_simplifie(td001_sys):
 
     td001_sys['gen_ecs_lib_final_simp'] = td001_sys['gen_ecs_lib_final'].copy()
 
-    gen_ecs_simp_dict = {
-        'ballon a accumulation electrique': 'ecs electrique a effet joule',
-        'ecs electrique indetermine': 'ecs electrique a effet joule',
-        'ecs instantanee electrique': 'ecs electrique a effet joule',
 
-    }
 
     for ener in energie_chaudiere_mods:
         gen_ecs_simp_dict[f'ecs {ener} indetermine'] = f'chaudiere {ener} standard'
