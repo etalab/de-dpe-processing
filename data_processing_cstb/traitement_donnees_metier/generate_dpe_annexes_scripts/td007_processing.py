@@ -359,8 +359,6 @@ def generate_mur_table(td007):
     td007_mur.loc[is_annee_isolation, 'annee_isole_uniforme_max'] = td007_mur.loc[
         is_annee_isolation, 'tv003_annee_isolation_max'].astype('string')
 
-    td007_mur.tv003_label_isolation_uniforme.value_counts()
-
     # ## label méthode calcul  U
 
     td007_mur['meth_calc_u'] = 'INCONNUE'

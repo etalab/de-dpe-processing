@@ -575,7 +575,7 @@ orientation_baie_search_dict = {
     'est': ['est*'],
     'nord': ['nord*'],
     'ouest': ['ouest*'],
-    'sud': ['nord*'],
+    'sud': ['sud*'],
 }
 
 # =============================== VENTILATION CLIM ENR ===============================================================
