@@ -70,6 +70,7 @@ def main_advanced_enveloppe_processing(td001,td003, td005,env_compo_agg_dict):
                    'pos_isol_pb', 'type_vitrage_baie',
                    'remplissage_baie', 'mat_baie', 'orientation_baie']
 
+    # HYPOTHESE les données structurées sont plus fiables que les données textes sur l'enveloppe
     for var in vars_to_sub:
         is_null = (td001_env[var].isnull()) | (td001_env[var] == 'inconnu') | (td001_env[var] == 'indetermine')| (td001_env[var] == 'INCOHERENT')
         td001_env.loc[is_null, var] = td001_env.loc[is_null, var + '_txt']
