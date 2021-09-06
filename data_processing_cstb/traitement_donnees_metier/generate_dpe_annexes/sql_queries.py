@@ -1,3 +1,4 @@
+import pandas as pd
 schema_name = "adedpe202006"
 
 
