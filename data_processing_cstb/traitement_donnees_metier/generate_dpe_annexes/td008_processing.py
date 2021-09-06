@@ -234,10 +234,12 @@ def postprocessing_td008(td008):
     td008['cat_baie_infer'] = cat_baie
 
     # U
+    td008.tv010_uw = td008.tv010_uw.replace('extrapolation', np.nan).astype(float)
+
     td008['u_baie'] = td008.coefficient_transmission_thermique_baie
     isnull = (td008.u_baie.isnull()) | (td008.u_baie == 0)
     td008.loc[isnull, 'u_baie'] = td008.loc[isnull, 'tv012_ujn'].astype(float).values
-    isnull = ((td008.u_baie.isnull()) | (td008.u_baie == 0))&(td008.tv010_uw.str.isnumeric()!=False)
+    isnull = ((td008.u_baie.isnull()) | (td008.u_baie == 0)) & (~td008.tv010_uw.isnull())
     td008.loc[isnull, 'u_baie'] = td008.loc[isnull, 'tv010_uw'].astype(float).values
 
     # METHODE SAISIE U
@@ -272,6 +274,7 @@ def postprocessing_td008(td008):
     td008['max_surface'] = td008[['surfacexnb_baie_calc', 'surface']].max(axis=1)
 
     return td008
+
 
 
 # def agg_td008_to_td001_essential(td008):
