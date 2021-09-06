@@ -2,6 +2,17 @@ import pandas as pd
 schema_name = "adedpe202006"
 
 
+def convert_id_column(table, col):
+    table[col] = table[col].astype(dtype=pd.Int32Dtype()).astype(str).replace('<NA>', np.nan).astype('category')
+
+def convert_all_tr_tv_ids(table):
+    ids_cols = [col for col in table if col.endswith('id')]
+
+    for col in ids_cols:
+        print(col)
+        convert_id_column(table, col)
+    return table
+
 def get_td006(dept, engine, schema_name=schema_name):
     query = f"""
         SELECT td006_batiment.*,td001_dpe_id 
@@ -12,7 +23,7 @@ def get_td006(dept, engine, schema_name=schema_name):
         """
     table = pd.read_sql(query, engine)
     table = table.rename(columns={"id": "td006_batiment_id"})
-
+    table = convert_all_tr_tv_ids(table)
     return table
 
 
@@ -28,6 +39,7 @@ def get_td007(dept, engine, schema_name=schema_name):
         """
     table = pd.read_sql(query, engine)
     table = table.rename(columns={"id": "td007_paroi_opaque_id"})
+    table = convert_all_tr_tv_ids(table)
 
     return table
 
@@ -46,5 +58,6 @@ def get_td008(dept, engine, schema_name=schema_name):
         """
     table = pd.read_sql(query, engine)
     table = table.rename(columns={"id": "td008_baie_id"})
+    table = convert_all_tr_tv_ids(table)
 
     return table
