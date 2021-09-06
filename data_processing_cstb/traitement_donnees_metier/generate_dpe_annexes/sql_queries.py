@@ -11,6 +11,8 @@ def get_td006(dept, engine, schema_name=schema_name):
         WHERE td001_dpe.tv016_departement_id = {dept}
         """
     table = pd.read_sql(query, engine)
+    table = table.rename(columns={"id": "td006_batiment_id"})
+
     return table
 
 
@@ -25,6 +27,8 @@ def get_td007(dept, engine, schema_name=schema_name):
         WHERE td001_dpe.tv016_departement_id = {dept}
         """
     table = pd.read_sql(query, engine)
+    table = table.rename(columns={"id": "td007_paroi_opaque_id"})
+
     return table
 
 
@@ -41,4 +45,6 @@ def get_td008(dept, engine, schema_name=schema_name):
         WHERE td001_dpe.tv016_departement_id = {dept}
         """
     table = pd.read_sql(query, engine)
+    table = table.rename(columns={"id": "td008_baie_id"})
+
     return table
