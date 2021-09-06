@@ -2,33 +2,33 @@ import pandas as pd
 from pathlib import Path
 import os
 import json
-from generate_dpe_annexes_scripts import td001_processing
-from generate_dpe_annexes_scripts.td001_processing import postprocessing_td001
-from generate_dpe_annexes_scripts.utils import round_float_cols, unique_ordered
+from generate_dpe_annexes import td001_processing
+from generate_dpe_annexes.td001_processing import postprocessing_td001
+from generate_dpe_annexes.utils import round_float_cols, unique_ordered
 from config import paths, nb_proc
 from multiprocessing import Pool
-from generate_dpe_annexes_scripts.td007_processing import merge_td007_tr_tv, postprocessing_td007, generate_pb_table, \
+from generate_dpe_annexes.td007_processing import merge_td007_tr_tv, postprocessing_td007, generate_pb_table, \
     generate_ph_table, generate_mur_table, agg_td007_mur_to_td001, agg_td007_ph_to_td001, agg_td007_pb_to_td001
 
-from generate_dpe_annexes_scripts.td008_processing import merge_td008_tr_tv, postprocessing_td008
-from generate_dpe_annexes_scripts.td001_merge import merge_td001_dpe_id_envelope
-from generate_dpe_annexes_scripts.td007_processing import agg_td007_to_td001_essential, agg_surf_envelope
-from generate_dpe_annexes_scripts.td008_processing import agg_td008_to_td001
-from generate_dpe_annexes_scripts.td010_processing import merge_td010_tr_tv, postprocessing_td010, agg_td010_td001
-from generate_dpe_annexes_scripts.td011_td012_processing import merge_td012_tr_tv, postprocessing_td011_td012, \
+from generate_dpe_annexes.td008_processing import merge_td008_tr_tv, postprocessing_td008
+from generate_dpe_annexes.td001_merge import merge_td001_dpe_id_envelope
+from generate_dpe_annexes.td007_processing import agg_td007_to_td001_essential, agg_surf_envelope
+from generate_dpe_annexes.td008_processing import agg_td008_to_td001
+from generate_dpe_annexes.td010_processing import merge_td010_tr_tv, postprocessing_td010, agg_td010_td001
+from generate_dpe_annexes.td011_td012_processing import merge_td012_tr_tv, postprocessing_td011_td012, \
     merge_td011_tr_tv, \
     agg_systeme_ch_essential
-from generate_dpe_annexes_scripts.td013_td014_processing import merge_td013_tr_tv, postprocessing_td014, \
+from generate_dpe_annexes.td013_td014_processing import merge_td013_tr_tv, postprocessing_td014, \
     merge_td014_tr_tv, \
     agg_systeme_ecs_essential
-from generate_dpe_annexes_scripts.td001_merge import merge_td001_dpe_id_system
-from generate_dpe_annexes_scripts.doc_annexe import td001_annexe_enveloppe_agg_desc, td001_sys_ch_agg_desc, \
+from generate_dpe_annexes.td001_merge import merge_td001_dpe_id_system
+from generate_dpe_annexes.doc_annexe import td001_annexe_enveloppe_agg_desc, td001_sys_ch_agg_desc, \
     td001_sys_ecs_agg_desc, \
     td007_annexe_desc, td008_annexe_desc, td012_annexe_desc, td014_annexe_desc, enums_cstb, \
     td001_annexe_generale_desc
-from generate_dpe_annexes_scripts.td006_processing import agg_td006_td001, merge_td006_tr_tv
-from generate_dpe_annexes_scripts.gorenove_scripts import concat_td001_gorenove
-from generate_dpe_annexes_scripts.advanced_enveloppe_processing import main_advanced_enveloppe_processing
+from generate_dpe_annexes.td006_processing import agg_td006_td001, merge_td006_tr_tv
+from generate_dpe_annexes.gorenove_scripts import concat_td001_gorenove
+from generate_dpe_annexes.advanced_enveloppe_processing import main_advanced_enveloppe_processing
 import subprocess
 
 
