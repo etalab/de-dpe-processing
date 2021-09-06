@@ -447,6 +447,59 @@ def generate_mur_table(td007):
 
     # TODO :tv001_262 ???
 
+    # ANOMALIES SUR U ET INDICATEUR DE RENOVATION.
+
+    td007_murs['u'] = td007_murs['coefficient_transmission_thermique_paroi'].astype(float)
+    td007_murs['u0'] = td007_murs['coefficient_transmission_thermique_paroi_non_isolee'].astype(float)
+    td007_murs.tv004_umur = td007_murs.tv004_umur.astype(float)
+    td007_murs.tv003_umur = td007_murs.tv003_umur.astype(float)
+
+    # anomaly u0 vs tvu0 -> pointe vraisemblablement vers des anomalies
+    not_null = (~td007_murs.u0.isnull()) & (~td007_murs.tv004_umur.isnull())
+    not_null = not_null & td007_murs.u0 > 0.05
+    sel = td007_murs.loc[not_null]
+    bad = sel.loc[~np.isclose(sel.u0, sel.tv004_umur, atol=0.1)].index
+    td007_murs['anomaly_u0_tvu0'] = 0
+    td007_murs.loc[bad, 'anomaly_u0_tvu0'] = 1
+    td007_murs['u0'] = td007_murs[['u0', 'tv004_umur']].max(axis=1)
+
+    # anomaly u vs tvu -> trop d'anomalies -> cela doit être un probleme d'implémentation EDL.
+    not_null = (~td007_murs.u.isnull()) & (~td007_murs.tv003_umur.isnull())
+    not_null = not_null & td007_murs.u > 0.05
+    sel = td007_murs.loc[not_null]
+    goods = np.isclose(sel.u, sel.tv003_umur, atol=0.1)
+    goods = goods | np.isclose(sel.u, sel.u0, atol=0.1)
+    bad = sel.loc[~goods].index
+    td007_murs['anomaly_u_tvu'] = 0
+    td007_murs.loc[bad, 'anomaly_u_tvu'] = 1
+
+    # pour les U qui sont par défaut non isolé on prend le U0
+    u_2 = td007_murs.u == 2  # a affiner.
+    td007_murs.loc[u_2, 'u'] = td007_murs.loc[u_2, 'u0']
+    is_u_bad = (~td007_murs.u.between(0.05, 5)) | td007_murs.u.isnull()
+    td007_murs.loc[is_u_bad, 'anomaly_u_bad_value'] = 1
+    td007_murs.loc[is_u_bad, 'u'] = td007_murs.loc[is_u_bad, 'tv003_umur']
+
+    # calcul de l'état rénové des parois
+    # comparaison de l'année de construction et les années par défaut et/ou les niveaux de performances.
+    td007_murs['annee_construction'] = td007_murs.annee_construction.astype(float)
+    td007_murs['annee_isole_uniforme_min'] = td007_murs.annee_isole_uniforme_min.astype(float)
+
+    # si année isolation > année construction +20
+    is_renove = td007_murs.annee_isole_uniforme_min > td007_murs.annee_construction + 20
+    # et si année isolation >2000
+    is_renove = is_renove & (td007_murs.annee_isole_uniforme_min > 2000) & (td007_murs.u <= 0.5)
+    # si pas d'info sur année isolation.
+    is_null = td007_murs.annee_isole_uniforme_min.isnull()
+    # on regarde si performance ~=  performance bâtiments récent avec année construction ancienne.
+    is_renove_null = is_null & (td007_murs.annee_construction < 1988) & (td007_murs.u.between(0.05, 0.47))
+    is_renove_null = is_renove_null | (is_null & (td007_murs.annee_construction < 2000) & (td007_murs.u.between(0.05, 0.25)))
+    is_renove = is_renove | is_renove_null
+    td007_murs['is_renove'] = is_renove
+    # affectation de periode rénovation en fonction des performances du U pour les parois rénovées.
+    td007_murs['periode_renovation'] = pd.cut(td007_murs.u, [0.05, 0.25, 0.4, 0.47], labels=['2000-2005', '2006-2012', '>2012'])
+    td007_murs.loc[~is_renove, 'periode_renovation'] = np.nan
+
     return td007_mur
 
 
@@ -499,6 +552,7 @@ def agg_td007_mur_to_td001(td007_mur):
     td007_mur_agg = pd.concat(concat, axis=1)
 
     td007_mur_agg.index.name = 'td001_dpe_id'
+
 
     return td007_mur_agg
 
