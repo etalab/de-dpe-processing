@@ -16,7 +16,7 @@ def convert_all_tr_tv_ids(table):
 
 def get_td006(dept, engine, schema_name=schema_name):
     query = f"""
-        SELECT td006_batiment.*,td001_dpe_id 
+        SELECT td006_batiment.* 
         from {schema_name}.td006_batiment as  td006_batiment
         INNER JOIN {schema_name}.td001_dpe as td001_dpe
                     ON td001_dpe.id = td006_batiment.td001_dpe_id
