@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 schema_name = "adedpe202006"
 
 
