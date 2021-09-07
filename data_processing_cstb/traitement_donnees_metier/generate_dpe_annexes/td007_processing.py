@@ -189,7 +189,7 @@ def calc_surf_paroi_opaque(td007, td008):
     is_non_ext_from_b_infer = td007_m.b_infer.round(2) < 0.96
     is_non_ext = (is_tv002) | (is_tv001_non_ext) | (is_non_ext_from_b_infer)
     td007_m.loc[is_non_ext, 'surf_paroi_opaque_ext_infer'] = np.nan
-    td007_m['surf_paroi_opaque_deperditive_inferxb'] = td007_m['surf_paroi_opaque_deperditive_infer'] * td007.b_infer
+    td007_m['surf_paroi_opaque_deperditive_inferxb'] = td007_m['surf_paroi_opaque_deperditive_infer'] * td007_m.b_infer
 
     return td007_m
 
