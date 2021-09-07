@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 schema_name = "adedpe202006"
-td001_cols = 'td001_dpe.td001_dpe_id as td001_dpe_id,td001_dpe.annee_construction as annee_construction,td001_dpe.tv016_departement_id as tv016_departement_id'
+td001_cols = 'td001_dpe.id as td001_dpe_id,td001_dpe.annee_construction as annee_construction,td001_dpe.tv016_departement_id as tv016_departement_id'
 
 def convert_id_column(table, col):
     table[col] = table[col].astype(dtype=pd.Int32Dtype()).astype(str).replace('<NA>', np.nan).astype('category')
