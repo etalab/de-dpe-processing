@@ -13,6 +13,17 @@ def convert_all_tr_tv_ids(table):
         convert_id_column(table, col)
     return table
 
+def convert_td_ids(table):
+
+    ids_cols = [col for col in table if (col.endswith('id') and  col.startswith('td'))]
+    for col in ids_cols:
+        table[col]=table[col].astype(str)
+    return table
+def convert_all_ids(table):
+
+    table = convert_all_tr_tv_ids(table)
+    table = convert_td_ids(table)
+    return table
 
 def get_td001(dept, engine, schema_name=schema_name):
     query = f"""
@@ -23,7 +34,7 @@ def get_td001(dept, engine, schema_name=schema_name):
     table = pd.read_sql(query, engine)
     table = table.rename(columns={"id": "td006_batiment_id"})
     table = table.loc[:, table.columns.duplicated() == False]
-    table = convert_all_tr_tv_ids(table)
+    table = convert_all_ids(table)
     return table
 
 
@@ -38,7 +49,7 @@ def get_td006(dept, engine, schema_name=schema_name):
     table = pd.read_sql(query, engine)
     table = table.rename(columns={"id": "td006_batiment_id"})
     table = table.loc[:, table.columns.duplicated() == False]
-    table = convert_all_tr_tv_ids(table)
+    table = convert_all_ids(table)
     return table
 
 
@@ -55,7 +66,7 @@ def get_td007(dept, engine, schema_name=schema_name):
     table = pd.read_sql(query, engine)
     table = table.rename(columns={"id": "td007_paroi_opaque_id"})
     table = table.loc[:, table.columns.duplicated() == False]
-    table = convert_all_tr_tv_ids(table)
+    table = convert_all_ids(table)
 
     return table
 
@@ -77,7 +88,7 @@ def get_td008(dept, engine, schema_name=schema_name):
         del table['td008_baie_id']
     table = table.rename(columns={"id": "td008_baie_id"})
     table = table.loc[:, table.columns.duplicated() == False]
-    table = convert_all_tr_tv_ids(table)
+    table = convert_all_ids(table)
 
     return table
 
@@ -94,6 +105,6 @@ def get_td010(dept, engine, schema_name=schema_name):
     table = pd.read_sql(query, engine)
     table = table.rename(columns={"id": "td010_pont_thermique_id"})
     table = table.loc[:, table.columns.duplicated() == False]
-    table = convert_all_tr_tv_ids(table)
+    table = convert_all_ids(table)
 
     return table
