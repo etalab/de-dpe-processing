@@ -24,6 +24,7 @@ def get_td006(dept, engine, schema_name=schema_name):
         """
     table = pd.read_sql(query, engine)
     table = table.rename(columns={"id": "td006_batiment_id"})
+    table = table.loc[:, table.columns.duplicated() == False]
     table = convert_all_tr_tv_ids(table)
     return table
 
@@ -40,6 +41,7 @@ def get_td007(dept, engine, schema_name=schema_name):
         """
     table = pd.read_sql(query, engine)
     table = table.rename(columns={"id": "td007_paroi_opaque_id"})
+    table = table.loc[:, table.columns.duplicated() == False]
     table = convert_all_tr_tv_ids(table)
 
     return table
@@ -61,6 +63,7 @@ def get_td008(dept, engine, schema_name=schema_name):
     if 'td008_baie_id' in table:
         del table['td008_baie_id']
     table = table.rename(columns={"id": "td008_baie_id"})
+    table = table.loc[:, table.columns.duplicated() == False]
     table = convert_all_tr_tv_ids(table)
 
     return table
@@ -77,6 +80,7 @@ def get_td010(dept, engine, schema_name=schema_name):
         """
     table = pd.read_sql(query, engine)
     table = table.rename(columns={"id": "td010_pont_thermique_id"})
+    table = table.loc[:, table.columns.duplicated() == False]
     table = convert_all_tr_tv_ids(table)
 
     return table
