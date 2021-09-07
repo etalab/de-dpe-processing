@@ -41,15 +41,15 @@ def postprocessing_td007(td007, td008):
     table['mat'] = np.nan
     is_tv004 = ~table['tv004_materiaux'].isnull()
 
-    table.loc[is_tv004, 'mat'] = table.loc[is_tv004, 'tv004_materiaux'].str.lower().str.strip().replace('inconnu','indetermine')
+    table.loc[is_tv004, 'mat'] = table.loc[is_tv004, 'tv004_materiaux'].str.lower().str.strip().replace('inconnu', 'indetermine')
 
     is_tv006 = ~table['tv006_materiaux'].isnull()
 
-    table.loc[is_tv006, 'mat'] = table.loc[is_tv006, 'tv006_materiaux'].str.lower().str.strip().replace('inconnu','indetermine')
+    table.loc[is_tv006, 'mat'] = table.loc[is_tv006, 'tv006_materiaux'].str.lower().str.strip().replace('inconnu', 'indetermine')
 
     is_tv008 = ~table['tv008_materiaux'].isnull()
 
-    table.loc[is_tv008, 'mat'] = table.loc[is_tv008, 'tv008_materiaux'].str.lower().str.strip().replace('inconnu','indetermine')
+    table.loc[is_tv008, 'mat'] = table.loc[is_tv008, 'tv008_materiaux'].str.lower().str.strip().replace('inconnu', 'indetermine')
 
     # calcul isolation
 
@@ -139,7 +139,7 @@ def calc_surf_paroi_opaque(td007, td008):
     is_surf_totale_v2 = calc_surf_approx_equality(td007_m.surface_paroi, td007_m.surf_paroi_totale_calc_v2)
     is_surf_paroi_opaque = calc_surf_approx_equality(td007_m.surface_paroi, td007_m.surf_paroi_opaque_calc)
     is_surf_paroi_opaque_deg = calc_surf_approx_equality(td007_m.surface_paroi, td007_m.surf_paroi_opaque_calc,
-                                                            rtol=0.1)
+                                                         rtol=0.1)
 
     td007_m['qualif_surf'] = 'indetermine'
     td007_m.loc[is_surf_paroi_opaque_deg, 'qualif_surf'] = 'surf_paroi=surf_paroi_opaque'
@@ -195,7 +195,6 @@ def calc_surf_paroi_opaque(td007, td008):
 
 
 def agg_surf_envelope(td007, td008):
-
     # surface
 
     td008_porte = td008.loc[td008.cat_baie_simple_infer == 'porte']
@@ -218,8 +217,8 @@ def agg_surf_envelope(td007, td008):
     td007_ph = td007.loc[td007.tr014_type_parois_opaque_id == '4']
 
     surf_mur = td007_mur.groupby('td001_dpe_id')[['surf_paroi_opaque_infer',
-                                                   'surf_paroi_opaque_deperditive_infer',
-                                                   'surf_paroi_opaque_ext_infer']].sum()
+                                                  'surf_paroi_opaque_deperditive_infer',
+                                                  'surf_paroi_opaque_ext_infer']].sum()
     surf_pb = td007_pb.groupby('td001_dpe_id')[['surf_paroi_opaque_infer',
                                                 'surf_paroi_opaque_deperditive_infer']].sum()
 
@@ -244,8 +243,8 @@ def agg_surf_envelope(td007, td008):
     quantitatif['perc_surf_vitree_total'] = quantitatif.surf_vitree_totale / (
             quantitatif.surf_mur_totale + quantitatif.surf_vitree_totale)
     for perc_surf_vitree_col in ['perc_surf_vitree_ext',
-                                     'perc_surf_vitree_deperditif',
-                                     'perc_surf_vitree_total']:
+                                 'perc_surf_vitree_deperditif',
+                                 'perc_surf_vitree_total']:
         perc_surf_vitree = quantitatif[perc_surf_vitree_col]
         anomaly_perc_surf_vitree = perc_surf_vitree > 0.95
         quantitatif.loc[anomaly_perc_surf_vitree, perc_surf_vitree_col] = np.nan
@@ -287,10 +286,10 @@ def agg_td007_to_td001_essential(td007):
     #                                     'td001_dpe_id').to_frame('is_mur_deper_isole')
 
     mat_mur_deper_agg = agg_pond_top_freq(td007_mur, 'mat', 'surf_paroi_opaque_deperditive_infer',
-                                           'td001_dpe_id').to_frame('mat_mur_deper_top')
+                                          'td001_dpe_id').to_frame('mat_mur_deper_top')
 
     mat_mur_ext_agg = agg_pond_top_freq(td007_mur, 'mat', 'surf_paroi_opaque_ext_infer',
-                                         'td001_dpe_id').to_frame('mat_mur_ext_top')
+                                        'td001_dpe_id').to_frame('mat_mur_ext_top')
 
     mat_pb_agg = agg_pond_top_freq(td007_pb, 'mat', 'surf_paroi_opaque_deperditive_infer',
                                    'td001_dpe_id').to_frame('mat_pb_deper_top')
@@ -344,11 +343,11 @@ def generate_mur_table(td007):
         inconnu, 'tv003_label_isolation_uniforme']
     td007_mur.loc[non_isole, 'tv003_label_isolation_uniforme'] = 'non isolé'
     td007_mur.loc[isole & is_annee_construction, 'tv003_label_isolation_uniforme'] = 'isolé periode constr : ' + \
-                                                                                      td007_mur.loc[
-                                                                                          isole & is_annee_construction, 'tv003_label_isolation_uniforme']
+                                                                                     td007_mur.loc[
+                                                                                         isole & is_annee_construction, 'tv003_label_isolation_uniforme']
     td007_mur.loc[isole & (~is_annee_construction), 'tv003_label_isolation_uniforme'] = 'isolé periode isolation :' + \
-                                                                                         td007_mur.loc[isole & (
-                                                                                             ~is_annee_construction), 'tv003_label_isolation_uniforme']
+                                                                                        td007_mur.loc[isole & (
+                                                                                            ~is_annee_construction), 'tv003_label_isolation_uniforme']
 
     # annee isolation uniforme.
 
@@ -497,16 +496,20 @@ def generate_mur_table(td007):
     is_renove = is_renove | is_renove_null
     td007_mur['is_renove'] = is_renove
     # affectation de periode rénovation en fonction des performances du U pour les parois rénovées.
-    td007_mur['periode_renovation'] = pd.cut(td007_mur.u, [0.05, 0.25, 0.4, 0.47], labels=['2000-2005', '2006-2012', '>2012'])
+    td007_mur['periode_renovation'] = pd.cut(td007_mur.u, [0.05, 0.25, 0.4, 0.47], labels=['>2012', '2006-2012', '2000-2005'],ordered=False)
+    periode_renovation_table = pd.cut(td007_mur.annee_isole_uniforme_min, [1999, 2005, 2011, 2100], labels=['2000-2005', '2006-2012', '>2012'],ordered=False)
+    td007_mur.loc[~periode_renovation_table.isnull(), 'periode_renovation'] = periode_renovation_table[~periode_renovation_table.isnull()]
     td007_mur.loc[~is_renove, 'periode_renovation'] = np.nan
+    td007_mur.periode_renovation = td007_mur.periode_renovation.cat.add_categories('batiment récent')
+    td007_mur.loc[td007_mur.annee_construction > 2006, 'periode_renovation'] = 'batiment récent'
 
     return td007_mur
 
 
 def agg_td007_mur_to_td001(td007_mur):
     td007_mur = td007_mur.rename(columns={'tv004_epaisseur': 'ep_mat',
-                                            'tv002_local_non_chauffe': 'type_local_non_chauffe',
-                                            'coefficient_transmission_thermique_paroi': 'u'})
+                                          'tv002_local_non_chauffe': 'type_local_non_chauffe',
+                                          'coefficient_transmission_thermique_paroi': 'u'})
 
     concat = list()
     type_adjacence_top = agg_pond_top_freq(td007_mur, 'type_adjacence', 'surf_paroi_opaque_infer',
@@ -528,7 +531,7 @@ def agg_td007_mur_to_td001(td007_mur):
                                                        'td001_dpe_id').to_frame(f'type_lnc_mur_top')
 
     pivot = td007_mur.pivot_table(index='td001_dpe_id', columns='type_adjacence', values='surf_paroi_opaque_infer',
-                                   aggfunc='sum')
+                                  aggfunc='sum')
     pivot.columns = [f'surf_mur_{col.lower()}' for col in pivot]
     concat.extend([type_local_non_chauffe_arr_agg, type_local_non_chauffe_agg_top, pivot])
 
@@ -552,7 +555,6 @@ def agg_td007_mur_to_td001(td007_mur):
     td007_mur_agg = pd.concat(concat, axis=1)
 
     td007_mur_agg.index.name = 'td001_dpe_id'
-
 
     return td007_mur_agg
 
@@ -714,6 +716,64 @@ def generate_pb_table(td007):
 
     td007_pb['type_adjacence_simple'] = td007_pb.type_adjacence.replace({'TERRE_PLEIN': 'TP_VS',
                                                                          'VIDE_SANITAIRE': 'TP_VS'})
+
+    td007_pb['u'] = td007_pb['coefficient_transmission_thermique_paroi'].astype(float)
+    td007_pb['u0'] = td007_pb['coefficient_transmission_thermique_paroi_non_isolee'].astype(float)
+    td007_pb.tv006_upb0 = td007_pb.tv006_upb0.astype(float)
+    td007_pb.tv005_upb = td007_pb.tv005_upb.astype(float)
+
+    # anomaly u0 vs tvu0 -> pointe vraisemblablement vers des anomalies
+    not_null = (~td007_pb.u0.isnull()) & (~td007_pb.tv006_upb0.isnull())
+    not_null = not_null & td007_pb.u0 > 0.05
+    sel = td007_pb.loc[not_null]
+    bad = sel.loc[~np.isclose(sel.u0, sel.tv006_upb0, atol=0.1)].index
+    td007_pb['anomaly_u0_tvu0'] = 0
+    td007_pb.loc[bad, 'anomaly_u0_tvu0'] = 1
+    td007_pb['u0'] = td007_pb[['u0', 'tv006_upb0']].max(axis=1)
+
+    # anomaly u vs tvu -> trop d'anomalies -> cela doit être un probleme d'implémentation EDL.
+    not_null = (~td007_pb.u.isnull()) & (~td007_pb.tv005_upb.isnull())
+    not_null = not_null & td007_pb.u > 0.05
+    sel = td007_pb.loc[not_null]
+    goods = np.isclose(sel.u, sel.tv005_upb, atol=0.1)
+    goods = goods | np.isclose(sel.u, sel.u0, atol=0.1)
+    bad = sel.loc[~goods].index
+    td007_pb['anomaly_u_tvu'] = 0
+    td007_pb.loc[bad, 'anomaly_u_tvu'] = 1
+
+    # pour les U qui sont par défaut non isolé on prend le U0
+    u_2 = td007_pb.u == 2  # a affiner.
+    td007_pb.loc[u_2, 'u'] = td007_pb.loc[u_2, 'u0']
+    is_u_bad = (~td007_pb.u.between(0.05, 5)) | td007_pb.u.isnull()
+    td007_pb.loc[is_u_bad, 'anomaly_u_bad_value'] = 1
+    td007_pb.loc[is_u_bad, 'u'] = td007_pb.loc[is_u_bad, 'tv005_upb']
+
+    # calcul de l'état rénové des parois
+    # comparaison de l'année de construction et les années par défaut et/ou les niveaux de performances.
+    td007_pb['annee_construction'] = td007_pb.annee_construction.astype(float)
+    td007_pb['annee_isole_uniforme_min'] = td007_pb.annee_isole_uniforme_min.astype(float)
+
+    # si année isolation > année construction +20
+    is_renove = td007_pb.annee_isole_uniforme_min > td007_pb.annee_construction + 20
+    # et si année isolation >2000
+    is_renove = is_renove & (td007_pb.annee_isole_uniforme_min > 2000) & (td007_pb.u <= 0.3)
+
+    # si pas d'info sur année isolation.
+    is_null = td007_pb.annee_isole_uniforme_min.isnull()
+    # on regarde si performance ~=  performance bâtiments récent avec année construction ancienne.
+    # attention ici pour les pb si les U sont claqués en dur pour des terres plein on va les identifier rénové .
+    is_renove_null = is_null & (td007_pb.annee_construction < 1988) & (td007_pb.u.between(0.05, 0.43))
+    is_renove_null = is_renove_null | (is_null & (td007_pb.annee_construction < 2000) & (td007_pb.u.between(0.05, 0.36)))
+    is_renove = is_renove | is_renove_null
+    td007_pb['is_renove'] = is_renove
+    # affectation de periode rénovation en fonction des performances du U pour les parois rénovées.
+    td007_pb['periode_renovation'] = pd.cut(td007_pb.u, [0.05, 0.27, 0.3, 0.58], labels=['>2006', '2000-2005', '1988-2000'], ordered=False)
+    periode_renovation_table = pd.cut(td007_pb.annee_isole_uniforme_min, [1987, 1999, 2005, 2100], labels=['1988-2000', '2000-2005', '>2006'], ordered=False)
+    td007_pb.loc[~periode_renovation_table.isnull(), 'periode_renovation'] = periode_renovation_table[~periode_renovation_table.isnull()]
+    td007_pb.loc[~is_renove, 'periode_renovation'] = np.nan
+    td007_pb.periode_renovation = td007_pb.periode_renovation.cat.add_categories('batiment récent')
+    td007_pb.loc[td007_pb.annee_construction > 2006, 'periode_renovation'] = 'batiment récent'
+
     return td007_pb
 
 
@@ -904,6 +964,61 @@ def generate_ph_table(td007):
     is_adj = td007_ph.tv001_code == 'TV001_004'
 
     td007_ph.loc[is_adj, 'type_adjacence'] = 'BAT_ADJ'
+
+    td007_ph['u'] = td007_ph['coefficient_transmission_thermique_paroi'].astype(float)
+    td007_ph['u0'] = td007_ph['coefficient_transmission_thermique_paroi_non_isolee'].astype(float)
+    td007_ph.tv008_uph0 = td007_ph.tv008_uph0.astype(float)
+    td007_ph.tv007_uph = td007_ph.tv007_uph.astype(float)
+
+    # anomaly u0 vs tvu0 -> pointe vraisemblablement vers des anomalies
+    not_null = (~td007_ph.u0.isnull()) & (~td007_ph.tv008_uph0.isnull())
+    not_null = not_null & td007_ph.u0 > 0.05
+    sel = td007_ph.loc[not_null]
+    bad = sel.loc[~np.isclose(sel.u0, sel.tv008_uph0, atol=0.1)].index
+    td007_ph['anomaly_u0_tvu0'] = 0
+    td007_ph.loc[bad, 'anomaly_u0_tvu0'] = 1
+    td007_ph['u0'] = td007_ph[['u0', 'tv008_uph0']].max(axis=1)
+
+    # anomaly u vs tvu -> trop d'anomalies -> cela doit être un probleme d'implémentation EDL.
+    not_null = (~td007_ph.u.isnull()) & (~td007_ph.tv007_uph.isnull())
+    not_null = not_null & td007_ph.u > 0.05
+    sel = td007_ph.loc[not_null]
+    goods = np.isclose(sel.u, sel.tv007_uph, atol=0.1)
+    goods = goods | np.isclose(sel.u, sel.u0, atol=0.1)
+    bad = sel.loc[~goods].index
+    td007_ph['anomaly_u_tvu'] = 0
+    td007_ph.loc[bad, 'anomaly_u_tvu'] = 1
+
+    # pour les U qui sont par défaut non isolé on prend le U0
+    u_2 = td007_ph.u == 2  # a affiner.
+    td007_ph.loc[u_2, 'u'] = td007_ph.loc[u_2, 'u0']
+    is_u_bad = (~td007_ph.u.between(0.05, 5)) | td007_ph.u.isnull()
+    td007_ph.loc[is_u_bad, 'anomaly_u_bad_value'] = 1
+    td007_ph.loc[is_u_bad, 'u'] = td007_ph.loc[is_u_bad, 'tv007_uph']
+
+    # calcul de l'état rénové des parois
+    # comparaison de l'année de construction et les années par défaut et/ou les niveaux de performances.
+    td007_ph['annee_construction'] = td007_ph.annee_construction.astype(float)
+    td007_ph['annee_isole_uniforme_min'] = td007_ph.annee_isole_uniforme_min.astype(float)
+
+    # si année isolation > année construction +20
+    is_renove = td007_ph.annee_isole_uniforme_min > td007_ph.annee_construction + 20
+    # et si année isolation >2000
+    is_renove = is_renove & (td007_ph.annee_isole_uniforme_min > 2000) & (td007_ph.u <= 0.3)
+    # si pas d'info sur année isolation.
+    is_null = td007_ph.annee_isole_uniforme_min.isnull()
+    # on regarde si performance ~=  performance bâtiments récent avec année construction ancienne.
+    is_renove_null = is_null & (td007_ph.annee_construction < 1988) & (td007_ph.u.between(0.05, 0.3))
+    is_renove_null = is_renove_null | (is_null & (td007_ph.annee_construction < 2000) & (td007_ph.u.between(0.05, 0.25)))
+    is_renove = is_renove | is_renove_null
+    td007_ph['is_renove'] = is_renove
+    # affectation de periode rénovation en fonction des performances du U pour les parois rénovées.
+    td007_ph['periode_renovation'] = pd.cut(td007_ph.u, [0.05, 0.25, 0.3, 0.5], labels=['>2006', '2000-2005', '1988-2000'],ordered=True)
+    periode_renovation_table = pd.cut(td007_ph.annee_isole_uniforme_min, [1987, 1999, 2005, 2100], labels=['1988-2000', '2000-2005', '>2006'],ordered=True)
+    td007_ph.loc[~periode_renovation_table.isnull(), 'periode_renovation'] = periode_renovation_table[~periode_renovation_table.isnull()]
+    td007_ph.loc[~is_renove, 'periode_renovation'] = np.nan
+    td007_ph.periode_renovation = td007_ph.periode_renovation.cat.add_categories('batiment récent')
+    td007_ph.loc[td007_ph.annee_construction > 2006, 'periode_renovation'] = 'batiment récent'
 
     return td007_ph
 
