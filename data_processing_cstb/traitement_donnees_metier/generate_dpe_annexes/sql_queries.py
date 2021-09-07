@@ -7,7 +7,7 @@ def convert_id_column(table, col):
     table[col] = table[col].astype(dtype=pd.Int32Dtype()).astype(str).replace('<NA>', np.nan).astype('category')
 
 def convert_all_tr_tv_ids(table):
-    ids_cols = [col for col in table if col.endswith('id')]
+    ids_cols = [col for col in table if (col.endswith('id') and not col.startswith('td'))]
 
     for col in ids_cols:
         convert_id_column(table, col)

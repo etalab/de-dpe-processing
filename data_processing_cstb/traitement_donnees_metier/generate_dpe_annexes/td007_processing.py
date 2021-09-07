@@ -514,16 +514,14 @@ def agg_td007_mur_to_td001(td007_mur):
     type_adjacence_top = agg_pond_top_freq(td007_mur, 'type_adjacence', 'surf_paroi_opaque_infer',
                                            'td001_dpe_id').to_frame(f'type_adjacence_top')
 
-    type_adjacence_arr_agg = td007_mur.groupby('td001_dpe_id').type_adjacence.apply(
-        lambda x: np.sort(x.dropna().unique()).tolist())
+    type_adjacence_arr_agg = td007_mur.groupby('td001_dpe_id').type_adjacence.apply(lambda x: sorted(list(set(x.dropna()))))
 
     type_adjacence_arr_agg.name = 'type_adjacence_array'
 
     concat.append(type_adjacence_top)
     concat.append(type_adjacence_arr_agg)
 
-    type_local_non_chauffe_arr_agg = td007_mur.groupby('td001_dpe_id').type_local_non_chauffe.apply(
-        lambda x: np.sort(x.dropna().unique()).tolist())
+    type_local_non_chauffe_arr_agg = td007_mur.groupby('td001_dpe_id').type_local_non_chauffe.apply(lambda x: sorted(list(set(x.dropna()))))
     type_local_non_chauffe_arr_agg = type_local_non_chauffe_arr_agg.to_frame('type_lnc_mur_array')
     type_local_non_chauffe_agg_top = agg_pond_top_freq(td007_mur, 'type_local_non_chauffe',
                                                        'surf_paroi_opaque_infer',
@@ -556,7 +554,6 @@ def agg_td007_mur_to_td001(td007_mur):
     td007_mur_agg.index.name = 'td001_dpe_id'
 
     return td007_mur_agg
-
 
 # ================================== TRAITEMENT DES PLANCHERS BAS ==============================================================
 
@@ -783,16 +780,14 @@ def agg_td007_pb_to_td001(td007_pb):
     type_adjacence_top = agg_pond_top_freq(td007_pb, 'type_adjacence', 'surf_paroi_opaque_infer',
                                            'td001_dpe_id').to_frame(f'type_adjacence_pb_top')
 
-    type_adjacence_arr_agg = td007_pb.groupby('td001_dpe_id').type_adjacence.apply(
-        lambda x: np.sort(x.dropna().unique()).tolist())
+    type_adjacence_arr_agg = td007_pb.groupby('td001_dpe_id').type_adjacence.apply(lambda x: sorted(list(set(x.dropna()))))
 
     type_adjacence_arr_agg.name = 'type_adjacence_array'
 
     concat.append(type_adjacence_top)
     concat.append(type_adjacence_arr_agg)
 
-    type_local_non_chauffe_arr_agg = td007_pb.groupby('td001_dpe_id').type_local_non_chauffe.apply(
-        lambda x: np.sort(x.dropna().unique()).tolist())
+    type_local_non_chauffe_arr_agg = td007_pb.groupby('td001_dpe_id').type_local_non_chauffe.apply(lambda x: sorted(list(set(x.dropna()))))
     type_local_non_chauffe_arr_agg = type_local_non_chauffe_arr_agg.to_frame('type_lnc_pb_array')
     type_local_non_chauffe_agg_top = agg_pond_top_freq(td007_pb, 'type_local_non_chauffe', 'surf_paroi_opaque_infer',
                                                        'td001_dpe_id').to_frame(f'type_lnc_pb_top')
@@ -1028,16 +1023,14 @@ def agg_td007_ph_to_td001(td007_ph):
     type_adjacence_top = agg_pond_top_freq(td007_ph, 'type_adjacence', 'surf_paroi_opaque_infer',
                                            'td001_dpe_id').to_frame(f'type_adjacence_ph_top')
 
-    type_adjacence_arr_agg = td007_ph.groupby('td001_dpe_id').type_adjacence.apply(
-        lambda x: np.sort(x.dropna().unique()).tolist())
+    type_adjacence_arr_agg = td007_ph.groupby('td001_dpe_id').type_adjacence.apply(lambda x: sorted(list(set(x.dropna()))))
 
     type_adjacence_arr_agg.name = 'type_adjacence_array'
 
     concat.append(type_adjacence_top)
     concat.append(type_adjacence_arr_agg)
 
-    type_local_non_chauffe_arr_agg = td007_ph.groupby('td001_dpe_id').type_local_non_chauffe.apply(
-        lambda x: np.sort(x.dropna().unique()).tolist())
+    type_local_non_chauffe_arr_agg = td007_ph.groupby('td001_dpe_id').type_local_non_chauffe.apply(lambda x: sorted(list(set(x.dropna()))))
     type_local_non_chauffe_arr_agg = type_local_non_chauffe_arr_agg.to_frame('type_lnc_ph_array')
     type_local_non_chauffe_agg_top = agg_pond_top_freq(td007_ph, 'type_local_non_chauffe', 'surf_paroi_opaque_infer',
                                                        'td001_dpe_id').to_frame(f'type_lnc_ph_top')
