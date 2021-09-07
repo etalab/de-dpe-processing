@@ -333,7 +333,7 @@ def clean_desc_txt(x):
                           "\n", "\t",  # remove carriage return/tab
                           "/", "\\", "(", ")"  # remove special separators characters and ()
                                           "[", "]", "_", "°", "^", "<br>", ">", "<"
-                                                                                '«', '»','<br'
+                                                                                '«', '»', '<br'
 
                           ]
     for bad_char in bad_chars_to_space:
@@ -341,3 +341,12 @@ def clean_desc_txt(x):
     x = ' '.join(x.split())
     x = x.strip()
     return x
+
+
+def select_only_new_cols(raw_table, new_table, id_col, add_cols=None):
+    if add_cols is None:
+        add_cols = []
+    cols = [id_col] + [el for el in new_table.columns if el not in raw_table]
+    cols = [el for el in cols if (not el.startswith('tv')) and (not el.startswith('tr'))]
+    cols = cols + add_cols
+    return new_table[cols]

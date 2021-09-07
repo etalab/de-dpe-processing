@@ -10,9 +10,22 @@ def convert_all_tr_tv_ids(table):
     ids_cols = [col for col in table if col.endswith('id')]
 
     for col in ids_cols:
-        print(col)
         convert_id_column(table, col)
     return table
+
+
+def get_td001(dept, engine, schema_name=schema_name):
+    query = f"""
+        SELECT td001_dpe.*
+        from {schema_name}.td001_dpe as  td001_dpe
+        WHERE td001_dpe.tv016_departement_id = {dept}
+        """
+    table = pd.read_sql(query, engine)
+    table = table.rename(columns={"id": "td006_batiment_id"})
+    table = table.loc[:, table.columns.duplicated() == False]
+    table = convert_all_tr_tv_ids(table)
+    return table
+
 
 def get_td006(dept, engine, schema_name=schema_name):
     query = f"""

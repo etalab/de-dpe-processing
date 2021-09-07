@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
-from .utils import agg_pond_avg, agg_pond_top_freq
-from .trtvtables import DPETrTvTables
+from generate_dpe_annexes.utils import agg_pond_avg, agg_pond_top_freq
+from generate_dpe_annexes.trtvtables import DPETrTvTables
 
 td007_types = {'id': 'str',
                'td006_batiment_id': 'str',
@@ -473,7 +473,7 @@ def generate_mur_table(td007):
     td007_mur.loc[bad, 'anomaly_u_tvu'] = 1
 
     # pour les U qui sont par défaut non isolé on prend le U0
-    u_2 = td007_mur.u == 2  # a affiner.
+    u_2 = td007_mur.u == 2 & (~td007_mur.u0.isnull())  # a affiner.
     td007_mur.loc[u_2, 'u'] = td007_mur.loc[u_2, 'u0']
     is_u_bad = (~td007_mur.u.between(0.05, 5)) | td007_mur.u.isnull()
     td007_mur.loc[is_u_bad, 'anomaly_u_bad_value'] = 1
@@ -508,14 +508,13 @@ def generate_mur_table(td007):
 
 def agg_td007_mur_to_td001(td007_mur):
     td007_mur = td007_mur.rename(columns={'tv004_epaisseur': 'ep_mat',
-                                          'tv002_local_non_chauffe': 'type_local_non_chauffe',
-                                          'coefficient_transmission_thermique_paroi': 'u'})
+                                          'tv002_local_non_chauffe': 'type_local_non_chauffe'})
 
     concat = list()
     type_adjacence_top = agg_pond_top_freq(td007_mur, 'type_adjacence', 'surf_paroi_opaque_infer',
                                            'td001_dpe_id').to_frame(f'type_adjacence_top')
 
-    type_adjacence_arr_agg = td007_mur.groupby('td001_dpe_id').type_adjacence.agg(
+    type_adjacence_arr_agg = td007_mur.groupby('td001_dpe_id').type_adjacence.apply(
         lambda x: np.sort(x.dropna().unique()).tolist())
 
     type_adjacence_arr_agg.name = 'type_adjacence_array'
@@ -523,7 +522,7 @@ def agg_td007_mur_to_td001(td007_mur):
     concat.append(type_adjacence_top)
     concat.append(type_adjacence_arr_agg)
 
-    type_local_non_chauffe_arr_agg = td007_mur.groupby('td001_dpe_id').type_local_non_chauffe.agg(
+    type_local_non_chauffe_arr_agg = td007_mur.groupby('td001_dpe_id').type_local_non_chauffe.apply(
         lambda x: np.sort(x.dropna().unique()).tolist())
     type_local_non_chauffe_arr_agg = type_local_non_chauffe_arr_agg.to_frame('type_lnc_mur_array')
     type_local_non_chauffe_agg_top = agg_pond_top_freq(td007_mur, 'type_local_non_chauffe',
@@ -779,13 +778,12 @@ def generate_pb_table(td007):
 
 def agg_td007_pb_to_td001(td007_pb):
     td007_pb = td007_pb.rename(columns={
-        'tv002_local_non_chauffe': 'type_local_non_chauffe',
-        'coefficient_transmission_thermique_paroi': 'u'})
+        'tv002_local_non_chauffe': 'type_local_non_chauffe'})
     concat = list()
     type_adjacence_top = agg_pond_top_freq(td007_pb, 'type_adjacence', 'surf_paroi_opaque_infer',
                                            'td001_dpe_id').to_frame(f'type_adjacence_pb_top')
 
-    type_adjacence_arr_agg = td007_pb.groupby('td001_dpe_id').type_adjacence.agg(
+    type_adjacence_arr_agg = td007_pb.groupby('td001_dpe_id').type_adjacence.apply(
         lambda x: np.sort(x.dropna().unique()).tolist())
 
     type_adjacence_arr_agg.name = 'type_adjacence_array'
@@ -793,7 +791,7 @@ def agg_td007_pb_to_td001(td007_pb):
     concat.append(type_adjacence_top)
     concat.append(type_adjacence_arr_agg)
 
-    type_local_non_chauffe_arr_agg = td007_pb.groupby('td001_dpe_id').type_local_non_chauffe.agg(
+    type_local_non_chauffe_arr_agg = td007_pb.groupby('td001_dpe_id').type_local_non_chauffe.apply(
         lambda x: np.sort(x.dropna().unique()).tolist())
     type_local_non_chauffe_arr_agg = type_local_non_chauffe_arr_agg.to_frame('type_lnc_pb_array')
     type_local_non_chauffe_agg_top = agg_pond_top_freq(td007_pb, 'type_local_non_chauffe', 'surf_paroi_opaque_infer',
@@ -1025,13 +1023,12 @@ def generate_ph_table(td007):
 
 def agg_td007_ph_to_td001(td007_ph):
     td007_ph = td007_ph.rename(columns={
-        'tv002_local_non_chauffe': 'type_local_non_chauffe',
-        'coefficient_transmission_thermique_paroi': 'u'})
+        'tv002_local_non_chauffe': 'type_local_non_chauffe'})
     concat = list()
     type_adjacence_top = agg_pond_top_freq(td007_ph, 'type_adjacence', 'surf_paroi_opaque_infer',
                                            'td001_dpe_id').to_frame(f'type_adjacence_ph_top')
 
-    type_adjacence_arr_agg = td007_ph.groupby('td001_dpe_id').type_adjacence.agg(
+    type_adjacence_arr_agg = td007_ph.groupby('td001_dpe_id').type_adjacence.apply(
         lambda x: np.sort(x.dropna().unique()).tolist())
 
     type_adjacence_arr_agg.name = 'type_adjacence_array'
@@ -1039,7 +1036,7 @@ def agg_td007_ph_to_td001(td007_ph):
     concat.append(type_adjacence_top)
     concat.append(type_adjacence_arr_agg)
 
-    type_local_non_chauffe_arr_agg = td007_ph.groupby('td001_dpe_id').type_local_non_chauffe.agg(
+    type_local_non_chauffe_arr_agg = td007_ph.groupby('td001_dpe_id').type_local_non_chauffe.apply(
         lambda x: np.sort(x.dropna().unique()).tolist())
     type_local_non_chauffe_arr_agg = type_local_non_chauffe_arr_agg.to_frame('type_lnc_ph_array')
     type_local_non_chauffe_agg_top = agg_pond_top_freq(td007_ph, 'type_local_non_chauffe', 'surf_paroi_opaque_infer',
