@@ -273,6 +273,9 @@ def postprocessing_td008(td008):
     # MAX SURFACE
     td008['max_surface'] = td008[['surfacexnb_baie_calc', 'surface']].max(axis=1)
 
+    # IS RENOVE
+    td008['is_renove'] = (td008.coefficient_transmission_thermique_baie < 2.5) & (td008.annee_construction < 1988)
+
     return td008
 
 

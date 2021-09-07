@@ -181,7 +181,6 @@ def calc_surf_paroi_opaque(td007, td008):
 
     td007_m['b_infer'] = td007_m.deperdition_thermique / (
             td007_m.surface_paroi * td007_m.coefficient_transmission_thermique_paroi)
-
     # infer surface paroi opaque exterieure
 
     td007_m['surf_paroi_opaque_ext_infer'] = td007_m.surf_paroi_opaque_infer
@@ -190,6 +189,7 @@ def calc_surf_paroi_opaque(td007, td008):
     is_non_ext_from_b_infer = td007_m.b_infer.round(2) < 0.96
     is_non_ext = (is_tv002) | (is_tv001_non_ext) | (is_non_ext_from_b_infer)
     td007_m.loc[is_non_ext, 'surf_paroi_opaque_ext_infer'] = np.nan
+    td007_m['surf_paroi_opaque_deperditive_inferxb'] = td007_m['surf_paroi_opaque_deperditive_infer'] * td007.b_infer
 
     return td007_m
 
@@ -1013,8 +1013,8 @@ def generate_ph_table(td007):
     is_renove = is_renove | is_renove_null
     td007_ph['is_renove'] = is_renove
     # affectation de periode rénovation en fonction des performances du U pour les parois rénovées.
-    td007_ph['periode_renovation'] = pd.cut(td007_ph.u, [0.05, 0.25, 0.3, 0.5], labels=['>2006', '2000-2005', '1988-2000'],ordered=True)
-    periode_renovation_table = pd.cut(td007_ph.annee_isole_uniforme_min, [1987, 1999, 2005, 2100], labels=['1988-2000', '2000-2005', '>2006'],ordered=True)
+    td007_ph['periode_renovation'] = pd.cut(td007_ph.u, [0.05, 0.25, 0.3, 0.5], labels=['>2006', '2000-2005', '1988-2000'],ordered=False)
+    periode_renovation_table = pd.cut(td007_ph.annee_isole_uniforme_min, [1987, 1999, 2005, 2100], labels=['1988-2000', '2000-2005', '>2006'],ordered=False)
     td007_ph.loc[~periode_renovation_table.isnull(), 'periode_renovation'] = periode_renovation_table[~periode_renovation_table.isnull()]
     td007_ph.loc[~is_renove, 'periode_renovation'] = np.nan
     td007_ph.periode_renovation = td007_ph.periode_renovation.cat.add_categories('batiment récent')

@@ -64,3 +64,19 @@ def get_td008(dept, engine, schema_name=schema_name):
     table = convert_all_tr_tv_ids(table)
 
     return table
+
+def get_td010(dept, engine, schema_name=schema_name):
+    query = f"""
+        SELECT td010_pont_thermique.*,td001_dpe_id,td001_dpe.annee_construction as annee_construction
+        from {schema_name}.td010_pont_thermique as  td010_pont_thermique
+        INNER JOIN {schema_name}.td006_batiment as td006_batiment
+                    ON td006_batiment.id = td010_pont_thermique.td006_batiment_id
+        INNER JOIN {schema_name}.td001_dpe as td001_dpe
+                    ON td001_dpe.id = td006_batiment.td001_dpe_id
+        WHERE td001_dpe.tv016_departement_id = {dept}
+        """
+    table = pd.read_sql(query, engine)
+    table = table.rename(columns={"id": "td010_pont_thermique_id"})
+    table = convert_all_tr_tv_ids(table)
+
+    return table
