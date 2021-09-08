@@ -32,7 +32,7 @@ def get_td001(dept, engine, schema_name=schema_name):
         WHERE td001_dpe.tv016_departement_id = {dept}
         """
     table = pd.read_sql(query, engine)
-    table = table.rename(columns={"id": "td006_batiment_id"})
+    table = table.rename(columns={"id": "td001_dpe_id"})
     table = table.loc[:, table.columns.duplicated() == False]
     table = convert_all_ids(table)
     return table
