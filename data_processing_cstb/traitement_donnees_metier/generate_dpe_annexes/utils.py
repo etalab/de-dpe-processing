@@ -113,6 +113,7 @@ def agg_pond_avg(table, value_col, pond, by, bool_filter_col=None, bool_filter_n
     serie of ponderate avg of value_col
 
     """
+    table = table.copy()
     pond_col = str(uuid.uuid4())
     table = _prep_agg_pond(table, pond, bool_filter_col, pond_col, bool_filter_not)
     pond_value_col_temp = str(uuid.uuid4())
@@ -157,7 +158,7 @@ def agg_pond_top_freq(table, enum_col, pond, by, bool_filter_col=None, bool_filt
     serie of ponderated topfreq of enum_col
 
     """
-
+    table = table.copy()
     pond_col = str(uuid.uuid4())
     table = _prep_agg_pond(table, pond, bool_filter_col, pond_col, bool_filter_not)
     if isinstance(table.loc[:,enum_col].dtype, pd.CategoricalDtype):
