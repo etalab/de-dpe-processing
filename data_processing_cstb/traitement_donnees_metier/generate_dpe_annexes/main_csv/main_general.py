@@ -1,15 +1,12 @@
 import pandas as pd
 from pathlib import Path
 import os
-import json
-from generate_dpe_annexes import td001_processing
 from generate_dpe_annexes.td001_processing import postprocessing_td001
-from generate_dpe_annexes.utils import round_float_cols, unique_ordered
-from config import paths,nb_proc
+from generate_dpe_annexes.utils import round_float_cols
+from generate_dpe_annexes.config import paths,nb_proc
 from multiprocessing import Pool
 
 from generate_dpe_annexes.td006_processing import agg_td006_td001, merge_td006_tr_tv
-from generate_dpe_annexes.gorenove_scripts import concat_td001_gorenove
 from generate_dpe_annexes.advanced_general_processing import main_advanced_general_processing
 import subprocess
 

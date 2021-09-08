@@ -1,13 +1,9 @@
-import zipfile
-from io import BytesIO, StringIO
 from pathlib import Path
-from generate_dpe_annexes.gorenove_scripts import gorenove_types, rename_dpe_table_light
-import json
+from generate_dpe_annexes.gorenove_scripts import rename_dpe_table_light
 import numpy as np
 import pandas as pd
-from config import paths
+from generate_dpe_annexes.config import paths
 from generate_dpe_annexes.utils import round_float_cols
-from generate_dpe_annexes.doc_annexe import gorenove_vars
 from multiprocessing import Pool
 
 data_dir = paths['DPE_DEPT_PATH']

@@ -1,14 +1,15 @@
 import zipfile
-from io import BytesIO, StringIO
+from io import BytesIO
 from pathlib import Path
 from generate_dpe_annexes.gorenove_scripts import gorenove_types,rename_dpe_table_light
 import json
 import numpy as np
 import pandas as pd
-from config import paths
+from generate_dpe_annexes.config import paths
 from generate_dpe_annexes.utils import round_float_cols
 from generate_dpe_annexes.doc_annexe import gorenove_vars
-from multiprocessing import Pool
+
+
 def run_postprocessing_by_depts(dept_dir):
     print(dept_dir)
     annexe_dept_dir = annexe_dir / dept_dir.name
