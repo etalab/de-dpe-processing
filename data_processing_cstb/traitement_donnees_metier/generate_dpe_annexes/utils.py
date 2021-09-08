@@ -343,7 +343,6 @@ def clean_desc_txt(x):
     x = x.strip()
     return x
 
-
 def select_only_new_cols(raw_table, new_table, id_col, add_cols=None):
     if add_cols is None:
         add_cols = []
@@ -351,3 +350,8 @@ def select_only_new_cols(raw_table, new_table, id_col, add_cols=None):
     cols = [el for el in cols if (not el.startswith('tv')) and (not el.startswith('tr'))]
     cols = cols + add_cols
     return new_table[cols]
+
+def remerge_td001_columns(table,td001,td001_columns):
+    td001_columns = ['td001_dpe_id']+td001_columns
+    table=table.merge(td001[td001_columns],on='td001_dpe_id')
+    return table

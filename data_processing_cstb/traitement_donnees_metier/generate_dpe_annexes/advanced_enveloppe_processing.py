@@ -9,11 +9,11 @@ from .gorenove_scripts import rename_dpe_table_light
 
 def main_advanced_enveloppe_processing(td001,td003, td005,env_compo_agg_dict):
     env_dict_cols = {
-        'td007_murs_agg': ['u_mur_exterieur_top', 'mat_mur_exterieur_top', 'ep_mat_mur_exterieur_top'],
-        "td007_ph_agg": ['type_adjacence_ph_top', 'u_ph_top', 'mat_ph_top'],
-        "td007_pb_agg": ['type_adjacence_pb_top', 'u_pb_top', 'mat_pb_top'],
-        "td010_agg": ['pos_isol_mur_ext', 'pos_isol_pb', 'pos_isol_ph'],
-        "td008_agg": ['u_baie_baie_vitree_top', 'facteur_solaire_corr_baie_vitree_top',
+        'td007_murs_agg_annexe': ['u_mur_exterieur_top', 'mat_mur_exterieur_top', 'ep_mat_mur_exterieur_top'],
+        "td007_ph_agg_annexe": ['type_adjacence_ph_top', 'u_ph_top', 'mat_ph_top'],
+        "td007_pb_agg_annexe": ['type_adjacence_pb_top', 'u_pb_top', 'mat_pb_top'],
+        "td010_agg_annexe": ['pos_isol_mur_ext', 'pos_isol_pb', 'pos_isol_ph'],
+        "td008_agg_annexe": ['u_baie_baie_vitree_top', 'facteur_solaire_corr_baie_vitree_top',
                       'type_vitrage_baie_vitree_top', 'remplissage_baie_vitree_top', 'mat_baie_vitree_top',
                       'orientation_baie_infer', 'avancee_masque_max','type_occultation_baie_vitree_top',"u_baie_porte_top",
                       "presence_balcon"],

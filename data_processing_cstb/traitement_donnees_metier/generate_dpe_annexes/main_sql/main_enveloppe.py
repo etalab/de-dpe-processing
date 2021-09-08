@@ -16,7 +16,7 @@ from generate_dpe_annexes.td006_processing import merge_td006_tr_tv
 from generate_dpe_annexes.advanced_enveloppe_processing import main_advanced_enveloppe_processing
 from generate_dpe_annexes.sql_queries import *
 from generate_dpe_annexes.config import config
-from generate_dpe_annexes.utils import select_only_new_cols
+from generate_dpe_annexes.utils import select_only_new_cols,remerge_td001_columns
 from generate_dpe_annexes.sql_config import engine, sql_config
 
 
@@ -73,17 +73,22 @@ def run_enveloppe_processing(dept):
 
     env_compo_dict = dict(
         # td007_paroi_opaque=select_only_new_cols(td007_raw,td007,'td007_paroi_opaque_id',add_cols=add_cols)
-        td007_ph=select_only_new_cols(td007_raw, td007_ph, 'td007_paroi_opaque_id', add_cols=add_cols),
-        td007_pb=select_only_new_cols(td007_raw, td007_pb, 'td007_paroi_opaque_id', add_cols=add_cols),
-        td007_mur=select_only_new_cols(td007_raw, td007_mur, 'td007_paroi_opaque_id', add_cols=add_cols),
-        td008_baie=select_only_new_cols(td008_raw, td008, 'td008_baie_id', add_cols=add_cols),
-        td010_pont_thermique=select_only_new_cols(td010_raw, td010, 'td010_pont_thermique_id', add_cols=add_cols)
+        td007_ph_annexe=select_only_new_cols(td007_raw, td007_ph, 'td007_paroi_opaque_id', add_cols=add_cols),
+        td007_pb_annexe=select_only_new_cols(td007_raw, td007_pb, 'td007_paroi_opaque_id', add_cols=add_cols),
+        td007_mur_annexe=select_only_new_cols(td007_raw, td007_mur, 'td007_paroi_opaque_id', add_cols=add_cols),
+        td008_baie_annexe=select_only_new_cols(td008_raw, td008, 'td008_baie_id', add_cols=add_cols),
+        td010_pont_thermique_annexe=select_only_new_cols(td010_raw, td010, 'td010_pont_thermique_id', add_cols=add_cols)
     )
 
-    env_compo_agg_dict = dict(td007_murs_agg=td007_murs_agg,
-                              surfaces_agg_essential=surfaces_agg_essential,
-                              td007_ph_agg=td007_ph_agg,
-                              td007_pb_agg=td007_pb_agg, td008_agg=td008_agg, td010_agg=td010_agg)
+    env_compo_agg_dict = dict(td007_murs_agg_annexe=td007_murs_agg,
+                              surfaces_agg_essential_annexe=surfaces_agg_essential,
+                              td007_ph_agg_annexe=td007_ph_agg,
+                              td007_pb_agg_annexe=td007_pb_agg,
+                              td008_agg_annexe=td008_agg,
+                              td010_agg_annexe=td010_agg)
+
+    for k, v in env_compo_agg_dict.items():
+        env_compo_agg_dict[k] = remerge_td001_columns(v, td001_raw, ['tv016_departement_id'])
 
     logger.debug(f'{function_name} -------------- dump table data')
 
