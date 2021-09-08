@@ -279,7 +279,6 @@ def postprocessing_td008(td008):
     return td008
 
 
-
 # def agg_td008_to_td001_essential(td008):
 #     # AGG orientation
 #
@@ -326,14 +325,14 @@ def agg_td008_to_td001(td008):
     est_and_ouest_double = (est_double & ouest_double)
 
     orientation_agg.loc[est_and_ouest_double] = orientation_agg.loc[est_and_ouest_double].str.replace('est ou ouest \+',
-                                                                                                      '').str.replace(
-        '\+ est ou ouest', '')
+                                                                                                      '', regex=True).str.replace(
+        '\+ est ou ouest', '', regex=True)
 
     is_indetermine = orientation_agg.str.contains('indetermine')
 
     orientation_agg.loc[is_indetermine] = orientation_agg.loc[is_indetermine].str.replace('indetermine \+',
-                                                                                          '').str.replace(
-        '\+ indetermine', '')
+                                                                                          '', regex=True).str.replace(
+        '\+ indetermine', '', regex=True)
     orientation_agg = orientation_agg.str.strip()
     concat.append(orientation_agg)
     # AGG SURFS
@@ -361,7 +360,7 @@ def agg_td008_to_td001(td008):
     # AGG parois vitrees
     td008_vit = td008.loc[td008.cat_baie_simple_infer != 'porte']
 
-    for col in ['u_baie', 'Uw', 'Ug', 'type_occultation', 'mat', 'type_vitrage', 'remplissage','facteur_solaire_corr',
+    for col in ['u_baie', 'Uw', 'Ug', 'type_occultation', 'mat', 'type_vitrage', 'remplissage', 'facteur_solaire_corr',
                 'meth_calc_u', 'meth_calc_Fs']:
         var_agg = agg_pond_top_freq(td008_vit, col, 'surfacexnb_baie_calc',
                                     'td001_dpe_id').to_frame(col + '_baie_vitree_top')
