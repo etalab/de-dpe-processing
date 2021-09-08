@@ -540,7 +540,7 @@ def agg_td007_mur_to_td001(td007_mur):
         concat.append(var_agg)
 
     for type_adjacence in ['EXTERIEUR', 'LNC', 'BAT_ADJ']:
-        sel = td007_mur.loc[td007_mur.type_adjacence == type_adjacence]
+        sel = td007_mur.loc[td007_mur.type_adjacence == type_adjacence].copy()
         for var in ['meth_calc_u', 'u', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
                     'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'mat',
                     'ep_mat',
@@ -805,7 +805,7 @@ def agg_td007_pb_to_td001(td007_pb):
                                     'td001_dpe_id').to_frame(f'{var}_pb_top')
         concat.append(var_agg)
     for type_adjacence_simple in ['EXTERIEUR', 'TP_VS', 'LNC', 'BAT_ADJ']:
-        sel = td007_pb.loc[td007_pb.type_adjacence_simple == type_adjacence_simple]
+        sel = td007_pb.loc[td007_pb.type_adjacence_simple == type_adjacence_simple].copy()
         for var in ['meth_calc_u', 'u', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
                     'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'mat',
                     ]:
@@ -1048,7 +1048,7 @@ def agg_td007_ph_to_td001(td007_ph):
         concat.append(var_agg)
 
     for type_adjacence in ['EXTERIEUR', 'LNC', 'BAT_ADJ']:
-        sel = td007_ph.loc[td007_ph.type_adjacence == type_adjacence]
+        sel = td007_ph.loc[td007_ph.type_adjacence == type_adjacence].copy()
         for var in ['meth_calc_u', 'u', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
                     'annee_isole_uniforme_min', 'annee_isole_uniforme_max', 'mat',
                     ]:

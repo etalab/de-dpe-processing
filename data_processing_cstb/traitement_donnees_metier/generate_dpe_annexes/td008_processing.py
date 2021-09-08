@@ -379,7 +379,7 @@ def agg_td008_to_td001(td008):
 
     for type_baie in ['fenetre', 'porte_fenetre']:
 
-        sel = td008_vit.loc[td008_vit.cat_baie_infer == type_baie]
+        sel = td008_vit.loc[td008_vit.cat_baie_infer == type_baie].copy()
         for col in ['u_baie', 'Uw', 'Ug', 'type_occultation', 'mat', 'type_vitrage', 'remplissage', 'meth_calc_u',
                     'meth_calc_Fs']:
             var_agg = agg_pond_top_freq(sel, col, 'surfacexnb_baie_calc',
