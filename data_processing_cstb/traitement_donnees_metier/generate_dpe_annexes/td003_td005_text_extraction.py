@@ -1,10 +1,10 @@
-from .text_matching_dict import gen_ch_search_dict_flat, gen_ecs_search_dict_flat, \
+from generate_dpe_annexes.text_matching_dict import gen_ch_search_dict_flat, gen_ecs_search_dict_flat, \
     reverse_cat_gen_ecs, reverse_cat_gen_ch, installation_search_dict, energie_search_dict, murs_materiau_search_dict,\
     solaire_ch_search_dict, ph_materiau_search_dict, pb_materiau_search_dict, \
     materiau_baie_search_dict, isolation_search_dict, type_vitrage_search_dict, type_remplissage_search_dict, \
     orientation_baie_search_dict, type_ventilation_search_dict, presence_climatisation_search_dict, enr_search_dict
-from .utils_elasticsearch import search_and_affect, categorize_search_res
-from .utils import strip_accents, clean_desc_txt
+from generate_dpe_annexes.utils_elasticsearch import search_and_affect, categorize_search_res
+from generate_dpe_annexes.utils import strip_accents, clean_desc_txt
 
 
 # EXTRACT CHAUFFAGE DATA
