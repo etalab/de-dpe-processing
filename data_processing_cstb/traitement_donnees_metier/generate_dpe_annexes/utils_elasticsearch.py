@@ -8,8 +8,7 @@ sleepers = {'after_bulk': 1,
 
 
 def setup_es_client(index_name):
-    es_client = Elasticsearch()
-
+    es_client = Elasticsearch(hosts=['es01', 'es02'])
     index_name = index_name
     index_configurations = {
         "settings": {

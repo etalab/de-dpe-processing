@@ -2,10 +2,12 @@ import pandas as pd
 import numpy as np
 from sqlalchemy import inspect
 from generate_dpe_annexes.utils import round_float_cols
-from generate_dpe_annexes.sql_config import engine,sql_config,td001_cols
+from generate_dpe_annexes.sql_config import engine, sql_config, td001_cols
+
 
 def convert_id_column(table, col):
     table[col] = table[col].astype(dtype=pd.Int32Dtype()).astype(str).replace('<NA>', np.nan).astype('category')
+
 
 def convert_all_tr_tv_ids(table):
     ids_cols = [col for col in table if (col.endswith('id') and not col.startswith('td'))]
@@ -14,20 +16,22 @@ def convert_all_tr_tv_ids(table):
         convert_id_column(table, col)
     return table
 
+
 def convert_td_ids(table):
-
-    ids_cols = [col for col in table if (col.endswith('id') and  col.startswith('td'))]
+    ids_cols = [col for col in table if (col.endswith('id') and col.startswith('td'))]
     for col in ids_cols:
-        table[col]=table[col].astype(str)
+        table[col] = table[col].astype(str)
     return table
-def convert_all_ids(table):
 
+
+def convert_all_ids(table):
     table = convert_all_tr_tv_ids(table)
     table = convert_td_ids(table)
     return table
 
+
 def get_raw_departements():
-    schema_name =sql_config['schemas']['dpe_raw_schema_name']
+    schema_name = sql_config['schemas']['dpe_raw_schema_name']
     query = f"""
     SELECT DISTINCT(tv016_departement_id) FROM {schema_name}.td001_dpe
     """
@@ -36,8 +40,9 @@ def get_raw_departements():
 
     return [str(el) for el in df.tv016_departement_id.tolist()]
 
+
 def get_annexe_departements(annexe_table_name):
-    schema_name =sql_config['schemas']['dpe_out_schema_name']
+    schema_name = sql_config['schemas']['dpe_out_schema_name']
     inspector = inspect(engine)
     if annexe_table_name in inspector.get_table_names(schema_name):
         query = f"""
@@ -46,12 +51,12 @@ def get_annexe_departements(annexe_table_name):
         df = pd.read_sql(query, engine)
 
         return df.tv016_departement_id.tolist()
-    else :
+    else:
         return []
 
 
 def get_td001(dept):
-    schema_name =sql_config['schemas']['dpe_raw_schema_name']
+    schema_name = sql_config['schemas']['dpe_raw_schema_name']
     query = f"""
         SELECT td001_dpe.*
         from {schema_name}.td001_dpe as  td001_dpe
@@ -80,6 +85,38 @@ def get_td006(dept):
     return table
 
 
+def get_td005(dept):
+    schema_name = sql_config['schemas']['dpe_raw_schema_name']
+    query = f"""
+        SELECT td005_fiche_technique.*,{td001_cols}
+        from {schema_name}.td005_fiche_technique as  td005_fiche_technique
+        INNER JOIN {schema_name}.td001_dpe as td001_dpe
+                    ON td001_dpe.id = td005_fiche_technique.td001_dpe_id
+        WHERE td001_dpe.tv016_departement_id = {dept}
+        """
+    table = pd.read_sql(query, engine)
+    table = table.rename(columns={"id": "td005_fiche_technique_id"})
+    table = table.loc[:, table.columns.duplicated() == False]
+    table = convert_all_ids(table)
+    return table
+
+
+def get_td003(dept):
+    schema_name = sql_config['schemas']['dpe_raw_schema_name']
+    query = f"""
+        SELECT td003_descriptif.*,{td001_cols}
+        from {schema_name}.td003_descriptif as  td003_descriptif
+        INNER JOIN {schema_name}.td001_dpe as td001_dpe
+                    ON td001_dpe.id = td003_descriptif.td001_dpe_id
+        WHERE td001_dpe.tv016_departement_id = {dept}
+        """
+    table = pd.read_sql(query, engine)
+    table = table.rename(columns={"id": "td003_descriptif_id"})
+    table = table.loc[:, table.columns.duplicated() == False]
+    table = convert_all_ids(table)
+    return table
+
+
 def get_td007(dept):
     schema_name = sql_config['schemas']['dpe_raw_schema_name']
     query = f"""
@@ -97,6 +134,7 @@ def get_td007(dept):
     table = convert_all_ids(table)
 
     return table
+
 
 def get_td008(dept):
     schema_name = sql_config['schemas']['dpe_raw_schema_name']
@@ -120,6 +158,7 @@ def get_td008(dept):
 
     return table
 
+
 def get_td010(dept):
     schema_name = sql_config['schemas']['dpe_raw_schema_name']
 
@@ -139,7 +178,8 @@ def get_td010(dept):
 
     return table
 
-def dump_sql(table,table_name,dept):
+
+def dump_sql(table, table_name, dept):
     schema_name = sql_config['schemas']['dpe_out_schema_name']
     inspector = inspect(engine)
     if table_name in inspector.get_table_names(schema_name):
@@ -150,5 +190,5 @@ def dump_sql(table,table_name,dept):
         WHERE tv016_departement_id = '{dept}'
         """
         with engine.connect() as con:
-            resp=con.execute(delete_query)
-    round_float_cols(table).to_sql(table_name,con=engine,schema=schema_name,if_exists="append")
+            resp = con.execute(delete_query)
+    round_float_cols(table).to_sql(table_name, con=engine, schema=schema_name, if_exists="append")

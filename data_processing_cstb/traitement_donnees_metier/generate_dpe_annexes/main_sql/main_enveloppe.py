@@ -1,14 +1,10 @@
-import pandas as pd
-from pathlib import Path
+
 import json
-from generate_dpe_annexes.utils import round_float_cols, unique_ordered
-from generate_dpe_annexes.config import paths, nb_proc
 from multiprocessing import Pool
 from generate_dpe_annexes.td007_processing import merge_td007_tr_tv, postprocessing_td007, generate_pb_table, \
     generate_ph_table, generate_mur_table, agg_td007_mur_to_td001, agg_td007_ph_to_td001, agg_td007_pb_to_td001
 
 from generate_dpe_annexes.td008_processing import merge_td008_tr_tv, postprocessing_td008
-from generate_dpe_annexes.td001_merge import merge_td001_dpe_id_envelope
 from generate_dpe_annexes.td007_processing import agg_surf_envelope
 from generate_dpe_annexes.td008_processing import agg_td008_to_td001
 from generate_dpe_annexes.td010_processing import merge_td010_tr_tv, postprocessing_td010, agg_td010_td001
@@ -18,23 +14,25 @@ from generate_dpe_annexes.doc_annexe import td001_annexe_enveloppe_agg_desc, td0
     td001_annexe_generale_desc
 from generate_dpe_annexes.td006_processing import merge_td006_tr_tv
 from generate_dpe_annexes.advanced_enveloppe_processing import main_advanced_enveloppe_processing
-import subprocess
 from generate_dpe_annexes.sql_queries import *
 from generate_dpe_annexes.config import config
 from generate_dpe_annexes.utils import select_only_new_cols
-from generate_dpe_annexes.sql_config import engine,sql_config
+from generate_dpe_annexes.sql_config import engine, sql_config
+
 
 def run_enveloppe_processing(dept):
-
     function_name = "run_enveloppe_processing"
     logger = config['logger']
     add_cols = ['tv016_departement_id', 'td001_dpe_id', 'annee_construction']
     logger.debug(f'{function_name} -------------- load tables')
-    td001_raw = get_td001(dept=dept, engine=engine)
-    td006_raw = get_td006(dept=dept, engine=engine)
-    td007_raw = get_td007(dept=dept, engine=engine)
-    td008_raw = get_td008(dept=dept, engine=engine)
-    td010_raw = get_td010(dept=dept, engine=engine)
+    td001_raw = get_td001(dept=dept)
+    td006_raw = get_td006(dept=dept)
+    td007_raw = get_td007(dept=dept)
+    td008_raw = get_td008(dept=dept)
+    td010_raw = get_td010(dept=dept)
+    td003_raw = get_td003(dept=dept)
+    td005_raw = get_td005(dept=dept)
+
     logger.debug(f'{function_name} -------------- postprotables')
 
     # POSTPRO DES TABLES
@@ -74,12 +72,12 @@ def run_enveloppe_processing(dept):
     td010_agg = agg_td010_td001(td010)
 
     env_compo_dict = dict(
-        #td007_paroi_opaque=select_only_new_cols(td007_raw,td007,'td007_paroi_opaque_id',add_cols=add_cols)
-                          td007_ph=select_only_new_cols(td007_raw,td007_ph,'td007_paroi_opaque_id',add_cols=add_cols),
-                          td007_pb=select_only_new_cols(td007_raw,td007_pb,'td007_paroi_opaque_id',add_cols=add_cols),
-                          td007_mur=select_only_new_cols(td007_raw,td007_mur,'td007_paroi_opaque_id',add_cols=add_cols),
-                          td008_baie=select_only_new_cols(td008_raw,td008,'td008_baie_id',add_cols=add_cols),
-                          td010_pont_thermique=select_only_new_cols(td010_raw,td010,'td010_pont_thermique_id',add_cols=add_cols)
+        # td007_paroi_opaque=select_only_new_cols(td007_raw,td007,'td007_paroi_opaque_id',add_cols=add_cols)
+        td007_ph=select_only_new_cols(td007_raw, td007_ph, 'td007_paroi_opaque_id', add_cols=add_cols),
+        td007_pb=select_only_new_cols(td007_raw, td007_pb, 'td007_paroi_opaque_id', add_cols=add_cols),
+        td007_mur=select_only_new_cols(td007_raw, td007_mur, 'td007_paroi_opaque_id', add_cols=add_cols),
+        td008_baie=select_only_new_cols(td008_raw, td008, 'td008_baie_id', add_cols=add_cols),
+        td010_pont_thermique=select_only_new_cols(td010_raw, td010, 'td010_pont_thermique_id', add_cols=add_cols)
     )
 
     env_compo_agg_dict = dict(td007_murs_agg=td007_murs_agg,
@@ -87,13 +85,18 @@ def run_enveloppe_processing(dept):
                               td007_ph_agg=td007_ph_agg,
                               td007_pb_agg=td007_pb_agg, td008_agg=td008_agg, td010_agg=td010_agg)
 
+    logger.debug(f'{function_name} -------------- dump table data')
 
     for k, v in env_compo_dict.items():
-        dump_sql(table=v,table_name=k,dept=dept)
+        dump_sql(table=v, table_name=k, dept=dept)
 
     for k, v in env_compo_agg_dict.items():
-        dump_sql(table=v,table_name=k,dept=dept)
+        dump_sql(table=v, table_name=k, dept=dept)
 
+    td001_env_adv_agg = main_advanced_enveloppe_processing(td001=td001_raw, env_compo_agg_dict=env_compo_agg_dict,
+                                                           td003=td003_raw, td005=td005_raw)
+
+    dump_sql(table=td001_env_adv_agg, table_name="td001_env_adv_agg", dept=dept)
 
 def build_doc(annexe_dir):
     doc_annexe = dict()
@@ -113,27 +116,15 @@ def build_doc(annexe_dir):
         json.dump(enums_cstb, f, indent=4)
 
 
-
-def run_postprocessing_by_depts(dept_dir):
-    td001_env_adv_agg = main_advanced_enveloppe_processing(td001=td001, env_compo_agg_dict=env_compo_agg_dict,
-                                                           td003=td003, td005=td005)
-
-    round_float_cols(td001_env_adv_agg).to_csv(annexe_dept_dir / 'td001_env_agg_adv.csv')
-
-
 if __name__ == '__main__':
-    build_doc(annexe_dir)
-    list_dir = list(Path(data_dir).iterdir())
-    # wipe = True
-    # if wipe is True:
-    #     for a_dir in list_dir:
-    #         if (annexe_dir / a_dir.name / 'td001_env_agg_adv.csv').is_file():
-    #             (annexe_dir / a_dir.name / 'td001_env_agg_adv.csv').unlink()
+
     all_depts = get_raw_departements()
     already_processed_depts = get_annexe_departements('td007_pb_agg')
     depts_to_be_processed = [dept for dept in all_depts if dept not in already_processed_depts]
+    if config['multiprocessing']['is_multiprocessing'] is True:
 
-    with Pool(processes=nb_proc) as pool:
-        pool.starmap(run_postprocessing_by_depts, [(dept_dir,) for dept_dir in list_dir])
-
-    p_es.terminate()
+        with Pool(processes=config['multiprocessing']['nb_proc']) as pool:
+            pool.starmap(run_enveloppe_processing, [(dept,) for dept in depts_to_be_processed])
+    else:
+        for dept in depts_to_be_processed:
+            run_enveloppe_processing(dept)
