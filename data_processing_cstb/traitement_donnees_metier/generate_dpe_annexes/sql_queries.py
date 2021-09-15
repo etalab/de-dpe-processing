@@ -178,6 +178,89 @@ def get_td010(dept):
 
     return table
 
+def get_td011(dept):
+    schema_name = sql_config['schemas']['dpe_raw_schema_name']
+
+    query = f"""
+        SELECT td011_installation_chauffage.*,td006_batiment_id,{td001_cols}
+        from {schema_name}.td011_installation_chauffage as  td011_installation_chauffage
+        INNER JOIN {schema_name}.td006_batiment as td006_batiment
+                    ON td006_batiment.id = td011_installation_chauffage.td006_batiment_id
+        INNER JOIN {schema_name}.td001_dpe as td001_dpe
+                    ON td001_dpe.id = td006_batiment.td001_dpe_id
+        WHERE td001_dpe.tv016_departement_id = {dept}
+        """
+    table = pd.read_sql(query, engine)
+    table = table.rename(columns={"id": "td011_installation_chauffage_id"})
+    table = table.loc[:, table.columns.duplicated() == False]
+    table = convert_all_ids(table)
+
+    return table
+
+def get_td012(dept):
+    schema_name = sql_config['schemas']['dpe_raw_schema_name']
+    query = f"""
+        SELECT td012_generateur_chauffage.*,td011_installation_chauffage_id,td006_batiment_id,{td001_cols}
+        from {schema_name}.td012_generateur_chauffage as  td012_generateur_chauffage
+        INNER JOIN {schema_name}.td011_installation_chauffage as td011_installation_chauffage
+            ON td011_installation_chauffage.id = td012_generateur_chauffage.td011_installation_chauffage_id
+        INNER JOIN {schema_name}.td006_batiment as td006_batiment
+                    ON td006_batiment.id = td011_installation_chauffage.td006_batiment_id
+        INNER JOIN {schema_name}.td001_dpe as td001_dpe
+                    ON td001_dpe.id = td006_batiment.td001_dpe_id
+        WHERE td001_dpe.tv016_departement_id = {dept}
+        """
+    table = pd.read_sql(query, engine)
+    if 'td012_generateur_chauffage_id' in table:
+        del table['td012_generateur_chauffage_id']
+    table = table.rename(columns={"id": "td012_generateur_chauffage_id"})
+    table = table.loc[:, table.columns.duplicated() == False]
+    table = convert_all_ids(table)
+
+    return table
+
+def get_td013(dept):
+    schema_name = sql_config['schemas']['dpe_raw_schema_name']
+
+    query = f"""
+        SELECT td013_installation_ecs.*,td006_batiment_id,{td001_cols}
+        from {schema_name}.td013_installation_ecs as  td013_installation_ecs
+        INNER JOIN {schema_name}.td006_batiment as td006_batiment
+                    ON td006_batiment.id = td013_installation_ecs.td006_batiment_id
+        INNER JOIN {schema_name}.td001_dpe as td001_dpe
+                    ON td001_dpe.id = td006_batiment.td001_dpe_id
+        WHERE td001_dpe.tv016_departement_id = {dept}
+        """
+    table = pd.read_sql(query, engine)
+    table = table.rename(columns={"id": "td013_installation_ecs_id"})
+    table = table.loc[:, table.columns.duplicated() == False]
+    table = convert_all_ids(table)
+
+    return table
+
+def get_td014(dept):
+    schema_name = sql_config['schemas']['dpe_raw_schema_name']
+    query = f"""
+        SELECT td014_generateur_ecs.*,td013_installation_ecs_id,td006_batiment_id,{td001_cols}
+        from {schema_name}.td014_generateur_ecs as  td014_generateur_ecs
+        INNER JOIN {schema_name}.td013_installation_ecs as td013_installation_ecs
+            ON td013_installation_ecs.id = td014_generateur_ecs.td013_installation_ecs_id
+        INNER JOIN {schema_name}.td006_batiment as td006_batiment
+                    ON td006_batiment.id = td013_installation_ecs.td006_batiment_id
+        INNER JOIN {schema_name}.td001_dpe as td001_dpe
+                    ON td001_dpe.id = td006_batiment.td001_dpe_id
+        WHERE td001_dpe.tv016_departement_id = {dept}
+        """
+    table = pd.read_sql(query, engine)
+    if 'td014_generateur_ecs_id' in table:
+        del table['td014_generateur_ecs_id']
+    table = table.rename(columns={"id": "td014_generateur_ecs_id"})
+    table = table.loc[:, table.columns.duplicated() == False]
+    table = convert_all_ids(table)
+
+    return table
+
+
 
 def dump_sql(table, table_name, dept):
     schema_name = sql_config['schemas']['dpe_out_schema_name']
