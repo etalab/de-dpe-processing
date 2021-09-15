@@ -183,7 +183,6 @@ def dump_sql(table, table_name, dept):
     schema_name = sql_config['schemas']['dpe_out_schema_name']
     inspector = inspect(engine)
     if table_name in inspector.get_table_names(schema_name):
-        print('delete old data')
         delete_query = f"""
         DELETE
         FROM {schema_name}.{table_name}
@@ -191,4 +190,4 @@ def dump_sql(table, table_name, dept):
         """
         with engine.connect() as con:
             resp = con.execute(delete_query)
-    round_float_cols(table).to_sql(table_name, con=engine, schema=schema_name, if_exists="append")
+    round_float_cols(table).to_sql(table_name, con=engine, schema=schema_name, if_exists="append",method="multi")

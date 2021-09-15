@@ -26,5 +26,5 @@ logger.propagate = 0
 config['logger'] = logger
 # multiprocessing
 
-config['multiprocessing']={'is_multiprocessing':False ,
-                           'nb_proc':3}
+config['multiprocessing']={'is_multiprocessing':True ,
+                           'nb_proc':8}

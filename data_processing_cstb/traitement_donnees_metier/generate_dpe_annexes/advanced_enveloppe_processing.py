@@ -77,6 +77,11 @@ def main_advanced_enveloppe_processing(td001,td003, td005,env_compo_agg_dict):
         is_null = (td001_env[var].isnull()) | (td001_env[var] == 'inconnu') | (td001_env[var] == 'indetermine')| (td001_env[var] == 'INCOHERENT')
         td001_env.loc[is_null, var] = np.nan
 
+    # calcul traversant
+
+
+    td001_env = calculate_traversant(td001_env,td001,env_compo_agg_dict)
+
     # corr isolation
 
     is_non_isole = td001_env['u_mur_ext'] > 1.5
@@ -275,3 +280,53 @@ def concat_baie_txt(td001_env, type_vitrage_desc, type_vitrage_ft, type_rempliss
     td001_env = td001_env.merge(orientation_baie_from_txt,
                                 on='td001_dpe_id', how='left')
     return td001_env
+
+def calculate_traversant(td001_env,td001,env_compo_agg_dict):
+    """
+    RT2005
+    Un logement est dit traversant si, pour chaque orientation
+    (verticale nord, vertical est, verticale sud, verticale ouest, horizontale)
+    la surface des baies est inférieure à 75 % de la surface totale des baies.
+    https://www.legifrance.gouv.fr/jorf/jo/2006/05/25/0121
+    """
+
+    surfaces_agg_essential = env_compo_agg_dict['surfaces_agg_essential_annexe'].copy()
+
+    for surf in ['surf_vitree_est', 'surf_vitree_nord', 'surf_vitree_ouest', 'surf_vitree_sud', 'surf_vitree_est_ou_ouest']:
+        surfaces_agg_essential[f'perc_temp_{surf}'] = surfaces_agg_essential[surf] / surfaces_agg_essential['surf_vitree_totale']
+
+    surfaces_agg_essential['perc_temp_surf_vitree_indeterminee'] = (surfaces_agg_essential.surf_vitree_horizontale + surfaces_agg_essential.surf_vitree_indetermine) / surfaces_agg_essential[
+        'surf_vitree_totale']
+    is_traversant = (surfaces_agg_essential.filter(like='perc_temp').fillna(0) < 0.75).min(axis=1)
+
+    null_traversant = (surfaces_agg_essential.filter(like='perc_temp').isnull().mean(axis=1) == 1) | (surfaces_agg_essential['perc_temp_surf_vitree_indeterminee'] >= 0.75)
+    is_traversant = is_traversant & (~null_traversant)
+    surfaces_agg_essential['traversant'] = is_traversant.replace({True: 'traversant', False: 'non traversant'})
+    surfaces_agg_essential.loc[null_traversant, 'traversant'] = np.nan
+
+    traversant_nord_sud = td001_env.orientation_baie.str.contains('sud') & td001_env.orientation_baie.str.contains('nord')
+    traversant_est_ouest = td001_env.orientation_baie.str.contains('ouest') & td001_env.orientation_baie.str.contains('est')
+    traversant_2_facades = td001_env.orientation_baie.str.count('\+') >= 1
+    traversant_3_facades = td001_env.orientation_baie.str.count('\+') >= 2
+    traversant_4_facades = traversant_nord_sud & traversant_est_ouest
+    non_traversant = td001_env.orientation_baie.str.count('\+') == 0
+
+    traversant = td001_env[['td001_dpe_id']]
+    traversant = traversant.merge(td001[['tr002_type_batiment_id', 'td001_dpe_id']], on='td001_dpe_id', how='left')
+    traversant = traversant.merge(surfaces_agg_essential[['traversant', 'td001_dpe_id']], on='td001_dpe_id', how='left')
+    null_traversant = (traversant.traversant.isnull())
+    is_traversant = (traversant.traversant == "traversant")
+    is_traversant_or_null = null_traversant | (traversant.traversant == 'traversant')
+    traversant.loc[traversant_nord_sud & is_traversant_or_null, "traversant"] = 'traversant nord sud'
+    traversant.loc[traversant_est_ouest & is_traversant_or_null, "traversant"] = 'traversant est ouest'
+    traversant.loc[traversant_2_facades & is_traversant_or_null, "traversant"] = 'traversant 90°'
+    traversant.loc[traversant_3_facades & is_traversant_or_null, "traversant"] = 'traversant tout venant'
+    traversant.loc[traversant_4_facades & is_traversant_or_null, "traversant"] = 'traversant tout venant'
+    traversant.loc[traversant_nord_sud & null_traversant, "traversant"] = 'traversant nord sud (faible)'
+    traversant.loc[traversant_est_ouest & null_traversant, "traversant"] = 'traversant est ouest (faible)'
+    traversant.loc[traversant_2_facades & null_traversant, "traversant"] = 'traversant 90° (faible)'
+    traversant.loc[traversant_3_facades & null_traversant, "traversant"] = 'traversant tout venant (faible)'
+    traversant.loc[traversant_4_facades & null_traversant, "traversant"] = 'traversant tout venant (faible)'
+    traversant.loc[non_traversant, 'traversant'] = "non traversant"
+
+    return td001_env.merge(traversant[['traversant', 'td001_dpe_id']], on='td001_dpe_id', how='left')

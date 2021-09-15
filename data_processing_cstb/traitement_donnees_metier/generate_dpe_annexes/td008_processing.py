@@ -334,6 +334,8 @@ def agg_td008_to_td001(td008):
                                                                                           '', regex=True).str.replace(
         '\+ indetermine', '', regex=True)
     orientation_agg = orientation_agg.str.strip()
+    not_null = ~orientation_agg.isnull()
+    orientation_agg[not_null] = orientation_agg[not_null].apply(lambda x: ' '.join(x.split()))
     concat.append(orientation_agg)
     # AGG SURFS
     surfs = td008.pivot_table(index='td001_dpe_id', columns='cat_baie_infer', values='surfacexnb_baie_calc',

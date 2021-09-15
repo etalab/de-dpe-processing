@@ -80,12 +80,12 @@ def run_enveloppe_processing(dept):
         td010_pont_thermique_annexe=select_only_new_cols(td010_raw, td010, 'td010_pont_thermique_id', add_cols=add_cols)
     )
 
-    env_compo_agg_dict = dict(td007_murs_agg_annexe=td007_murs_agg,
+    env_compo_agg_dict = dict(td007_mur_agg_annexe=td007_murs_agg,
                               surfaces_agg_essential_annexe=surfaces_agg_essential,
                               td007_ph_agg_annexe=td007_ph_agg,
                               td007_pb_agg_annexe=td007_pb_agg,
-                              td008_agg_annexe=td008_agg,
-                              td010_agg_annexe=td010_agg)
+                              td008_baie_agg_annexe=td008_agg,
+                              td010_pont_thermique_agg_annexe=td010_agg)
 
     for k, v in env_compo_agg_dict.items():
         env_compo_agg_dict[k] = remerge_td001_columns(v, td001_raw, ['tv016_departement_id'])
@@ -98,9 +98,12 @@ def run_enveloppe_processing(dept):
     for k, v in env_compo_agg_dict.items():
         dump_sql(table=v, table_name=k, dept=dept)
 
+    logger.debug(f'{function_name} -------------- traitement avancé + traitement texte')
+
     td001_env_adv_agg = main_advanced_enveloppe_processing(td001=td001_raw, env_compo_agg_dict=env_compo_agg_dict,
                                                            td003=td003_raw, td005=td005_raw)
 
+    td001_env_adv_agg = remerge_td001_columns(td001_env_adv_agg, td001_raw, ['tv016_departement_id'])
     dump_sql(table=td001_env_adv_agg, table_name="td001_env_adv_agg", dept=dept)
 
 def build_doc(annexe_dir):
@@ -124,7 +127,7 @@ def build_doc(annexe_dir):
 if __name__ == '__main__':
 
     all_depts = get_raw_departements()
-    already_processed_depts = get_annexe_departements('td007_pb_agg')
+    already_processed_depts = get_annexe_departements('td001_env_adv_agg')
     depts_to_be_processed = [dept for dept in all_depts if dept not in already_processed_depts]
     if config['multiprocessing']['is_multiprocessing'] is True:
 
