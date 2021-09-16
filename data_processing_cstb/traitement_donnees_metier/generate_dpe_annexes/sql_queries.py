@@ -260,7 +260,35 @@ def get_td014(dept):
 
     return table
 
+def get_td002(dept):
+    schema_name = sql_config['schemas']['dpe_raw_schema_name']
+    query = f"""
+        SELECT td002_consommation.*,{td001_cols}
+        from {schema_name}.td002_consommation as  td002_consommation
+        INNER JOIN {schema_name}.td001_dpe as td001_dpe
+                    ON td001_dpe.id = td002_consommation.td001_dpe_id
+        WHERE td001_dpe.tv016_departement_id = {dept}
+        """
+    table = pd.read_sql(query, engine)
+    table = table.rename(columns={"id": "td002_consommation_id"})
+    table = table.loc[:, table.columns.duplicated() == False]
+    table = convert_all_ids(table)
+    return table
 
+def get_td016(dept):
+    schema_name = sql_config['schemas']['dpe_raw_schema_name']
+    query = f"""
+        SELECT td016_facture.*,{td001_cols}
+        from {schema_name}.td016_facture as  td016_facture
+        INNER JOIN {schema_name}.td001_dpe as td001_dpe
+                    ON td001_dpe.id = td016_facture.td001_dpe_id
+        WHERE td001_dpe.tv016_departement_id = {dept}
+        """
+    table = pd.read_sql(query, engine)
+    table = table.rename(columns={"id": "td016_facture_id"})
+    table = table.loc[:, table.columns.duplicated() == False]
+    table = convert_all_ids(table)
+    return table
 
 def dump_sql(table, table_name, dept):
     schema_name = sql_config['schemas']['dpe_out_schema_name']
