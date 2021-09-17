@@ -10,7 +10,7 @@ def convert_id_column(table, col):
 
 
 def convert_all_tr_tv_ids(table):
-    ids_cols = [col for col in table if (col.endswith('id') and not col.startswith('td'))]
+    ids_cols = [col for col in table if (col.endswith('id') and (col.startswith('tv')|col.startswith('tr')))]
 
     for col in ids_cols:
         convert_id_column(table, col)

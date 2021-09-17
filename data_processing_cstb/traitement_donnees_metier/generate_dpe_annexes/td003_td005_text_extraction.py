@@ -27,7 +27,7 @@ def extract_td005_ch_variables(td005):
     td005_ch.valeur_renseignee = td005_ch.valeur_renseignee.str.lower().apply(lambda x: strip_accents(x))
     td005_ch.valeur_renseignee = td005_ch.valeur_renseignee.apply(lambda x: clean_desc_txt(x))
 
-    m = search_and_affect(td005_ch, id_col='td005_descriptif_id', val_col='valeur_renseignee',
+    m = search_and_affect(td005_ch, id_col='td005_fiche_technique_id', val_col='valeur_renseignee',
                           search_dict=gen_ch_search_dict_flat)
 
     m = categorize_search_res(m, label_cat=list(gen_ch_search_dict_flat.keys()) + ['indetermine'],
