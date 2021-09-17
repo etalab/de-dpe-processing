@@ -18,50 +18,74 @@ from generate_dpe_annexes.doc_annexe import td001_annexe_enveloppe_agg_desc, td0
     td001_annexe_generale_desc
 from generate_dpe_annexes.advanced_system_processing import main_advanced_system_processing
 import subprocess
+from generate_dpe_annexes.sql_queries import *
+from generate_dpe_annexes.config import config
+from generate_dpe_annexes.utils import select_only_new_cols,remerge_td001_columns
 
+def run_systeme_processing(dept):
 
-def run_system_processing(td001, td006, td011, td012, td013, td014):
-    td011_raw_cols = td011.columns.tolist()
-    td012_raw_cols = td012.columns.tolist()
-    td013_raw_cols = td013.columns.tolist()
-    td014_raw_cols = td014.columns.tolist()
-    td001, td006, td011, td012, td013, td014 = merge_td001_dpe_id_system(td001, td006, td011, td012, td013, td014)
-    td011 = merge_td011_tr_tv(td011)
-    td012 = merge_td012_tr_tv(td012)
-    td013 = merge_td013_tr_tv(td013)
-    td014 = merge_td014_tr_tv(td014)
+    function_name = "run_systeme_processing"
+    logger = config['logger']
+    add_cols = ['tv016_departement_id', 'td001_dpe_id', 'annee_construction']
+    logger.debug(f'{function_name} -------------- load tables')
+    td001_raw = get_td001(dept=dept)
+    td002_raw = get_td002(dept=dept)
+    td003_raw = get_td003(dept=dept)
+    td006_raw = get_td006(dept=dept)
+    td005_raw = get_td005(dept=dept)
+    td011_raw = get_td011(dept=dept)
+    td012_raw = get_td012(dept=dept)
+    td013_raw = get_td013(dept=dept)
+    td014_raw = get_td014(dept=dept)
+    td016_raw = get_td016(dept=dept)
+
+    # POSTPRO DES TABLES
+    logger.debug(f'{function_name} -------------- postprotables')
+
+    td011 = merge_td011_tr_tv(td011_raw)
+    td012 = merge_td012_tr_tv(td012_raw)
+    td013 = merge_td013_tr_tv(td013_raw)
+    td014 = merge_td014_tr_tv(td014_raw)
 
     td011, td012 = postprocessing_td011_td012(td011, td012)
 
-    cols = [el for el in td011.columns if el not in td011_raw_cols]
-    cols.append('td011_installation_chauffage_id')
-    cols = unique_ordered(cols)
-    td011_p = td011[cols]
+    td001_sys_ch_agg = agg_systeme_ch_essential(td001_raw, td011, td012)
 
-    cols = [el for el in td012.columns if
-            el not in td012_raw_cols + ['besoin_chauffage_infer', 'gen_ch_concat_txt_desc']]
-    cols.append('td012_generateur_chauffage_id')
-    cols = unique_ordered(cols)
-    td012_p = td012[cols]
+    td014 = postprocessing_td014(td013, td014, td001_raw, td001_sys_ch_agg)
 
-    td001_sys_ch_agg = agg_systeme_ch_essential(td001, td011, td012)
+    td001_sys_ecs_agg = agg_systeme_ecs_essential(td001_raw, td013, td014)
 
-    td014 = postprocessing_td014(td013, td014, td001, td001_sys_ch_agg)
+    td001_sys_adv_agg = main_advanced_system_processing(td001_sys_ch_agg=td001_sys_ch_agg, td001_sys_ecs_agg=td001_sys_ecs_agg, td001=td001_raw,
+                                                        td002=td002_raw, td016=td016_raw,
+                                                        td003=td003_raw, td005=td005_raw, td011_p=td011, td012_p=td012, td014_p=td014)
 
-    cols = [el for el in td013.columns if el not in td013_raw_cols]
-    cols.append('td013_installation_ecs_id')
-    cols = unique_ordered(cols)
-    td013_p = td013[cols]
+    sys_dict = dict(
+        # td007_paroi_opaque=select_only_new_cols(td007_raw,td007,'td007_paroi_opaque_id',add_cols=add_cols)
+        td012_annexe=select_only_new_cols(td012_raw, td012, 'td012_generateur_chauffage_id', add_cols=add_cols),
+        td014_annexe=select_only_new_cols(td014_raw, td014, 'td014_generateur_ecs_id', add_cols=add_cols),
 
-    cols = [el for el in td014.columns if
-            el not in td014_raw_cols + ['score_gen_ecs_lib_infer', 'gen_ecs_concat_txt_desc']]
-    cols.append('td014_generateur_ecs_id')
-    cols = unique_ordered(cols)
-    td014_p = td014[cols]
+    )
 
-    td001_sys_ecs_agg = agg_systeme_ecs_essential(td001, td013, td014)
+    td001_sys_table_dict = dict(
+        td001_sys_ch_from_data_annexe=td001_sys_ch_agg,
+        td001_sys_ecs_from_data_annexe=td001_sys_ecs_agg,
+        td001_sys_adv_annexe=td001_sys_adv_agg
+    )
 
-    return td011_p, td012_p, td001_sys_ch_agg, td013_p, td014_p, td001_sys_ecs_agg
+    for k, v in sys_dict.items():
+        td001_sys_table_dict[k] = remerge_td001_columns(v, td001_raw, ['tv016_departement_id'])
+
+    for k, v in td001_sys_table_dict.items():
+        td001_sys_table_dict[k] = remerge_td001_columns(v, td001_raw, ['tv016_departement_id'])
+
+    logger.debug(f'{function_name} -------------- dump table data')
+
+    for k, v in sys_dict.items():
+        dump_sql(table=v, table_name=k, dept=dept)
+
+    for k, v in td001_sys_table_dict.items():
+        dump_sql(table=v, table_name=k, dept=dept)
+
 
 
 def build_doc(annexe_dir):
@@ -82,66 +106,18 @@ def build_doc(annexe_dir):
         json.dump(enums_cstb, f, indent=4)
 
 
-data_dir = paths['DPE_DEPT_PATH']
-annexe_dir = paths['DPE_DEPT_ANNEXE_PATH']
-annexe_dir = Path(annexe_dir)
-annexe_dir.mkdir(exist_ok=True, parents=True)
-es_server_path = paths['ES_SERVER_PATH']
 
-
-def run_postprocessing_by_depts(dept_dir):
-    print(dept_dir)
-    annexe_dept_dir = annexe_dir / dept_dir.name
-    annexe_dept_dir.mkdir(exist_ok=True, parents=True)
-    # LOAD TABLES
-    td001 = pd.read_csv(dept_dir / 'td001_dpe.csv', dtype=str)
-    td002 = pd.read_csv(dept_dir / 'td002_consommation.csv', dtype=str)
-    td003 = pd.read_csv(dept_dir / 'td003_descriptif.csv', dtype=str)
-    td005 = pd.read_csv(dept_dir / 'td005_fiche_technique.csv', dtype=str)
-    td006 = pd.read_csv(dept_dir / 'td006_batiment.csv', dtype=str)
-    td016 = pd.read_csv(dept_dir / 'td016_facture.csv', dtype=str)
-
-    # SYSTEM PROCESSING
-
-    td011 = pd.read_csv(dept_dir / 'td011_installation_chauffage.csv', dtype=str)
-    td012 = pd.read_csv(dept_dir / 'td012_generateur_chauffage.csv', dtype=str)
-    td013 = pd.read_csv(dept_dir / 'td013_installation_ecs.csv', dtype=str)
-    td014 = pd.read_csv(dept_dir / 'td014_generateur_ecs.csv', dtype=str)
-
-    td011_p, td012_p, td001_sys_ch_agg, td013_p, td014_p, td001_sys_ecs_agg = run_system_processing(td001, td006,
-                                                                                                    td011, td012,
-                                                                                                    td013, td014)
-    round_float_cols(td001_sys_ch_agg).to_csv(annexe_dept_dir / 'td001_sys_ch_agg_annexe.csv')
-    round_float_cols(td001_sys_ecs_agg).to_csv(annexe_dept_dir / 'td001_sys_ecs_agg_annexe.csv')
-    round_float_cols(td011_p).to_csv(annexe_dept_dir / 'td011_installation_chauffage_annexe.csv')
-    round_float_cols(td012_p).to_csv(annexe_dept_dir / 'td012_generateur_chauffage_annexe.csv')
-    round_float_cols(td013_p).to_csv(annexe_dept_dir / 'td013_installation_ecs_annexe.csv')
-    round_float_cols(td014_p).to_csv(annexe_dept_dir / 'td014_generateur_ecs_annexe.csv')
-
-    td001_sys_adv_agg = main_advanced_system_processing(td001_sys_ch_agg=td001_sys_ch_agg, td001_sys_ecs_agg=td001_sys_ecs_agg, td001=td001,
-                                    td002=td002, td016=td016,
-                                    td003=td003, td005=td005, td011_p=td011_p, td012_p=td012_p, td014_p=td014_p)
-
-    round_float_cols(td001_sys_adv_agg).to_csv(annexe_dept_dir / 'td001_sys_agg_adv.csv')
 
 
 if __name__ == '__main__':
-    build_doc(annexe_dir)
-    list_dir = list(Path(data_dir).iterdir())
-    firsts = [a_dir for a_dir in list_dir if
-              not (annexe_dir / a_dir.name / 'td001_sys_agg_adv.csv').is_file()]
-    lasts = [a_dir for a_dir in list_dir if (annexe_dir / a_dir.name / 'td001_sys_agg_adv.csv').is_file()]
-    print(len(firsts), len(lasts))
-    list_dir = firsts + lasts
-    list_dir = firsts
 
+    all_depts = get_raw_departements()
+    already_processed_depts = get_annexe_departements('td001_env_adv_agg')
+    depts_to_be_processed = [dept for dept in all_depts if dept not in already_processed_depts]
+    if config['multiprocessing']['is_multiprocessing'] is True:
 
-    # list_dir = [el for el in list_dir if '94' in el.name]
-    # list_dir.reverse()
-
-    p_es = subprocess.Popen(str(es_server_path.absolute()))
-
-    with Pool(processes=nb_proc) as pool:
-        pool.starmap(run_postprocessing_by_depts, [(dept_dir,) for dept_dir in list_dir])
-
-    p_es.terminate()
+        with Pool(processes=config['multiprocessing']['nb_proc']) as pool:
+            pool.starmap(run_systeme_processing, [(dept,) for dept in depts_to_be_processed])
+    else:
+        for dept in depts_to_be_processed:
+            run_systeme_processing(dept)

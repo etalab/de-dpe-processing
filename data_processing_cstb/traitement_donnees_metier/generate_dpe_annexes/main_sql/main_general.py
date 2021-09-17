@@ -21,7 +21,6 @@ def run_postprocessing_by_depts(dept_dir):
     annexe_dept_dir = annexe_dir / dept_dir.name
     annexe_dept_dir.mkdir(exist_ok=True, parents=True)
     # LOAD TABLES
-    td007 = pd.read_csv(dept_dir / 'td007_paroi_opaque.csv', dtype=str)
     td003 = pd.read_csv(dept_dir / 'td003_descriptif.csv', dtype=str)
     td005 = pd.read_csv(dept_dir / 'td005_fiche_technique.csv', dtype=str)
     td006 = pd.read_csv(dept_dir / 'td006_batiment.csv', dtype=str)
