@@ -105,7 +105,9 @@ def merge_td014_tr_tv(td014):
     table = meta.merge_all_tr_tables(table)
     table = meta.merge_all_tv_tables(table)
     table = table.astype(td014_types)
-    table = table.rename(columns={'id': 'td013_installation_ecs_id'})
+    float_cols = [col for col, value in td014_types.items() if value == 'float']
+    table[float_cols] = table[float_cols].round(2)
+    table = table.rename(columns={'id': 'td014_generateur_ecs_id'})
 
     return table
 

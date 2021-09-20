@@ -290,6 +290,21 @@ def get_td016(dept):
     table = convert_all_ids(table)
     return table
 
+def get_td017(dept):
+    schema_name = sql_config['schemas']['dpe_raw_schema_name']
+    query = f"""
+        SELECT td017_neuf.*,{td001_cols}
+        from {schema_name}.td017_neuf as  td017_neuf
+        INNER JOIN {schema_name}.td001_dpe as td001_dpe
+                    ON td001_dpe.id = td017_neuf.td001_dpe_id
+        WHERE td001_dpe.tv016_departement_id = {dept}
+        """
+    table = pd.read_sql(query, engine)
+    table = table.rename(columns={"id": "td017_neuf_id"})
+    table = table.loc[:, table.columns.duplicated() == False]
+    table = convert_all_ids(table)
+    return table
+
 def dump_sql(table, table_name, dept):
     schema_name = sql_config['schemas']['dpe_out_schema_name']
     inspector = inspect(engine)

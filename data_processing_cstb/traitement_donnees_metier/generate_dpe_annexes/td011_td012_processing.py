@@ -73,6 +73,8 @@ def merge_td012_tr_tv(td012):
     table = meta.merge_all_tr_tables(table)
     table = meta.merge_all_tv_tables(table)
     table = table.astype({k: v for k, v in td012_types.items() if k in table})
+    float_cols = [col for col, value in td012_types.items() if value == 'float']
+    table[float_cols] = table[float_cols].round(2)
     table = table.rename(columns={'id': 'td012_generateur_chauffage_id'})
     return table
 
@@ -91,16 +93,17 @@ def postprocessing_td011_td012(td011, td012):
     is_chaudiere = is_rpint | is_rpn
     is_chaudiere = is_chaudiere | ~table.tv038_puissance_nominale_id.isnull()
     # all text description raw concat
-    gen_ch_concat_txt_desc = table['tv031_type_generateur'].astype('string').replace(np.nan, '') + ' '
+    gen_ch_concat_txt_desc = table['tv031_type_generateur'].astype('string').replace({np.nan: '', 'nan': ''}) + ' '
+    gen_ch_concat_txt_desc += table['systeme_chauffage_cogeneration_id'].astype('string').replace({np.nan: '', 'nan': ''}) + ' '
     gen_ch_concat_txt_desc.loc[is_chaudiere] += 'chaudiere '
-    gen_ch_concat_txt_desc += table['tv036_type_chaudiere'].astype('string').replace(np.nan, ' ') + ' '
-    gen_ch_concat_txt_desc += table["tv030_type_installation"].astype('string').replace(np.nan, ' ') + ' '
-    gen_ch_concat_txt_desc += table["tv032_type_generateur"].astype('string').replace(np.nan, ' ') + ' '
-    gen_ch_concat_txt_desc += table['tv035_type_chaudiere'].astype('string').replace(np.nan, ' ') + ' '
-    gen_ch_concat_txt_desc += table['tv036_type_generation'].astype('string').replace(np.nan, ' ') + ' '
-    gen_ch_concat_txt_desc += table["tv030_type_installation"].astype('string').replace(np.nan, ' ') + ' '
-    gen_ch_concat_txt_desc += table["tr004_description"].astype('string').replace(np.nan, ' ') + ' '
-    gen_ch_concat_txt_desc += table["type_energie_ch"].astype('string').replace(np.nan, ' ') + ' '
+    gen_ch_concat_txt_desc += table['tv036_type_chaudiere'].astype('string').replace({np.nan: '', 'nan': ''}) + ' '
+    gen_ch_concat_txt_desc += table["tv030_type_installation"].astype('string').replace({np.nan: '', 'nan': ''}) + ' '
+    gen_ch_concat_txt_desc += table["tv032_type_generateur"].astype('string').replace({np.nan: '', 'nan': ''}) + ' '
+    gen_ch_concat_txt_desc += table['tv035_type_chaudiere'].astype('string').replace({np.nan: '', 'nan': ''}) + ' '
+    gen_ch_concat_txt_desc += table['tv036_type_generation'].astype('string').replace({np.nan: '', 'nan': ''}) + ' '
+    gen_ch_concat_txt_desc += table["tv030_type_installation"].astype('string').replace({np.nan: '', 'nan': ''}) + ' '
+    gen_ch_concat_txt_desc += table["tr004_description"].astype('string').replace({np.nan: '', 'nan': ''}) + ' '
+    gen_ch_concat_txt_desc += table["type_energie_ch"].astype('string').replace({np.nan: '', 'nan': ''}) + ' '
     gen_ch_concat_txt_desc += table['tv046_nom_reseau'].isnull().replace({False: 'réseau de chaleur',
                                                                           True: " "})
     gen_ch_concat_txt_desc = gen_ch_concat_txt_desc.str.lower().apply(lambda x: strip_accents(x))
@@ -322,7 +325,7 @@ def agg_systeme_ch_essential(td001, td011, td012):
             'sys_ch_tert_type_energie_ch_concat']
 
     td001_sys_ch['mix_energetique_ch'] = concat_string_cols(td001_sys_ch, cols=cols, join_string=' + ',
-                                                                   is_unique=True, is_sorted=True)
+                                                            is_unique=True, is_sorted=True)
 
     cols = ['sys_ch_princ_type_installation_ch',
             'sys_ch_sec_type_installation_ch',

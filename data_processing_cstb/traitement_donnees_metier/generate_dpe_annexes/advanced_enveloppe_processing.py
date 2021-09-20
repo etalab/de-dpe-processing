@@ -25,7 +25,6 @@ def main_advanced_enveloppe_processing(td001,td003, td005,env_compo_agg_dict):
         td001_env = td001_env.merge(env_compo_agg_dict[k][v], on='td001_dpe_id', how='left')
 
     td001_env = rename_dpe_table_light(td001_env)
-    final_cols = td001_env.columns
     # ELASTIC SEARCH descriptif et fiches techniques
     print('ES : murs')
     materiau_mur_ft, isolation_mur_ft = extract_td005_murs_variables(td005)
@@ -101,6 +100,10 @@ def main_advanced_enveloppe_processing(td001,td003, td005,env_compo_agg_dict):
     td001_env.loc[is_non_isole, 'pos_isol_ph'] = 'non isole'
 
     td001_env.pos_isol_ph = td001_env.pos_isol_ph.replace('Non isolé', 'non isole')
+
+    # final columns
+
+    final_cols = td001_env.columns + [col for col in td001_env.columns if '_txt' in col]
 
     return td001_env[final_cols]
 

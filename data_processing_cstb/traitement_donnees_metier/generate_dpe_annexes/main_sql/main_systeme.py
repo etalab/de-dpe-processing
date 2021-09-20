@@ -31,7 +31,7 @@ def run_systeme_processing(dept):
     td001_raw = get_td001(dept=dept)
     td002_raw = get_td002(dept=dept)
     td003_raw = get_td003(dept=dept)
-    td006_raw = get_td006(dept=dept)
+    #td006_raw = get_td006(dept=dept)
     td005_raw = get_td005(dept=dept)
     td011_raw = get_td011(dept=dept)
     td012_raw = get_td012(dept=dept)

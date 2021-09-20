@@ -17,11 +17,16 @@ def postprocessing_td001(td001):
     td001.loc[is_facture, 'nom_methode_dpe_norm'] = 'FACTURE'
     td001.loc[is_thc, 'nom_methode_dpe_norm'] = 'THBCE(RT2012)/THC(RT2005)'
     td001.loc[is_vierge, 'nom_methode_dpe_norm'] = 'DPE vierge'
+
     periode_construction = pd.cut(td001.annee_construction.astype(float),
                                   [-100000, 1800, 1948, 1970, 1988, 1999, 2005, 2012, 2020, 2100],
                                   labels=['bad inf', '<1948', '1949-1970', '1970-1988', '1989-1999', '2000-2005',
                                           '2006-2012', '>2012', 'bad sup'])
 
     td001['periode_construction'] = periode_construction
+    not_valid = ~td001.classe_consommation_energie.isin(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
+    td001.loc[not_valid,'classe_consommation_energie']='vierge'
+    not_valid = ~td001.classe_estimation_ges.isin(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
+    td001.loc[not_valid,'classe_estimation_ges']='vierge'
 
     return td001
