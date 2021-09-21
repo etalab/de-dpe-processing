@@ -103,7 +103,7 @@ def main_advanced_enveloppe_processing(td001,td003, td005,env_compo_agg_dict):
 
     # final columns
 
-    final_cols = td001_env.columns + [col for col in td001_env.columns if '_txt' in col]
+    final_cols = td001_env.columns
 
     return td001_env[final_cols]
 
