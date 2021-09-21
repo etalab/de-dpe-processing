@@ -81,7 +81,7 @@ def run_enveloppe_processing(dept):
     )
 
     env_compo_agg_dict = dict(td007_mur_agg_annexe=td007_murs_agg,
-                              surfaces_agg_essential_annexe=surfaces_agg_essential,
+                              td001_surfaces_agg_essential_annexe=surfaces_agg_essential,
                               td007_ph_agg_annexe=td007_ph_agg,
                               td007_pb_agg_annexe=td007_pb_agg,
                               td008_baie_agg_annexe=td008_agg,
