@@ -3,11 +3,10 @@ import numpy as np
 from generate_dpe_annexes.text_matching_dict import enr_search_dict, type_ventilation_search_dict, presence_climatisation_search_dict
 from generate_dpe_annexes.td003_td005_text_extraction import extract_td003_td005_ventilation_variables, \
     extract_td003_td005_climatisation_variables, extract_td003_td005_enr_variables
-from generate_dpe_annexes.utils import select_only_new_cols
 
 def main_advanced_general_processing(td001, td003, td005, td001_td006):
 
-    td001_gen = select_only_new_cols(td001,'td001_dpe_id').merge(td001_td006, on='td001_dpe_id', how='left')
+    td001_gen = td001.merge(td001_td006, on='td001_dpe_id', how='left')
 
     # ELASTIC SEARCH descriptif et fiches techniques
 

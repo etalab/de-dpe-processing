@@ -10,8 +10,7 @@ from generate_dpe_annexes.td006_processing import agg_td006_td001, merge_td006_t
 from generate_dpe_annexes.advanced_general_processing import main_advanced_general_processing
 from generate_dpe_annexes.utils import remerge_td001_columns
 import subprocess
-
-
+from generate_dpe_annexes.utils import select_only_new_cols
 
 
 def run_general_processing(dept):
@@ -29,13 +28,21 @@ def run_general_processing(dept):
     td012_raw = get_td012(dept=dept)
     td017_raw = get_td017(dept=dept)
 
-    td001 = postprocessing_td001(td001=td001_raw,td002=td002_raw,td007=td007_raw,td012=td012_raw,td016=td016_raw,td017=td017_raw)
+    logger.debug(f'{function_name} -------------- postprocessing')
+
+    td001 = postprocessing_td001(td001=td001_raw, td002=td002_raw, td007=td007_raw, td012=td012_raw, td016=td016_raw, td017=td017_raw)
     td006 = merge_td006_tr_tv(td006_raw)
     td001_td006 = agg_td006_td001(td006=td006)
 
+    logger.debug(f'{function_name} -------------- advanced')
+
+    td001 = select_only_new_cols(td001_raw, td001, 'td001_dpe_id')
     td001_gen_agg_adv = main_advanced_general_processing(td001=td001, td003=td003_raw, td005=td005_raw, td001_td006=td001_td006)
     td001_general_table_dict = dict(
         td001_gen_agg_adv_annexe=td001_gen_agg_adv)
+
+    logger.debug(f'{function_name} -------------- dump sql')
+
     for k, v in td001_general_table_dict.items():
         td001_general_table_dict[k] = remerge_td001_columns(v, td001_raw, ['tv016_departement_id'])
 
