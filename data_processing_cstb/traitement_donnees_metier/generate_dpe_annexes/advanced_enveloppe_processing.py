@@ -293,7 +293,7 @@ def calculate_traversant(td001_env,td001,env_compo_agg_dict):
     https://www.legifrance.gouv.fr/jorf/jo/2006/05/25/0121
     """
 
-    surfaces_agg_essential = env_compo_agg_dict['surfaces_agg_essential_annexe'].copy()
+    surfaces_agg_essential = env_compo_agg_dict['td001_surfaces_agg_essential_annexe'].copy()
 
     for surf in ['surf_vitree_est', 'surf_vitree_nord', 'surf_vitree_ouest', 'surf_vitree_sud', 'surf_vitree_est_ou_ouest']:
         surfaces_agg_essential[f'perc_temp_{surf}'] = surfaces_agg_essential[surf] / surfaces_agg_essential['surf_vitree_totale']
