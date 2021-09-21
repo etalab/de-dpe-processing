@@ -1043,11 +1043,11 @@ def redressement_td001_sys(td001_sys):
 
     td001_sys.loc[is_chaudiere_bois & is_chaudiere_ind, 'gen_ecs_lib_final'] = f'chaudiere bois'
 
-    for type_chaudiere in type_chaudiere_mods:
-        is_chaudiere_ind = td001_sys.gen_ecs_lib_final.str.contains(
-            f'chaudiere energie indetermine {type_chaudiere}')
-
-        td001_sys.loc[is_chaudiere_bois, 'gen_ecs_lib_final'] = f'chaudiere bois'
+    # for type_chaudiere in type_chaudiere_mods:
+    #     is_chaudiere_ind = td001_sys.gen_ecs_lib_final.str.contains(
+    #         f'chaudiere energie indetermine {type_chaudiere}')
+    #
+    #     td001_sys.loc[is_chaudiere_bois, 'gen_ecs_lib_final'] = f'chaudiere bois'
 
     # ======= Suppression des libéllés chauffage indetermine avec une chaudiere =======================================
 

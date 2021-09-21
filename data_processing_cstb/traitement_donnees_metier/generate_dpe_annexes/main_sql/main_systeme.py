@@ -112,7 +112,7 @@ def build_doc(annexe_dir):
 if __name__ == '__main__':
 
     all_depts = get_raw_departements()
-    already_processed_depts = get_annexe_departements('td001_env_adv_agg')
+    already_processed_depts = get_annexe_departements('td001_sys_adv_annexe')
     depts_to_be_processed = [dept for dept in all_depts if dept not in already_processed_depts]
     if config['multiprocessing']['is_multiprocessing'] is True:
 

@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
-from .text_matching_dict import enr_search_dict, type_ventilation_search_dict, presence_climatisation_search_dict
-from .td003_td005_text_extraction import extract_td003_td005_ventilation_variables, \
+from generate_dpe_annexes.text_matching_dict import enr_search_dict, type_ventilation_search_dict, presence_climatisation_search_dict
+from generate_dpe_annexes.td003_td005_text_extraction import extract_td003_td005_ventilation_variables, \
     extract_td003_td005_climatisation_variables, extract_td003_td005_enr_variables
-
+from generate_dpe_annexes.utils import select_only_new_cols
 
 def main_advanced_general_processing(td001, td003, td005, td001_td006):
 
-    td001_gen = td001[['td001_dpe_id','nom_methode_dpe_norm','periode_construction']].merge(td001_td006, on='td001_dpe_id', how='left')
+    td001_gen = select_only_new_cols(td001,'td001_dpe_id').merge(td001_td006, on='td001_dpe_id', how='left')
 
     # ELASTIC SEARCH descriptif et fiches techniques
 
@@ -79,7 +79,10 @@ def main_advanced_general_processing(td001, td003, td005, td001_td006):
 
     td001_gen.presence_climatisation = (~td001_gen.presence_climatisation.isnull()).astype(int)
 
-    useful_cols = ['td001_dpe_id', 'nom_methode_dpe_norm','periode_construction','type_prise_air', 'type_ventilation',
+    useful_cols = ['td001_dpe_id','type_prise_air', 'type_ventilation',
        'inertie','presence_climatisation','enr']
+    td001_processing_cols = ['type_batiment','coherence_data_methode_dpe', 'nom_methode_dpe_norm','periode_construction','classe_consommation_energie',
+                             'classe_estimation_ges','is_conso_table', 'is_facture_table', 'is_neuf_table', 'is_paroi_opaque_table', 'is_systeme_ch_table','is_3cl','is_data_model_propre']
+    useful_cols = td001_processing_cols+useful_cols
 
     return td001_gen[useful_cols]

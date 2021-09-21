@@ -104,7 +104,7 @@ def run_enveloppe_processing(dept):
                                                            td003=td003_raw, td005=td005_raw)
 
     td001_env_adv_agg = remerge_td001_columns(td001_env_adv_agg, td001_raw, ['tv016_departement_id'])
-    dump_sql(table=td001_env_adv_agg, table_name="td001_env_adv_agg", dept=dept)
+    dump_sql(table=td001_env_adv_agg, table_name="td001_env_adv_agg_annexe", dept=dept)
 
 def build_doc(annexe_dir):
     doc_annexe = dict()
@@ -127,7 +127,7 @@ def build_doc(annexe_dir):
 if __name__ == '__main__':
 
     all_depts = get_raw_departements()
-    already_processed_depts = get_annexe_departements('td001_env_adv_agg')
+    already_processed_depts = get_annexe_departements('td001_env_adv_agg_annexe')
     depts_to_be_processed = [dept for dept in all_depts if dept not in already_processed_depts]
     if config['multiprocessing']['is_multiprocessing'] is True:
 

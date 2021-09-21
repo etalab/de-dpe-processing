@@ -75,10 +75,6 @@ def run_postprocessing_by_depts(dept_dir):
                                                         'True':True}).astype(float).astype(pd.Int8Dtype())
     # TEMPORARY FIX
 
-    not_valid = ~grnv.classe_consommation_energie.isin(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
-    grnv.loc[not_valid,'classe_consommation_energie']='vierge'
-    not_valid = ~grnv.classe_estimation_ges.isin(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
-    grnv.loc[not_valid,'classe_estimation_ges']='vierge'
 
     round_float_cols(grnv).to_csv(annexe_dept_dir / 'td001_agg_synthese_gorenove.csv')
 
