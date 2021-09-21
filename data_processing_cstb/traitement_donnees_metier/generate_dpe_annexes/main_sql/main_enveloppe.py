@@ -19,7 +19,7 @@ from generate_dpe_annexes.config import config
 from generate_dpe_annexes.utils import select_only_new_cols,remerge_td001_columns
 from generate_dpe_annexes.sql_config import engine, sql_config
 
-
+@timeit
 def run_enveloppe_processing(dept):
     function_name = "run_enveloppe_processing"
     logger = config['logger']

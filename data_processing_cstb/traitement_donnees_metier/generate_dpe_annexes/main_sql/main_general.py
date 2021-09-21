@@ -12,7 +12,7 @@ from generate_dpe_annexes.utils import remerge_td001_columns
 import subprocess
 from generate_dpe_annexes.utils import select_only_new_cols
 
-
+@timeit
 def run_general_processing(dept):
     function_name = "run_general_processing"
     logger = config['logger']

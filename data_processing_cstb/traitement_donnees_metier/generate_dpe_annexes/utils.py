@@ -355,3 +355,19 @@ def remerge_td001_columns(table,td001,td001_columns):
     td001_columns = ['td001_dpe_id']+td001_columns
     table=table.merge(td001[td001_columns],on='td001_dpe_id')
     return table
+
+def timeit(method):
+    """
+    Decorator to compute functions execution time
+    """
+    def timed(*args, **kw):
+        ts = time.time()
+        result = method(*args, **kw)
+        te = time.time()
+        if 'log_time' in kw:
+            name = kw.get('log_name', method.__name__.upper())
+            kw['log_time'][name] = str(datetime.timedelta(seconds=te - ts))
+        else:
+            config['logger'].debug('%r  %2.2f s' % (method.__name__, (te - ts)))
+        return result
+    return timed
