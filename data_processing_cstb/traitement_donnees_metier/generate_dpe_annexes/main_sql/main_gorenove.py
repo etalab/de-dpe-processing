@@ -2,7 +2,6 @@ from pathlib import Path
 from generate_dpe_annexes.gorenove_scripts import rename_dpe_table_light
 import numpy as np
 import pandas as pd
-from generate_dpe_annexes.config import paths
 from generate_dpe_annexes.utils import round_float_cols
 from multiprocessing import Pool
 

@@ -2,7 +2,6 @@ import pandas as pd
 from pathlib import Path
 import json
 from generate_dpe_annexes.utils import round_float_cols, unique_ordered
-from generate_dpe_annexes.config import paths,nb_proc
 from multiprocessing import Pool
 
 from generate_dpe_annexes.td011_td012_processing import merge_td012_tr_tv, postprocessing_td011_td012, \
