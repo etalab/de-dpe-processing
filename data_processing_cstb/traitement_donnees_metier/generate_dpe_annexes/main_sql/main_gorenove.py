@@ -4,28 +4,32 @@ import numpy as np
 import pandas as pd
 from generate_dpe_annexes.utils import round_float_cols
 from multiprocessing import Pool
+import pandas as pd
+from pathlib import Path
+import os
+from generate_dpe_annexes.td001_processing import postprocessing_td001
+from generate_dpe_annexes.utils import round_float_cols
+from multiprocessing import Pool
+from generate_dpe_annexes.sql_queries import *
+from generate_dpe_annexes.config import config
+from generate_dpe_annexes.td006_processing import agg_td006_td001, merge_td006_tr_tv
+from generate_dpe_annexes.advanced_general_processing import main_advanced_general_processing
+from generate_dpe_annexes.utils import remerge_td001_columns
+import subprocess
+from generate_dpe_annexes.utils import select_only_new_cols,remerge_td001_columns,timeit
 
-data_dir = paths['DPE_DEPT_PATH']
-annexe_dir = paths['DPE_DEPT_ANNEXE_PATH']
-annexe_dir = Path(annexe_dir)
-annexe_dir.mkdir(exist_ok=True, parents=True)
-es_server_path = paths['ES_SERVER_PATH']
 
-def run_postprocessing_by_depts(dept_dir):
-    print(dept_dir)
-    annexe_dept_dir = annexe_dir / dept_dir.name
-    annexe_dept_dir.mkdir(exist_ok=True, parents=True)
-    # LOAD TABLES
-    td001 = pd.read_csv(dept_dir / 'td001_dpe.csv', dtype=str)
-    td001 = td001.rename(columns={'id': 'td001_dpe_id'})
-    gen_adv = pd.read_csv(annexe_dept_dir / 'td001_gen_agg_adv.csv', dtype=str)
-    sys_adv = pd.read_csv(annexe_dept_dir / 'td001_sys_agg_adv.csv', dtype=str)
-    env_surf = pd.read_csv(annexe_dept_dir / 'td001_enveloppe_surface_agg_annexe.csv', dtype=str)
-    env_surf = env_surf.rename(columns={"Unnamed: 0": "td001_dpe_id"})
-    env_adv = pd.read_csv(annexe_dept_dir / 'td001_env_agg_adv.csv', dtype=str)
-    td001_cols = ['td001_dpe_id', 'numero_dpe', 'tr002_type_batiment_id', 'date_reception_dpe', 'consommation_energie',
-                  'estimation_ges',
-                  'classe_consommation_energie', 'classe_estimation_ges']
+
+@timeit
+def run_gorenove_processing(dept):
+    td001 = get_td001(dept)
+    gen_adv = get_annexe_table('td001_gen_agg_adv_annexe', dept=dept)
+    sys_adv = get_annexe_table('td001_sys_adv_annexe', dept=dept)
+    env_adv = get_annexe_table('td001_env_adv_agg_annexe', dept=dept)
+    env_surf = get_annexe_table('td001_surfaces_agg_essential_annexe', dept=dept)
+
+    td001_cols = ['td001_dpe_id', 'tv016_departement_id', 'numero_dpe', 'date_reception_dpe', 'consommation_energie',
+                  'estimation_ges']
 
     env_surf_cols = ['td001_dpe_id', 'perc_surf_vitree_ext']
 
@@ -34,24 +38,16 @@ def run_postprocessing_by_depts(dept_dir):
                 'type_energie_ecs', 'gen_ecs_lib_final',
                 'gen_ecs_lib_principal', 'gen_ecs_lib_appoint', 'is_ecs_solaire']
 
-    gen_cols = ['td001_dpe_id', 'nom_methode_dpe_norm', 'periode_construction', 'type_ventilation',
+    gen_cols = ['td001_dpe_id', 'classe_consommation_energie', 'classe_estimation_ges', 'type_batiment', 'coherence_data_methode_dpe', 'is_3cl', 'nom_methode_dpe_norm', 'periode_construction',
+                'type_ventilation',
                 'inertie', 'presence_climatisation', 'enr']
     env_cols = ['td001_dpe_id', 'u_mur_ext', 'mat_mur_ext',
                 'ep_mat_mur_ext', 'type_adjacence_ph', 'u_ph', 'mat_ph',
                 'type_adjacence_pb', 'u_pb', 'mat_pb', 'pos_isol_mur_ext',
                 'pos_isol_pb', 'pos_isol_ph', 'u_baie', 'fs_baie', 'type_vitrage_baie',
                 'remplissage_baie', 'mat_baie', 'orientation_baie',
-                'avancee_masque_max', 'presence_balcon']
-    # temporary fix
-    if 'periode_construction' not in gen_cols:
-        gen_adv = gen_adv.merge(td001[['td01_dpe_id', 'annee_construction']], on='td001_dpe_id', how='left')
-        periode_construction = pd.cut(gen_adv.annee_construction.astype(float),
-                                      [-100000, 1400, 1948, 1970, 1988, 1999, 2005, 2012, 2020, 2100],
-                                      labels=['bad inf', '<1948', '1949-1970', '1970-1988', '1989-1999', '2000-2005',
-                                              '2006-2012', '>2012', 'bad sup'])
-        gen_adv['periode_construction'] = periode_construction
-        gen_adv["periode_construction"] = gen_adv["periode_construction"].replace('bad inf', np.nan).replace('bad sup',
-                                                                                                             np.nan)
+                'avancee_masque_max', 'presence_balcon', 'traversant']
+
     # MERGE TABLE
     grnv = td001[td001_cols].drop_duplicates('numero_dpe', keep='last')
     grnv = grnv.merge(gen_adv[gen_cols], on='td001_dpe_id', how='left')
@@ -64,40 +60,27 @@ def run_postprocessing_by_depts(dept_dir):
 
     # TEMPORARY FIX
 
-    grnv[[col for col in grnv if 'pos' in col]] = grnv[[col for col in grnv if 'pos' in col]].replace('Non isolé','non isole')
-    # convert bool to int
-    grnv.presence_balcon = grnv.presence_balcon.replace({'False':False,
-                                                        'True':True}).astype(float).astype(pd.Int8Dtype())
-    grnv.ecs_is_solaire = grnv.ecs_is_solaire.replace({'False':False,
-                                                        'True':True}).astype(float).astype(pd.Int8Dtype())
-    grnv.ch_is_solaire = grnv.ch_is_solaire.replace({'False':False,
-                                                        'True':True}).astype(float).astype(pd.Int8Dtype())
-    # TEMPORARY FIX
-
-
-    round_float_cols(grnv).to_csv(annexe_dept_dir / 'td001_agg_synthese_gorenove.csv')
-
+    grnv[[col for col in grnv if 'pos' in col]] = grnv[[col for col in grnv if 'pos' in col]].replace('Non isolé', 'non isole')
+    # convert bool
+    grnv.presence_balcon = grnv.presence_balcon.replace({'False': False,
+                                                         'True': True})
+    grnv.ecs_is_solaire = grnv.ecs_is_solaire.replace({'False': False,
+                                                       'True': True})
+    grnv.ch_is_solaire = grnv.ch_is_solaire.replace({'False': False,
+                                                     'True': True})
+    dump_sql(table=grnv, table_name='td001_agg_synthese_gorenove', dept=dept)
 
 if __name__ == '__main__':
-    # TODO : booléens en mode 0/1
-    data_dir = paths['DPE_DEPT_PATH']
-    annexe_dir = paths['DPE_DEPT_ANNEXE_PATH']
-    annexe_dir = Path(annexe_dir)
-    annexe_dir.mkdir(exist_ok=True, parents=True)
 
-    list_dir = list(Path(data_dir).iterdir())
-    firsts = [a_dir for a_dir in list_dir if
-              not (annexe_dir / a_dir.name / 'td001_agg_synthese_gorenove.csv').is_file()]
-    lasts = [a_dir for a_dir in list_dir if (annexe_dir / a_dir.name / 'td001_agg_synthese_gorenove.csv').is_file()]
-    print(len(firsts), len(lasts))
-    list_dir = firsts + lasts
-    # list_dir = [el for el in list_dir if '94' in el.name]
-    list_dir.reverse()
-    # for dept_dir in list_dir:
-    #     if dept_dir.name == '94':
-    #         print(dept_dir)
-    #         run_postprocessing_by_depts(dept_dir)
+    all_depts = get_raw_departements()
+    already_processed_depts = get_annexe_departements('td001_agg_synthese_gorenove')
+    depts_to_be_processed = [dept for dept in all_depts if dept not in already_processed_depts]
+    if config['multiprocessing']['is_multiprocessing'] is True:
 
-    with Pool(processes=3) as pool:
-        pool.starmap(run_postprocessing_by_depts, [(dept_dir,) for dept_dir in list_dir])
+        with Pool(processes=config['multiprocessing']['nb_proc']) as pool:
+            pool.starmap(run_gorenove_processing, [(dept,) for dept in depts_to_be_processed])
+    else:
+        for dept in depts_to_be_processed:
+            run_gorenove_processing(dept)
+
 
