@@ -59,7 +59,7 @@ def get_annexe_table(annexe_table_name,dept):
     query = f"""
     SELECT *
     FROM {schema_name}.{annexe_table_name}
-    WHERE tv016_departement_id = {dept}
+    WHERE tv016_departement_id='{dept}'
     """
     df = pd.read_sql(query, engine)
 
