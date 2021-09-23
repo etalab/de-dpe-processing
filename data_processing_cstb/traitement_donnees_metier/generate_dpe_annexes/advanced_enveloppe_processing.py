@@ -320,14 +320,16 @@ def calculate_traversant(td001_env,td001,env_compo_agg_dict):
     null_traversant = (traversant.traversant.isnull())
     is_traversant = (traversant.traversant == "traversant")
     is_traversant_or_null = null_traversant | (traversant.traversant == 'traversant')
+    non_traversant = non_traversant |(traversant.traversant == "non traversant")
+
+    traversant.loc[traversant_2_facades & is_traversant_or_null, "traversant"] = 'traversant 90°'
     traversant.loc[traversant_nord_sud & is_traversant_or_null, "traversant"] = 'traversant nord sud'
     traversant.loc[traversant_est_ouest & is_traversant_or_null, "traversant"] = 'traversant est ouest'
-    traversant.loc[traversant_2_facades & is_traversant_or_null, "traversant"] = 'traversant 90°'
     traversant.loc[traversant_3_facades & is_traversant_or_null, "traversant"] = 'traversant tout venant'
     traversant.loc[traversant_4_facades & is_traversant_or_null, "traversant"] = 'traversant tout venant'
+    traversant.loc[traversant_2_facades & null_traversant, "traversant"] = 'traversant 90° (faible)'
     traversant.loc[traversant_nord_sud & null_traversant, "traversant"] = 'traversant nord sud (faible)'
     traversant.loc[traversant_est_ouest & null_traversant, "traversant"] = 'traversant est ouest (faible)'
-    traversant.loc[traversant_2_facades & null_traversant, "traversant"] = 'traversant 90° (faible)'
     traversant.loc[traversant_3_facades & null_traversant, "traversant"] = 'traversant tout venant (faible)'
     traversant.loc[traversant_4_facades & null_traversant, "traversant"] = 'traversant tout venant (faible)'
     traversant.loc[non_traversant, 'traversant'] = "non traversant"

@@ -21,17 +21,17 @@ def postprocessing_td001(td001,td002,td007,td012,td016,td017):
 
     td001['is_3cl'] = (td001.is_paroi_opaque_table) & (td001.is_systeme_ch_table)
 
-    td001['is_data_model_propre'] = True
+    td001['coherence_data_model'] = True
     bool_ = td001.is_facture_table == True
-    td001.loc[bool_, 'is_data_model_propre'] = (td001.loc[bool_, 'is_neuf_table'] == False) & (td001.loc[bool_, 'is_3cl'] == False)
+    td001.loc[bool_, 'coherence_data_model'] = (td001.loc[bool_, 'is_neuf_table'] == False) & (td001.loc[bool_, 'is_3cl'] == False)
     bool_ = td001.is_neuf_table == True
-    td001.loc[bool_, 'is_data_model_propre'] = (td001.loc[bool_, 'is_facture_table'] == False) & (td001.loc[bool_, 'is_3cl'] == False)
+    td001.loc[bool_, 'coherence_data_model'] = (td001.loc[bool_, 'is_facture_table'] == False) & (td001.loc[bool_, 'is_3cl'] == False)
     bool_ = td001.is_3cl == True
-    td001.loc[bool_, 'is_data_model_propre'] = (td001.loc[bool_, 'is_facture_table'] == False) & (td001.loc[bool_, 'is_neuf_table'] == False)
+    td001.loc[bool_, 'coherence_data_model'] = (td001.loc[bool_, 'is_facture_table'] == False) & (td001.loc[bool_, 'is_neuf_table'] == False)
 
     td001['methode_dpe_from_data_model'] = 'NON DEFINI'
 
-    bool_propre = td001.is_data_model_propre == True
+    bool_propre = td001.coherence_data_model == True
     bool_ = bool_propre & (td001.is_3cl == True)
     td001.loc[bool_, 'methode_dpe_from_data_model'] = '3CL'
     bool_ = bool_propre & (td001.is_neuf_table == True)
@@ -92,15 +92,15 @@ def postprocessing_td001(td001,td002,td007,td012,td016,td017):
     nom_methode_etude_thermique = td001.nom_methode_etude_thermique.str.lower()
 
     not_valid = ~td001.classe_consommation_energie.isin(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
-    td001.loc[not_valid, 'classe_consommation_energie'] = 'vierge'
+    td001.loc[not_valid, 'classe_consommation_energie'] = 'N'
     not_valid = ~td001.classe_estimation_ges.isin(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
-    td001.loc[not_valid, 'classe_estimation_ges'] = 'vierge'
+    td001.loc[not_valid, 'classe_estimation_ges'] = 'N'
 
     is_3cl = nom_dpe.str.contains('cl')
     is_facture = nom_dpe.str.contains('facture')
     is_thc = (nom_dpe.str.startswith('th')) | (nom_methode_etude_thermique.str.startswith('th')) | (td001.version_methode_etude_thermique.isin(num_versions_rt2012))
     is_vierge = nom_dpe.str.contains('vierge')
-    is_classe_vierge = td001.classe_consommation_energie=="vierge"
+    is_classe_vierge = td001.classe_consommation_energie=="N"
 
     s_version = td001.version_methode_dpe.str.lower().fillna('')
     v2012 = s_version.str.contains('2012|1.3')

@@ -161,4 +161,5 @@ def concat_td001_gorenove(td001, td001_list):
         table = table[list(sel.keys()) + ['td001_dpe_id']].astype(sel)
         not_common_cols = ['td001_dpe_id'] + [el for el in td001 if el not in table]
         td001 = td001[not_common_cols].merge(table, on='td001_dpe_id', how='left')
+
     return td001
