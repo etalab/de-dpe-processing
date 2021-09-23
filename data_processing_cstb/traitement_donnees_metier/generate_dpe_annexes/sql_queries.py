@@ -54,6 +54,16 @@ def get_annexe_departements(annexe_table_name):
     else:
         return []
 
+def get_annexe_table(annexe_table_name,dept):
+    schema_name = sql_config['schemas']['dpe_out_schema_name']
+    query = f"""
+    SELECT *
+    FROM {schema_name}.{annexe_table_name}
+    WHERE tv016_departement_id = {dept}
+    """
+    df = pd.read_sql(query, engine)
+
+    return df
 
 def get_td001(dept):
     schema_name = sql_config['schemas']['dpe_raw_schema_name']
