@@ -10,7 +10,7 @@ from generate_dpe_annexes.td006_processing import agg_td006_td001, merge_td006_t
 from generate_dpe_annexes.advanced_general_processing import main_advanced_general_processing
 from generate_dpe_annexes.utils import remerge_td001_columns
 import subprocess
-from generate_dpe_annexes.utils import select_only_new_cols,remerge_td001_columns,timeit
+from generate_dpe_annexes.utils import select_only_new_cols,remerge_td001_columns
 
 #@timeit
 def run_general_processing(dept):

@@ -17,7 +17,7 @@ from generate_dpe_annexes.advanced_enveloppe_processing import main_advanced_env
 from generate_dpe_annexes.sql_queries import *
 from generate_dpe_annexes.config import config
 from generate_dpe_annexes.sql_config import engine, sql_config
-from generate_dpe_annexes.utils import select_only_new_cols,remerge_td001_columns,timeit
+from generate_dpe_annexes.utils import select_only_new_cols,remerge_td001_columns
 
 #@timeit
 def run_enveloppe_processing(dept):
