@@ -23,4 +23,4 @@ if __name__ == '__main__':
     depts_to_be_processed = [dept for dept in all_depts if dept not in already_processed_depts]
     if config['multiprocessing']['is_multiprocessing'] is True:
         with multiprocessing.get_context('spawn').Pool(processes=config['multiprocessing']['nb_proc']) as pool:
-            pool.starmap(run_systeme_processing, [(dept,) for dept in depts_to_be_processed])
+            pool.starmap(run_all, [(dept,) for dept in depts_to_be_processed])
