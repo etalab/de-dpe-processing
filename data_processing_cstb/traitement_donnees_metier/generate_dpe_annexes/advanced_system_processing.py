@@ -754,8 +754,8 @@ def concat_and_sort_energie_ecs_lib(energie_ecs_desc, energie_ecs_ft, td014_p):
 
 def redressement_td001_sys(td001_sys):
     # remove trailing indetermine
-    td001_sys['gen_ch_lib_final'] = td001_sys.gen_ch_lib_final.str.replace(' \+ indetermine', '',regex=True)
-    td001_sys['gen_ecs_lib_final'] = td001_sys.gen_ecs_lib_final.str.replace(' \+ indetermine', '',regex=True)
+    td001_sys['gen_ch_lib_final'] = td001_sys.gen_ch_lib_final.str.replace(' \+ indetermine', '',regex=False)
+    td001_sys['gen_ecs_lib_final'] = td001_sys.gen_ecs_lib_final.str.replace(' \+ indetermine', '',regex=False)
 
     td001_sys['gen_ch_lib_non_retraite'] = td001_sys.gen_ch_lib_final.copy()
     td001_sys['gen_ecs_lib_non_retraite'] = td001_sys.gen_ecs_lib_final.copy()
@@ -1058,7 +1058,7 @@ def redressement_td001_sys(td001_sys):
             is_ind_other = td001_sys.gen_ch_lib_final.str.contains(lib_ind_other)
 
             td001_sys.loc[is_chaudiere_ener & is_ind_other, 'gen_ch_lib_final'] = td001_sys.loc[
-                is_chaudiere_ener & is_ind_other, 'gen_ch_lib_final'].str.replace(' \+ ' + lib_ind_other, '',regex=True)
+                is_chaudiere_ener & is_ind_other, 'gen_ch_lib_final'].str.replace(' \+ ' + lib_ind_other, '',regex=False)
 
     # affectation de libéllés par défaut en fonction des energies de chauffage et ecs pour les générateurs indéterminés
 
@@ -1210,7 +1210,7 @@ def redressement_td001_sys(td001_sys):
 
     td001_sys['type_energie_ch_from_gen'] = td001_sys.gen_ch_lib_final.copy()
     for k, v in gen_to_energy.items():
-        td001_sys['type_energie_ch_from_gen'] = td001_sys['type_energie_ch_from_gen'].str.replace(k, v,regex=True)
+        td001_sys['type_energie_ch_from_gen'] = td001_sys['type_energie_ch_from_gen'].str.replace(k, v,regex=False)
 
     td001_sys['type_energie_ch_from_gen'] = td001_sys['type_energie_ch_from_gen'].apply(
         lambda x: ' + '.join(sorted(list(set([el for el in x.split(' + ') if el != ''])))))
@@ -1274,7 +1274,7 @@ def redressement_td001_sys(td001_sys):
 
     td001_sys['type_energie_ecs_from_gen'] = td001_sys.gen_ecs_lib_final.copy()
     for k, v in gen_to_energy.items():
-        td001_sys['type_energie_ecs_from_gen'] = td001_sys['type_energie_ecs_from_gen'].str.replace(k, v,regex=True)
+        td001_sys['type_energie_ecs_from_gen'] = td001_sys['type_energie_ecs_from_gen'].str.replace(k, v,regex=False)
 
     td001_sys['type_energie_ecs_from_gen'] = td001_sys['type_energie_ecs_from_gen'].apply(
         lambda x: ' + '.join(sorted(list(set([el for el in x.split(' + ') if el != ''])))))
@@ -1382,9 +1382,9 @@ def calcul_libelle_simplifie(td001_sys):
         gen_ch_simp_dict[f'chaudiere {ener} indetermine'] = f'chaudiere {ener} standard'
 
     for k, v in gen_ch_simp_dict.items():
-        td001_sys.gen_ch_lib_final_simp = td001_sys.gen_ch_lib_final_simp.str.replace(k, v)
-        td001_sys.gen_ch_lib_final_simp = td001_sys.gen_ch_lib_final_simp.str.replace(v + ' + ' + v, v)
-        td001_sys.gen_ch_lib_final_simp = td001_sys.gen_ch_lib_final_simp.str.replace(v + ' + ' + v, v)
+        td001_sys.gen_ch_lib_final_simp = td001_sys.gen_ch_lib_final_simp.str.replace(k, v,regex=False)
+        td001_sys.gen_ch_lib_final_simp = td001_sys.gen_ch_lib_final_simp.str.replace(v + ' \+ ' + v, v,regex=False)
+        td001_sys.gen_ch_lib_final_simp = td001_sys.gen_ch_lib_final_simp.str.replace(v + ' \+ ' + v, v,regex=False)
 
     # ### simplification réseau de chaleur
     # #si réseau de chaleur alors on considère que c'est le système de chauffage du bâtiment

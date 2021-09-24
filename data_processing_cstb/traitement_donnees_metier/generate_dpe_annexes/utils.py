@@ -354,6 +354,7 @@ def select_only_new_cols(raw_table, new_table, id_col, add_cols=None):
     return new_table[cols]
 
 def remerge_td001_columns(table,td001,td001_columns):
+    td001_columns = [el for el in td001_columns if el not in table]
     td001_columns = ['td001_dpe_id']+td001_columns
     table=table.merge(td001[td001_columns],on='td001_dpe_id')
     return table

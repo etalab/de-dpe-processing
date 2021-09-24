@@ -325,14 +325,14 @@ def agg_td008_to_td001(td008):
     est_and_ouest_double = (est_double & ouest_double)
 
     orientation_agg.loc[est_and_ouest_double] = orientation_agg.loc[est_and_ouest_double].str.replace('est ou ouest \+',
-                                                                                                      '', regex=True).str.replace(
-        '\+ est ou ouest', '', regex=True)
+                                                                                                      '', regex=False).str.replace(
+        '\+ est ou ouest', '', regex=False)
 
     is_indetermine = orientation_agg.str.contains('indetermine')
 
     orientation_agg.loc[is_indetermine] = orientation_agg.loc[is_indetermine].str.replace('indetermine \+',
-                                                                                          '', regex=True).str.replace(
-        '\+ indetermine', '', regex=True)
+                                                                                          '', regex=False).str.replace(
+        '\+ indetermine', '', regex=False)
     orientation_agg = orientation_agg.str.strip()
     not_null = ~orientation_agg.isnull()
     orientation_agg[not_null] = orientation_agg[not_null].apply(lambda x: ' '.join(x.split()))
