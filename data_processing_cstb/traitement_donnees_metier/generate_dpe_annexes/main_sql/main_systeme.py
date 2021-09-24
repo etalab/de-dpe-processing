@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 import json
 from generate_dpe_annexes.utils import round_float_cols, unique_ordered
-from multiprocessing import Pool
+from multiprocessing import get_context
 
 from generate_dpe_annexes.td011_td012_processing import merge_td012_tr_tv, postprocessing_td011_td012, \
     merge_td011_tr_tv, \
@@ -20,6 +20,7 @@ import subprocess
 from generate_dpe_annexes.sql_queries import *
 from generate_dpe_annexes.config import config
 from generate_dpe_annexes.utils import select_only_new_cols,remerge_td001_columns
+import multiprocessing
 
 #@timeit
 def run_systeme_processing(dept):
@@ -116,7 +117,7 @@ if __name__ == '__main__':
     depts_to_be_processed = [dept for dept in all_depts if dept not in already_processed_depts]
     if config['multiprocessing']['is_multiprocessing'] is True:
 
-        with Pool(processes=config['multiprocessing']['nb_proc']) as pool:
+        with multiprocessing.get_context('spawn').Pool(processes=config['multiprocessing']['nb_proc']) as pool:
             pool.starmap(run_systeme_processing, [(dept,) for dept in depts_to_be_processed])
     else:
         for dept in depts_to_be_processed:

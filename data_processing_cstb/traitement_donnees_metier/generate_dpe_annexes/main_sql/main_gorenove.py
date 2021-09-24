@@ -17,6 +17,7 @@ from generate_dpe_annexes.advanced_general_processing import main_advanced_gener
 from generate_dpe_annexes.utils import remerge_td001_columns
 import subprocess
 from generate_dpe_annexes.utils import select_only_new_cols,remerge_td001_columns
+import multiprocessing
 
 
 
@@ -77,7 +78,7 @@ if __name__ == '__main__':
     depts_to_be_processed = [dept for dept in all_depts if dept not in already_processed_depts]
     if config['multiprocessing']['is_multiprocessing'] is True:
 
-        with Pool(processes=config['multiprocessing']['nb_proc']) as pool:
+        with multiprocessing.get_context('spawn').Pool(processes=config['multiprocessing']['nb_proc']) as pool:
             pool.starmap(run_gorenove_processing, [(dept,) for dept in depts_to_be_processed])
     else:
         for dept in depts_to_be_processed:
