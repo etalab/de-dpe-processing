@@ -21,7 +21,7 @@ from generate_dpe_annexes.sql_queries import *
 from generate_dpe_annexes.config import config
 from generate_dpe_annexes.utils import select_only_new_cols,remerge_td001_columns,timeit
 
-@timeit
+#@timeit
 def run_systeme_processing(dept):
 
     function_name = "run_systeme_processing"

@@ -20,7 +20,7 @@ from generate_dpe_annexes.utils import select_only_new_cols,remerge_td001_column
 
 
 
-@timeit
+#@timeit
 def run_gorenove_processing(dept):
     td001 = get_td001(dept)
     gen_adv = get_annexe_table('td001_gen_agg_adv_annexe', dept=dept)
