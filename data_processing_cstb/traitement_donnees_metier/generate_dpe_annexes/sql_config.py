@@ -20,13 +20,21 @@ except:
         # Load config file content
         with open(yml_path, "r") as ymlfile:
             cfg = yaml.load(ymlfile, Loader=yaml.SafeLoader)
+            if 'gorenove_db_fabric' in cfg:
+                db = 'gorenove_db_fabric'
+                HOST = cfg[db]['host']
+                PORT = cfg[db]['port']
+                DATABASE = cfg[db]['db_name']
+                USER = cfg[db]['user']
+                PASSWORD = cfg[db]['password']
+            else:
 
-            # constantes
-            HOST = cfg['db']['host']
-            PORT = cfg['db']['port']
-            DATABASE = cfg['db']['db_name']
-            USER = cfg['db']['user']
-            PASSWORD = cfg['db']['password']
+                # constantes
+                HOST = cfg['db']['host']
+                PORT = cfg['db']['port']
+                DATABASE = cfg['db']['db_name']
+                USER = cfg['db']['user']
+                PASSWORD = cfg['db']['password']
 
         # Init connection to db on POSTGRES db
         return sqlalchemy.create_engine('postgresql://{}:{}@{}:{}/{}'.format(
