@@ -27,4 +27,4 @@ config['logger'] = logger
 # multiprocessing
 
 config['multiprocessing']={'is_multiprocessing':True ,
-                           'nb_proc':8}
+                           'nb_proc':4}

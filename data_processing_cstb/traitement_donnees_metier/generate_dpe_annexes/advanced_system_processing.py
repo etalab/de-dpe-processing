@@ -1437,9 +1437,9 @@ def calcul_libelle_simplifie(td001_sys):
         gen_ecs_simp_dict[f'chaudiere {ener} indetermine'] = f'chaudiere {ener} standard'
 
     for k, v in gen_ecs_simp_dict.items():
-        td001_sys.gen_ecs_lib_final_simp = td001_sys.gen_ecs_lib_final_simp.str.replace(k, v)
-        td001_sys.gen_ecs_lib_final_simp = td001_sys.gen_ecs_lib_final_simp.str.replace(v + ' + ' + v, v)
-        td001_sys.gen_ecs_lib_final_simp = td001_sys.gen_ecs_lib_final_simp.str.replace(v + ' + ' + v, v)
+        td001_sys.gen_ecs_lib_final_simp = td001_sys.gen_ecs_lib_final_simp.str.replace(k, v,regex=False)
+        td001_sys.gen_ecs_lib_final_simp = td001_sys.gen_ecs_lib_final_simp.str.replace(v + ' + ' + v, v,regex=False)
+        td001_sys.gen_ecs_lib_final_simp = td001_sys.gen_ecs_lib_final_simp.str.replace(v + ' + ' + v, v,regex=False)
 
     ### generateur ecs principal appoint et solaire
 
