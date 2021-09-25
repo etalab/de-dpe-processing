@@ -20,6 +20,7 @@ from generate_dpe_annexes.sql_config import engine, sql_config
 from generate_dpe_annexes.utils import select_only_new_cols,remerge_td001_columns
 import multiprocessing
 import sys
+from pathlib import Path
 import traceback as tb
 #@timeit
 def run_enveloppe_processing(dept):
@@ -111,7 +112,8 @@ def run_enveloppe_processing(dept):
         td001_env_adv_agg = remerge_td001_columns(td001_env_adv_agg, td001_raw, ['tv016_departement_id'])
         dump_sql(table=td001_env_adv_agg, table_name="td001_env_adv_agg_annexe", dept=dept)
     except Exception as e:
-        with open(f'{function_name}_error_log','w') as f:
+        logger.debug(f'{function_name} -------------- DUMP ERROR')
+        with open(Path(__file__).absolute().parent/f'{function_name}_error_log','w') as f:
             f.write(tb.format_exc())
         raise e
 def build_doc(annexe_dir):
