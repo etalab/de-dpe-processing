@@ -496,8 +496,8 @@ def generate_mur_table(td007):
     is_renove = is_renove | is_renove_null
     td007_mur['is_renove'] = is_renove
     # affectation de periode rénovation en fonction des performances du U pour les parois rénovées.
-    td007_mur['periode_renovation'] = pd.cut(td007_mur.u, [0.05, 0.25, 0.4, 0.47], labels=['>2012', '2006-2012', '2000-2005'],ordered=False)
-    periode_renovation_table = pd.cut(td007_mur.annee_isole_uniforme_min, [1999, 2005, 2011, 2100], labels=['2000-2005', '2006-2012', '>2012'],ordered=False)
+    td007_mur['periode_renovation'] = pd.cut(td007_mur.u, [0.05, 0.25, 0.4, 0.47], labels=['>2012', '2006-2012', '2000-2005'], ordered=False)
+    periode_renovation_table = pd.cut(td007_mur.annee_isole_uniforme_min, [1999, 2005, 2011, 2100], labels=['2000-2005', '2006-2012', '>2012'], ordered=False)
     td007_mur.loc[~periode_renovation_table.isnull(), 'periode_renovation'] = periode_renovation_table[~periode_renovation_table.isnull()]
     td007_mur.loc[~is_renove, 'periode_renovation'] = np.nan
     td007_mur.periode_renovation = td007_mur.periode_renovation.cat.add_categories('batiment récent')
@@ -530,6 +530,10 @@ def agg_td007_mur_to_td001(td007_mur):
     pivot = td007_mur.pivot_table(index='td001_dpe_id', columns='type_adjacence', values='surf_paroi_opaque_infer',
                                   aggfunc='sum')
     pivot.columns = [f'surf_mur_{col.lower()}' for col in pivot]
+    all_type_adjacence = ['EXTERIEUR', 'LNC', 'BAT_ADJ', 'NONDEF', 'PAROI_ENTERREE']
+    all_cols = [f'surf_mur_{col.lower()}' for col in all_type_adjacence]
+    pivot = pivot.reindex(all_cols, axis=1)
+
     concat.extend([type_local_non_chauffe_arr_agg, type_local_non_chauffe_agg_top, pivot])
 
     for var in ['meth_calc_u', 'u', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
@@ -554,6 +558,7 @@ def agg_td007_mur_to_td001(td007_mur):
     td007_mur_agg.index.name = 'td001_dpe_id'
 
     return td007_mur_agg
+
 
 # ================================== TRAITEMENT DES PLANCHERS BAS ==============================================================
 
@@ -795,7 +800,9 @@ def agg_td007_pb_to_td001(td007_pb):
     pivot = td007_pb.pivot_table(index='td001_dpe_id', columns='type_adjacence', values='surf_paroi_opaque_infer',
                                  aggfunc='sum')
     pivot.columns = [f'surf_pb_{col.lower()}' for col in pivot]
-
+    all_type_adjacence = ['EXTERIEUR', 'LNC', 'BAT_ADJ', 'NONDEF', 'PAROI_ENTERREE']
+    all_cols = [f'surf_pb_{col.lower()}' for col in all_type_adjacence]
+    pivot = pivot.reindex(all_cols, axis=1)
     concat.extend([type_local_non_chauffe_arr_agg, type_local_non_chauffe_agg_top, pivot])
 
     for var in ['meth_calc_u', 'u', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
@@ -1006,8 +1013,8 @@ def generate_ph_table(td007):
     is_renove = is_renove | is_renove_null
     td007_ph['is_renove'] = is_renove
     # affectation de periode rénovation en fonction des performances du U pour les parois rénovées.
-    td007_ph['periode_renovation'] = pd.cut(td007_ph.u, [0.05, 0.25, 0.3, 0.5], labels=['>2006', '2000-2005', '1988-2000'],ordered=False)
-    periode_renovation_table = pd.cut(td007_ph.annee_isole_uniforme_min, [1987, 1999, 2005, 2100], labels=['1988-2000', '2000-2005', '>2006'],ordered=False)
+    td007_ph['periode_renovation'] = pd.cut(td007_ph.u, [0.05, 0.25, 0.3, 0.5], labels=['>2006', '2000-2005', '1988-2000'], ordered=False)
+    periode_renovation_table = pd.cut(td007_ph.annee_isole_uniforme_min, [1987, 1999, 2005, 2100], labels=['1988-2000', '2000-2005', '>2006'], ordered=False)
     td007_ph.loc[~periode_renovation_table.isnull(), 'periode_renovation'] = periode_renovation_table[~periode_renovation_table.isnull()]
     td007_ph.loc[~is_renove, 'periode_renovation'] = np.nan
     td007_ph.periode_renovation = td007_ph.periode_renovation.cat.add_categories('batiment récent')
@@ -1038,6 +1045,9 @@ def agg_td007_ph_to_td001(td007_ph):
     pivot = td007_ph.pivot_table(index='td001_dpe_id', columns='type_adjacence', values='surf_paroi_opaque_infer',
                                  aggfunc='sum')
     pivot.columns = [f'surf_ph_{col.lower()}' for col in pivot]
+    all_type_adjacence = ['EXTERIEUR', 'LNC', 'BAT_ADJ', 'NONDEF', 'PAROI_ENTERREE']
+    all_cols = [f'surf_ph_{col.lower()}' for col in all_type_adjacence]
+    pivot = pivot.reindex(all_cols, axis=1)
     concat.extend([type_local_non_chauffe_arr_agg, type_local_non_chauffe_agg_top, pivot])
 
     for var in ['meth_calc_u', 'u', 'epaisseur_isolation', 'resistance_thermique_isolation', 'meth_calc_isolation',
