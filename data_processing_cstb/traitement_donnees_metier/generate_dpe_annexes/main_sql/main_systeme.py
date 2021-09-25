@@ -28,6 +28,7 @@ def run_systeme_processing(dept):
     function_name = "run_systeme_processing"
     logger = config['logger']
     add_cols = ['tv016_departement_id', 'td001_dpe_id', 'annee_construction']
+    logger.debug(f'{function_name} -------------- init for department {dept}')
     logger.debug(f'{function_name} -------------- load tables')
     td001_raw = get_td001(dept=dept)
     td002_raw = get_td002(dept=dept)

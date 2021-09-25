@@ -25,6 +25,8 @@ def run_enveloppe_processing(dept):
     function_name = "run_enveloppe_processing"
     logger = config['logger']
     add_cols = ['tv016_departement_id', 'td001_dpe_id', 'annee_construction']
+    logger.debug(f'{function_name} -------------- init for department {dept}')
+
     logger.debug(f'{function_name} -------------- load tables')
     td001_raw = get_td001(dept=dept)
     td006_raw = get_td006(dept=dept)

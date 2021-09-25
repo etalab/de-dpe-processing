@@ -18,6 +18,8 @@ def run_general_processing(dept):
     function_name = "run_general_processing"
     logger = config['logger']
     add_cols = ['tv016_departement_id', 'td001_dpe_id', 'annee_construction']
+    logger.debug(f'{function_name} -------------- init for department {dept}')
+
     logger.debug(f'{function_name} -------------- load tables')
     td001_raw = get_td001(dept=dept)
     td003_raw = get_td003(dept=dept)
