@@ -80,8 +80,8 @@ def main_advanced_general_processing(td001, td003, td005, td001_td006):
 
     useful_cols = ['td001_dpe_id','type_prise_air', 'type_ventilation',
        'inertie','presence_climatisation','enr']
-    td001_processing_cols = ['type_batiment','coherence_data_methode_dpe', 'nom_methode_dpe_norm','periode_construction','classe_consommation_energie',
-                             'classe_estimation_ges','is_conso_table', 'is_facture_table', 'is_neuf_table', 'is_paroi_opaque_table', 'is_systeme_ch_table','is_3cl','is_data_model_propre']
+    td001_processing_cols = ['type_batiment', 'nom_methode_dpe_norm','periode_construction','classe_consommation_energie_norm',
+                             'classe_estimation_ges_norm','is_conso_table', 'is_facture_table', 'is_neuf_table', 'is_paroi_opaque_table', 'is_systeme_ch_table','is_3cl','coherence_data_model','coherence_data_methode_dpe']
     useful_cols = td001_processing_cols+useful_cols
 
     return td001_gen[useful_cols]

@@ -39,7 +39,7 @@ def run_gorenove_processing(dept):
                 'type_energie_ecs', 'gen_ecs_lib_final',
                 'gen_ecs_lib_principal', 'gen_ecs_lib_appoint', 'is_ecs_solaire']
 
-    gen_cols = ['td001_dpe_id', 'classe_consommation_energie', 'classe_estimation_ges', 'type_batiment', 'coherence_data_methode_dpe', 'is_3cl', 'nom_methode_dpe_norm', 'periode_construction',
+    gen_cols = ['td001_dpe_id', 'classe_consommation_energie_norm', 'classe_estimation_ges_norm', 'type_batiment', 'coherence_data_methode_dpe', 'is_3cl', 'nom_methode_dpe_norm', 'periode_construction',
                 'type_ventilation',
                 'inertie', 'presence_climatisation', 'enr']
     env_cols = ['td001_dpe_id', 'u_mur_ext', 'mat_mur_ext',

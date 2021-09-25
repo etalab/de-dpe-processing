@@ -40,7 +40,7 @@ def run_general_processing(dept):
 
     logger.debug(f'{function_name} -------------- advanced')
 
-    td001 = select_only_new_cols(td001_raw, td001, 'td001_dpe_id')
+    td001 = select_only_new_cols(td001_raw, td001, 'td001_dpe_id',add_cols=add_cols)
     td001_gen_agg_adv = main_advanced_general_processing(td001=td001, td003=td003_raw, td005=td005_raw, td001_td006=td001_td006)
     td001_general_table_dict = dict(
         td001_gen_agg_adv_annexe=td001_gen_agg_adv)

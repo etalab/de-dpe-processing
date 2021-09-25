@@ -91,16 +91,19 @@ def postprocessing_td001(td001,td002,td007,td012,td016,td017):
     nom_dpe = td001.nom_methode_dpe.copy().str.lower()
     nom_methode_etude_thermique = td001.nom_methode_etude_thermique.str.lower()
 
+
+    td001['classe_consommation_energie_norm']=td001.classe_consommation_energie.copy()
+    td001['classe_estimation_ges_norm'] = td001.classe_consommation_energie.copy()
     not_valid = ~td001.classe_consommation_energie.isin(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
-    td001.loc[not_valid, 'classe_consommation_energie'] = 'N'
+    td001.loc[not_valid, 'classe_consommation_energie_norm'] = 'N'
     not_valid = ~td001.classe_estimation_ges.isin(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
-    td001.loc[not_valid, 'classe_estimation_ges'] = 'N'
+    td001.loc[not_valid, 'classe_estimation_ges_norm'] = 'N'
 
     is_3cl = nom_dpe.str.contains('cl')
     is_facture = nom_dpe.str.contains('facture')
     is_thc = (nom_dpe.str.startswith('th')) | (nom_methode_etude_thermique.str.startswith('th')) | (td001.version_methode_etude_thermique.isin(num_versions_rt2012))
     is_vierge = nom_dpe.str.contains('vierge')
-    is_classe_vierge = td001.classe_consommation_energie=="N"
+    is_classe_vierge = td001.classe_consommation_energie_norm=="N"
 
     s_version = td001.version_methode_dpe.str.lower().fillna('')
     v2012 = s_version.str.contains('2012|1.3')
