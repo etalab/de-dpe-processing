@@ -18,7 +18,6 @@ import sys
 def run_general_processing(dept):
     function_name = "run_general_processing"
     logger = config['logger']
-    add_cols = ['tv016_departement_id', 'td001_dpe_id', 'annee_construction']
     logger.debug(f'{function_name} -------------- init for department {dept}')
 
     logger.debug(f'{function_name} -------------- load tables')
@@ -40,7 +39,7 @@ def run_general_processing(dept):
 
     logger.debug(f'{function_name} -------------- advanced')
 
-    td001 = select_only_new_cols(td001_raw, td001, 'td001_dpe_id',add_cols=add_cols)
+    td001 = select_only_new_cols(td001_raw, td001, 'td001_dpe_id')
     td001_gen_agg_adv = main_advanced_general_processing(td001=td001, td003=td003_raw, td005=td005_raw, td001_td006=td001_td006)
     td001_general_table_dict = dict(
         td001_gen_agg_adv_annexe=td001_gen_agg_adv)
@@ -48,7 +47,7 @@ def run_general_processing(dept):
     logger.debug(f'{function_name} -------------- dump sql')
 
     for k, v in td001_general_table_dict.items():
-        td001_general_table_dict[k] = remerge_td001_columns(v, td001_raw, ['tv016_departement_id'])
+        td001_general_table_dict[k] = remerge_td001_columns(v, td001_raw, ['tv016_departement_id','annee_construction'])
 
     for k, v in td001_general_table_dict.items():
         dump_sql(table=v, table_name=k, dept=dept)
