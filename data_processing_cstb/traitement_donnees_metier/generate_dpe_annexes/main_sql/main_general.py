@@ -12,6 +12,7 @@ from generate_dpe_annexes.utils import remerge_td001_columns
 import subprocess
 from generate_dpe_annexes.utils import select_only_new_cols,remerge_td001_columns
 import multiprocessing
+import sys
 
 #@timeit
 def run_general_processing(dept):
@@ -54,11 +55,13 @@ def run_general_processing(dept):
 
 
 if __name__ == '__main__':
-
+    nb_args = len(sys.argv) - 1
+    if nb_args > 0:
+        config['multiprocessing']['is_multiprocessing'] = sys.argv[1]
     all_depts = get_raw_departements()
     already_processed_depts = get_annexe_departements('td001_gen_agg_adv_annexe')
     depts_to_be_processed = [dept for dept in all_depts if dept not in already_processed_depts]
-    if config['multiprocessing']['is_multiprocessing'] is True:
+    if config['multiprocessing']['is_multiprocessing'] == True:
 
         with multiprocessing.get_context('spawn').Pool(processes=config['multiprocessing']['nb_proc']) as pool:
             pool.starmap(run_general_processing, [(dept,) for dept in depts_to_be_processed])
