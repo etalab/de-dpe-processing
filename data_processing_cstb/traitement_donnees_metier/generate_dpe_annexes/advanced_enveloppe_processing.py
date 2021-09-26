@@ -1,11 +1,12 @@
 import pandas as pd
 import numpy as np
 
-from .td003_td005_text_extraction import extract_td003_baie_variables, extract_td003_murs_variables, \
+from generate_dpe_annexes.td003_td005_text_extraction import extract_td003_baie_variables, extract_td003_murs_variables, \
     extract_td003_pb_variables, extract_td003_ph_variables, extract_td005_baie_variables, extract_td005_murs_variables, \
     extract_td005_pb_variables, extract_td005_ph_variables
-from .text_matching_dict import *
-from .gorenove_scripts import rename_dpe_table_light
+from generate_dpe_annexes.text_matching_dict import *
+from generate_dpe_annexes.gorenove_scripts import rename_dpe_table_light
+from generate_dpe_annexes.config import config
 
 def main_advanced_enveloppe_processing(td001,td003, td005,env_compo_agg_dict):
     env_dict_cols = {
@@ -26,31 +27,32 @@ def main_advanced_enveloppe_processing(td001,td003, td005,env_compo_agg_dict):
 
     td001_env = rename_dpe_table_light(td001_env)
     # ELASTIC SEARCH descriptif et fiches techniques
-    print('ES : murs')
+    logger = config['logger']
+    logger.debug('ES : murs')
     materiau_mur_ft, isolation_mur_ft = extract_td005_murs_variables(td005)
-    print('ES : murs')
+    logger.debug('ES : murs')
 
     materiau_mur_desc, isolation_mur_desc = extract_td003_murs_variables(td003)
-    print('ES : ph')
+    logger.debug('ES : ph')
 
     materiau_ph_ft, isolation_ph_ft = extract_td005_ph_variables(td005)
-    print('ES : ph')
+    logger.debug('ES : ph')
 
     materiau_ph_desc, isolation_ph_desc = extract_td003_ph_variables(td003)
-    print('ES : pb')
+    logger.debug('ES : pb')
 
     materiau_pb_ft, isolation_pb_ft = extract_td005_pb_variables(td005)
-    print('ES : pb')
+    logger.debug('ES : pb')
 
     materiau_pb_desc, isolation_pb_desc = extract_td003_pb_variables(td003)
-    print('ES : vitrage')
+    logger.debug('ES : vitrage')
 
     type_vitrage_ft, type_remplissage_ft, materiau_baie_ft, orientation_baie_ft = extract_td005_baie_variables(td005)
-    print('ES : vitrage')
+    logger.debug('ES : vitrage')
 
     type_vitrage_desc, type_remplissage_desc, materiau_baie_desc, orientation_baie_desc = extract_td003_baie_variables(
         td003)
-    print('fusion')
+    logger.debug('fusion')
 
     td001_env = concat_mur_txt(td001_env, materiau_mur_ft=materiau_mur_ft, materiau_mur_desc=materiau_mur_desc,
                                isolation_mur_ft=isolation_mur_ft, isolation_mur_desc=isolation_mur_desc)

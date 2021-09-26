@@ -1,14 +1,14 @@
 import pandas as pd
 import numpy as np
-from .text_matching_dict import gen_ch_search_dict_flat, reverse_cat_gen_ch, gen_ch_search_dict, reverse_cat_gen_ecs, \
+from generate_dpe_annexes.text_matching_dict import gen_ch_search_dict_flat, reverse_cat_gen_ch, gen_ch_search_dict, reverse_cat_gen_ecs, \
     gen_ecs_search_dict, gen_ecs_search_dict_flat, tr003_desc_to_gen, energie_combustion_mods, priorisation_ecs, \
     energie_chaudiere_mods, type_chaudiere_mods,gen_ecs_simp_dict,gen_ch_simp_dict
-from .conversion_normalisation import energie_normalise_ordered
-from .td003_td005_text_extraction import extract_td003_ch_variables, extract_td003_ecs_variables, \
+from generate_dpe_annexes.conversion_normalisation import energie_normalise_ordered
+from generate_dpe_annexes.td003_td005_text_extraction import extract_td003_ch_variables, extract_td003_ecs_variables, \
     extract_td005_ch_variables, extract_td005_ecs_variables
 
-from .td002_td016_processing import extract_type_energie_from_td002_td016, merge_td002_td016_trtrv
-
+from generate_dpe_annexes.td002_td016_processing import extract_type_energie_from_td002_td016, merge_td002_td016_trtrv
+from generate_dpe_annexes.config import config
 
 def main_advanced_system_processing(td001_sys_ch_agg, td001, td002, td016,
                                     td001_sys_ecs_agg, td003, td005, td011_p, td012_p, td014_p):
@@ -21,17 +21,18 @@ def main_advanced_system_processing(td001_sys_ch_agg, td001, td002, td016,
     td001_sys = td001_sys.merge(td001_sys_ecs_agg[['td001_dpe_id', 'gen_ecs_lib_infer_concat', 'mix_energetique_ecs']],
                                 on='td001_dpe_id',
                                 how='left')
+    logger = config['logger']
 
     # ELASTIC SEARCH descriptif et fiches techniques
-    print('search CH TD005')
+    logger.debug('search CH TD005')
     gen_ch_lib_ft, type_installation_ch_ft, energie_ch_ft, solaire_ch_ft = extract_td005_ch_variables(td005)
-    print('search CH TD003')
+    logger.debug('search CH TD003')
 
     gen_ch_lib_desc, type_installation_ch_desc, energie_ch_desc, solaire_ch_desc = extract_td003_ch_variables(td003)
-    print('search ECS TD005')
+    logger.debug('search ECS TD005')
 
     gen_ecs_lib_ft, type_installation_ecs_ft, energie_ecs_ft = extract_td005_ecs_variables(td005)
-    print('search ECS TD003')
+    logger.debug('search ECS TD003')
 
     gen_ecs_lib_desc, type_installation_ecs_desc, energie_ecs_desc = extract_td003_ecs_variables(td003)
 
@@ -1166,8 +1167,7 @@ def redressement_td001_sys(td001_sys):
             c = ' + '.join(c.sort_values().tolist())
             return c
         except Exception as e:
-            print(x)
-            print(c)
+
             raise e
 
     def resort_gen_ecs_labels(x):
@@ -1175,8 +1175,7 @@ def redressement_td001_sys(td001_sys):
             c = pd.Categorical(x.split(' + '), ordered_ecs_labels, ordered=True)
             c = ' + '.join(c.sort_values().tolist())
         except Exception as e:
-            print(x)
-            print(c)
+
             raise e
         return x
 
