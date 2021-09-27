@@ -211,7 +211,7 @@ def agg_surf_envelope(td007, td008):
 
     surf_vitree_orient.columns = [f'surf_vitree_{el.lower().replace(" ", "_")}' for el in
                                   surf_vitree_orient.columns]
-    all_orientation_columns=['Est', 'Est ou Ouest', 'Horizontale', 'NONDEF', 'Nord', 'Ouest', 'Sud']
+    all_orientation_columns=['Est', 'Est ou Ouest', 'Horizontale', 'indetermine', 'Nord', 'Ouest', 'Sud']
     all_orientation_columns=[f'surf_vitree_{el.lower().replace(" ", "_")}' for el in
      all_orientation_columns]
     surf_vitree_orient = surf_vitree_orient.reindex(all_orientation_columns,axis=1)
