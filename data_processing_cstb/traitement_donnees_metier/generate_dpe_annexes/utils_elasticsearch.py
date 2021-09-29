@@ -121,6 +121,7 @@ def search_and_affect(data_to_search, id_col, val_col, search_dict, max_retries=
                     )
                 except:
                     pass
+                logger.debug(f'elastic setup for chunk : {i}')
 
                 es_client = setup_es_client(index_name)
                 L = data_to_search.shape[0]
