@@ -44,7 +44,8 @@ def setup_es_client(index_name):
         pass
     es_client.indices.create(
         index=index_name,
-        body=index_configurations
+        body=index_configurations,
+        request_timeout=60 * 5
     )
     return es_client
 
@@ -100,7 +101,7 @@ def search_from_search_dict(es_client, search_dict, index_name):
     return s_all
 
 
-def search_and_affect(data_to_search, id_col, val_col, search_dict, max_retries=2,chunk_size=100000):
+def search_and_affect(data_to_search, id_col, val_col, search_dict, max_retries=2,chunk_size=300000):
     logger = config['logger']
     full_data_to_search = data_to_search.copy()
     res_list = list()
@@ -149,6 +150,8 @@ def search_and_affect(data_to_search, id_col, val_col, search_dict, max_retries=
                 except:
                     pass
             except Exception as e:
+                logger.debug(f'ERROR : {tb.format_exc()}')
+                logger.debug(f'RETRY: {retry}')
                 retry += 1
                 if retry == max_retries:
                     raise e
