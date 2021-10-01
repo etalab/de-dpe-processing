@@ -23,7 +23,11 @@ import sys
 
 #@timeit
 def run_gorenove_processing(dept):
+
+    function_name = "run_general_processing"
     td001 = get_td001(dept)
+    logger = config['logger']
+    logger.debug(f'{function_name} -------------- run for department {dept}')
     gen_adv = get_annexe_table('td001_gen_agg_adv_annexe', dept=dept)
     sys_adv = get_annexe_table('td001_sys_adv_annexe', dept=dept)
     env_adv = get_annexe_table('td001_env_adv_agg_annexe', dept=dept)
