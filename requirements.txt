@@ -12,7 +12,7 @@ idna==2.9
 Jinja2==2.11.1
 MarkupSafe==1.1.1
 munch==2.5.0
-numpy==1.18.2
+numpy==1.22.0
 pandas==1.0.3
 pyproj==2.6.0
 python-dateutil==2.8.1
