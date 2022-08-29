@@ -517,7 +517,7 @@ Prérequis :
 Appliquer les opérations python suivantes sur les fichiers csv 
 
 ```
-df = pd.read_csv('td001_dpe_tertiaire.csv',dtype=str,sep="|")
+df = pd.read_csv('td001_dpe_logement.csv',dtype=str,sep="|")
 # Remove some \N in data
 for d in df.columns:
 	df[d] = df[d].apply(lambda x: str(x).replace("\\N","") if x == x else x)
