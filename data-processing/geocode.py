@@ -80,8 +80,8 @@ def trace(txt):
 #Ouverture des CSV et connexion aux bases SQL de stockage des géocodages déjà réalisés
 if len(sys.argv) > 2:
     stock = False
-    sirene_csv = csv.reader(open(sys.argv[1], 'r'), #NBED: previously encoding='iso8859-1'
-                            delimiter=csv_delimiter)
+    sirene_csv = csv.reader(open(sys.argv[1], 'r', encoding='iso8859-1'),
+                            delimiter=csv_delimiter, lineterminator='\n')
     sirene_geo = csv.writer(gzip.open(sys.argv[2], 'wt', compresslevel=9), delimiter=csv_delimiter)
     conn = None
     if len(sys.argv) > 3:

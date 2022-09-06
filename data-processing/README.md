@@ -28,28 +28,34 @@ docker cp *.sql my-container-mysql:/
 docker exec -it my-container-mysql /bin/bash
 ```
 
-* 4. Connection à la base mysql
+
+* 4. Elargissement des droits d'accès pour éviter les erreurs avec la base de données 
+```
+chmod -777 /var/lib
+```
+
+* 5. Connection à la base mysql
 
 ```
 mysql -u root -p
 # Entrer votre mot de passe (étape 1)
 ```
 
-* 5. Création des bases mysql
+* 6. Création des bases mysql
 
 ```
 CREATE DATABASE dpe_tertiaire;
 CREATE DATABASE dpe_logement;
 ```
 
-* 6. Import des dumps dans la base mysql
+* 7. Import des dumps dans la base mysql
 
 ```
 mysql -u root -p dpe_tertiaire < dpe_tertiaire_202103.sql
 mysql -u root -p dpe_logement < dpe_logement_202103.sql
 ```
 
-* 7. Opérations sur les bases
+* 8. Opérations sur les bases
 
 ```
 mysql -u root -p
@@ -202,7 +208,7 @@ update dpe_logement.td001_dpe set est_efface = replace(convert(est_efface using 
 update dpe_logement.td001_dpe set date_reception_dpe = replace(convert(date_reception_dpe using utf8) ,'\r','');
 ```
 
-* 8. Export csv
+* 9. Export csv
 
 ```
 SELECT 
@@ -497,7 +503,7 @@ INTO OUTFILE '/var/lib/mysql-files/td001_dpe_tertiaire.csv'
 FIELDS ESCAPED BY '\\' TERMINATED BY '|' ENCLOSED BY '"' LINES TERMINATED BY '\n';
 ```
 
-* 9. Récupération des dumps csv
+* 10. Récupération des dumps csv
 
 ```
 exit
@@ -517,15 +523,24 @@ Prérequis :
 Appliquer les opérations python suivantes sur les fichiers csv 
 
 ```
-df = pd.read_csv('td001_dpe_logement.csv',dtype=str,sep="|")
+import csv
+import os
+import pandas as pd
+
+df = pd.read_csv('td001_dpe_logement.csv', lineterminator='\n', dtype=str,sep="|", encoding="iso8859-1")
 # Remove some \N in data
 for d in df.columns:
-	df[d] = df[d].apply(lambda x: str(x).replace("\\N","") if x == x else x)
+    df[d] = df[d].apply(lambda x: str(x).replace("\\N","").replace("\\R","").replace("\\n","").replace("\\r","") if x == x else x)
 
 # Split one file per department
 deps = df.tv016_departement_id.unique()
 for d in deps: 
-	df[df['tv016_departement_id'] == d].to_csv('by_dep/dep_'+d+'.csv',sep="|",index=False)
+    df[df['tv016_departement_id'] == d].to_csv('by_dep/dep_'+d+'.csv',sep="|",index=False, encoding='iso8859-1', quoting=csv.QUOTE_NONNUMERIC)
+
+for dep_filename in os.listdir('by_dep'):
+    os.rename(f'by_dep/{dep_filename}', f'by_dep/{dep_filename.replace("_0", "_")}')
+os.rename('by_dep/dep_96.csv', 'by_dep/dep_2A.csv')
+os.rename('by_dep/dep_97.csv', 'by_dep/dep_2B.csv')
 ```
 
 Le sous-dossier by_dep contient désormais les fichiers de la base DPE logements par département, dans des fichiers CSV nommés `dep_XX.csv`
@@ -546,7 +561,7 @@ CREATE TABLE cache_addok (adr text, geo text,
 CREATE INDEX cache_addok_adr ON cache_addok (adr);
 .exit
 # shell
-for i in {01..20}; do cp test.csv.db cache_addok_$i; done
+for i in {1..95}; do cp test.csv.db cache_addok_$i.csv.cb; done
 mv test.csv.db cache_addok_2A.csv.db
 mv cache_addok_20.csv.db cache_addok2B.csv.db
 ```
